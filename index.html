@@ -224,7 +224,7 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
 .stat-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:12px}
 .stat-bar{height:6px;background:var(--bg-tertiary);border-radius:3px;flex:1;margin:0 12px;overflow:hidden}
 .stat-bar-fill{height:100%;border-radius:3px;transition:width .3s}
-.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:20px}
 .stat-card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center}
 .stat-card .stat-num{font-size:24px;font-weight:700;margin-bottom:4px}
 .stat-card .stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase}
@@ -295,7 +295,6 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
       <div class="page-panel active" id="page-bom">
         <div class="tab-bar">
           <div class="tab-item active" data-tab="structure">BOM 结构</div>
-          <div class="tab-item" data-tab="materials">物料清单</div>
           <div class="tab-item" data-tab="versions">版本管理</div>
           <div class="tab-item" data-tab="approval">审批流程</div>
         </div>
@@ -320,50 +319,7 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
             </div>
           </div>
         </div>
-        <!-- Tab 2: Materials List -->
-        <div class="tab-panel" id="tab-materials">
-          <div class="content-body">
-            <div class="toolbar">
-              <input class="search-input" type="text" id="matSearch" placeholder="搜索物料编号或名称…" />
-              <select class="filter-select" id="matFilter">
-                <option value="all">全部状态</option>
-                <option value="有效">有效</option>
-                <option value="停用">停用</option>
-                <option value="待审">待审</option>
-              </select>
-              <div style="flex:1"></div>
-              <button class="btn btn-primary btn-sm" onclick="showMaterialModal()">＋ 新增物料</button>
-              <button class="btn btn-secondary btn-sm" onclick="showModal('importModal')">↑ 导入</button>
-              <button class="btn btn-secondary btn-sm" onclick="exportCSV()">↓ 导出</button>
-            </div>
-            <div class="batch-bar" id="batchBar" style="display:none">
-              <span id="batchCount">已选 0 项</span>
-              <div style="flex:1"></div>
-              <select class="filter-select" id="batchStatus" style="width:auto">
-                <option value="">批量修改状态</option>
-                <option value="有效">设为有效</option>
-                <option value="停用">设为停用</option>
-                <option value="待审">设为待审</option>
-              </select>
-              <button class="btn btn-danger btn-xs" onclick="batchDelete()">批量删除</button>
-              <button class="btn btn-ghost btn-xs" onclick="clearSelection()">取消选择</button>
-            </div>
-            <div class="table-wrap">
-              <table id="matTable">
-                <thead><tr>
-                  <th style="width:36px"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" /></th>
-                  <th style="width:40px">#</th><th>物料编号</th><th>物料名称</th><th>规格型号</th><th>单位</th><th class="text-right">用量</th><th>供应商</th><th class="text-right">单价(¥)</th><th class="text-right">小计(¥)</th><th>状态</th><th style="width:80px">操作</th>
-                </tr></thead>
-                <tbody id="matBody"></tbody>
-              </table>
-            </div>
-            <div class="table-footer">
-              <span id="matSummary">共 0 种物料</span>
-              <span id="matCost">总成本: ¥ 0.00</span>
-            </div>
-          </div>
-        </div>
-        <!-- Tab 3: Versions -->
+        <!-- Tab 2: Versions -->
         <div class="tab-panel" id="tab-versions">
           <div class="content-body">
             <div class="toolbar">
@@ -387,7 +343,78 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
         </div>
       </div>
 
-      <!-- Page: Reports -->
+      <div class="page-panel" id="page-materials">
+        <div class="content-body">
+          <h2 style="font-size:18px;font-weight:700;margin-bottom:20px">🗂 物料库</h2>
+          <div class="stat-cards" id="matStatCards"></div>
+          <div class="toolbar">
+            <input class="search-input" type="text" id="matSearch" placeholder="搜索编号、名称或供应商…" />
+            <select class="filter-select" id="matFilter">
+              <option value="all">全部状态</option>
+              <option value="有效">有效</option>
+              <option value="停用">停用</option>
+              <option value="待审">待审</option>
+            </select>
+            <select class="filter-select" id="matCategoryFilter">
+              <option value="all">全部分类</option>
+            </select>
+            <select class="filter-select" id="matSupplierFilter">
+              <option value="all">全部供应商</option>
+            </select>
+            <div style="flex:1"></div>
+            <button class="btn btn-primary btn-sm" onclick="showMaterialModal()">＋ 新增物料</button>
+            <button class="btn btn-secondary btn-sm" onclick="showModal('importModal')">↑ 导入</button>
+            <button class="btn btn-secondary btn-sm" onclick="exportCSV()">↓ 导出</button>
+          </div>
+          <div class="batch-bar" id="batchBar" style="display:none">
+            <span id="batchCount">已选 0 项</span>
+            <div style="flex:1"></div>
+            <select class="filter-select" id="batchStatus" style="width:auto">
+              <option value="">批量修改状态</option>
+              <option value="有效">设为有效</option>
+              <option value="停用">设为停用</option>
+              <option value="待审">设为待审</option>
+            </select>
+            <button class="btn btn-danger btn-xs" onclick="batchDelete()">批量删除</button>
+            <button class="btn btn-ghost btn-xs" onclick="clearSelection()">取消选择</button>
+          </div>
+          <div class="table-wrap">
+            <table id="matTable">
+              <thead><tr>
+                <th style="width:36px"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" /></th>
+                <th style="width:40px">#</th>
+                <th data-sort="id" onclick="sortMaterials('id')">物料编号 ↕</th>
+                <th data-sort="name" onclick="sortMaterials('name')">物料名称 ↕</th>
+                <th>分类</th>
+                <th>规格型号</th>
+                <th>单位</th>
+                <th class="text-right" data-sort="qty" onclick="sortMaterials('qty')">用量 ↕</th>
+                <th>供应商</th>
+                <th class="text-right" data-sort="price" onclick="sortMaterials('price')">单价(¥) ↕</th>
+                <th class="text-right" data-sort="subtotal" onclick="sortMaterials('subtotal')">小计(¥) ↕</th>
+                <th>状态</th>
+                <th style="width:100px">操作</th>
+              </tr></thead>
+              <tbody id="matBody"></tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="matSummary">共 0 种物料</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button class="btn btn-ghost btn-xs" id="prevPage" onclick="changePage(-1)" disabled>‹ 上一页</button>
+              <span id="pageInfo" style="font-size:11px">第 1 页</span>
+              <button class="btn btn-ghost btn-xs" id="nextPage" onclick="changePage(1)">下一页 ›</button>
+              <select class="filter-select" id="pageSizeSelect" style="width:auto;font-size:11px" onchange="changePageSize()">
+                <option value="20">20条/页</option>
+                <option value="50">50条/页</option>
+                <option value="100">100条/页</option>
+              </select>
+            </div>
+            <span id="matCost">总成本: ¥ 0.00</span>
+          </div>
+        </div>
+      </div>
+
       <div class="page-panel" id="page-reports">
         <div class="content-body">
           <h2 style="font-size:18px;font-weight:700;margin-bottom:20px">📊 报表中心</h2>
@@ -583,6 +610,17 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="hideModal('confirmModal')">取消</button>
       <button class="btn btn-danger" id="confirmBtn" onclick="">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="matDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h3 id="matDetailTitle">物料详情</h3><button class="modal-close" onclick="hideModal('matDetailModal')">✕</button></div>
+    <div class="modal-body" id="matDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="hideModal('matDetailModal')">关闭</button>
+      <button class="btn btn-primary" id="matDetailEditBtn">编辑</button>
     </div>
   </div>
 </div>
@@ -958,28 +996,95 @@ function saveNode() {
   showDetail(findNode(selectedNodeId) || bomData);
 }
 
-// ===== MATERIALS TABLE =====
-function renderMaterials(filter, search) {
-  if (!filter) filter = document.getElementById('matFilter').value;
-  if (!search) search = document.getElementById('matSearch').value;
-  const tbody = document.getElementById('matBody');
+// ===== MATERIALS TABLE (Enhanced) =====
+let matSortField = null, matSortAsc = true, matPage = 1, matPageSize = 20;
+const categoryNames = {R:'电阻',C:'电容',IC:'芯片',L:'电感',D:'二极管',LED:'LED',X:'晶振',CN:'连接器',PCB:'PCB',CASE:'机壳',LCD:'显示',BAT:'电池',RF:'射频',PWR:'电源',SEN:'传感器',PKG:'包装'};
+function getCategory(id) { const p = id.split('-')[0]; return categoryNames[p] || p; }
+function buildFilterDropdowns() {
+  const cats = [...new Set(materialsFlat.map(m => getCategory(m.id)))].sort();
+  const sups = [...new Set(materialsFlat.map(m => m.supplier))].sort();
+  const catSel = document.getElementById('matCategoryFilter');
+  const supSel = document.getElementById('matSupplierFilter');
+  if (catSel) catSel.innerHTML = '<option value="all">全部分类</option>' + cats.map(c => '<option value="'+c+'">'+c+'</option>').join('');
+  if (supSel) supSel.innerHTML = '<option value="all">全部供应商</option>' + sups.map(s => '<option value="'+s+'">'+s+'</option>').join('');
+}
+function getFilteredMaterials() {
+  const filter = document.getElementById('matFilter')?.value || 'all';
+  const search = (document.getElementById('matSearch')?.value || '').toLowerCase();
+  const cat = document.getElementById('matCategoryFilter')?.value || 'all';
+  const sup = document.getElementById('matSupplierFilter')?.value || 'all';
   let data = materialsFlat.slice();
-  if (filter && filter !== 'all') data = data.filter(m => m.status === filter);
-  if (search) { const s = search.toLowerCase(); data = data.filter(m => m.id.toLowerCase().includes(s) || m.name.toLowerCase().includes(s)); }
-  let totalCost = 0;
-  tbody.innerHTML = data.map((m, i) => {
-    const sub = m.price * m.qty; totalCost += sub;
+  if (filter !== 'all') data = data.filter(m => m.status === filter);
+  if (cat !== 'all') data = data.filter(m => getCategory(m.id) === cat);
+  if (sup !== 'all') data = data.filter(m => m.supplier === sup);
+  if (search) data = data.filter(m => m.id.toLowerCase().includes(search) || m.name.toLowerCase().includes(search) || m.supplier.toLowerCase().includes(search));
+  if (matSortField) {
+    data.sort((a,b) => {
+      let va, vb;
+      if (matSortField === 'subtotal') { va = a.price*a.qty; vb = b.price*b.qty; }
+      else { va = a[matSortField]; vb = b[matSortField]; }
+      if (typeof va === 'string') return matSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+      return matSortAsc ? va - vb : vb - va;
+    });
+  }
+  return data;
+}
+function renderMaterials() {
+  const data = getFilteredMaterials();
+  const totalCost = data.reduce((s,m) => s + m.price*m.qty, 0);
+  const totalPages = Math.max(1, Math.ceil(data.length / matPageSize));
+  if (matPage > totalPages) matPage = totalPages;
+  const start = (matPage - 1) * matPageSize;
+  const pageData = data.slice(start, start + matPageSize);
+  const tbody = document.getElementById('matBody');
+  tbody.innerHTML = pageData.map((m, i) => {
+    const sub = m.price * m.qty;
     const cls = m.status==='有效'?'badge-green':m.status==='停用'?'badge-red':'badge-yellow';
     const checked = selectedMatIds.has(m.id) ? 'checked' : '';
     const rowCls = selectedMatIds.has(m.id) ? ' class="selected-row"' : '';
-    return `<tr${rowCls}><td><input type="checkbox" ${checked} onchange="toggleMatSelect('${m.id}',this.checked)" /></td><td>${i+1}</td><td style="color:var(--accent);font-weight:500">${m.id}</td><td>${m.name}</td><td style="color:var(--text-secondary)">${m.spec}</td><td>${m.unit}</td><td class="text-right">${m.qty}</td><td>${m.supplier}</td><td class="text-right">${m.price.toFixed(2)}</td><td class="text-right" style="font-weight:500">${sub.toFixed(2)}</td><td><span class="badge ${cls}">${m.status}</span></td><td><button class="btn btn-ghost btn-xs" onclick="editMaterial('${m.id}')">✏️</button><button class="btn btn-ghost btn-xs" onclick="deleteMaterial('${m.id}')">🗑</button></td></tr>`;
+    const cat = getCategory(m.id);
+    return '<tr'+rowCls+'><td><input type="checkbox" '+checked+' onchange="toggleMatSelect(\''+m.id+'\',this.checked)" /></td><td>'+(start+i+1)+'</td><td style="color:var(--accent);font-weight:500;cursor:pointer" onclick="showMatDetail(\''+m.id+'\')">'+m.id+'</td><td style="cursor:pointer" onclick="showMatDetail(\''+m.id+'\')">'+m.name+'</td><td><span class="badge badge-purple">'+cat+'</span></td><td style="color:var(--text-secondary)">'+m.spec+'</td><td>'+m.unit+'</td><td class="text-right">'+m.qty+'</td><td>'+m.supplier+'</td><td class="text-right">'+m.price.toFixed(2)+'</td><td class="text-right" style="font-weight:500">'+sub.toFixed(2)+'</td><td><span class="badge '+cls+'">'+m.status+'</span></td><td><button class="btn btn-ghost btn-xs" onclick="showMatDetail(\''+m.id+'\')">👁</button><button class="btn btn-ghost btn-xs" onclick="editMaterial(\''+m.id+'\')">✏️</button><button class="btn btn-ghost btn-xs" onclick="deleteMaterial(\''+m.id+'\')">🗑</button></td></tr>';
   }).join('');
-  document.getElementById('matSummary').textContent = `共 ${data.length} 种物料`;
-  document.getElementById('matCost').textContent = `总成本: ¥ ${totalCost.toFixed(2)}`;
+  document.getElementById('matSummary').textContent = '共 '+data.length+' 种物料（显示 '+(start+1)+'-'+Math.min(start+matPageSize, data.length)+'）';
+  document.getElementById('matCost').textContent = '总成本: ¥ '+totalCost.toFixed(2);
+  document.getElementById('pageInfo').textContent = '第 '+matPage+' / '+totalPages+' 页';
+  document.getElementById('prevPage').disabled = matPage <= 1;
+  document.getElementById('nextPage').disabled = matPage >= totalPages;
   updateBatchBar();
+  renderMatStats(data, totalCost);
+}
+function renderMatStats(data, totalCost) {
+  const el = document.getElementById('matStatCards');
+  if (!el) return;
+  const active = data.filter(m => m.status==='有效').length;
+  const pending = data.filter(m => m.status==='待审').length;
+  const stopped = data.filter(m => m.status==='停用').length;
+  const avgPrice = data.length ? (totalCost / data.reduce((s,m) => s+m.qty, 0)).toFixed(2) : '0.00';
+  el.innerHTML = '<div class="stat-card"><div class="stat-num" style="color:var(--accent)">'+data.length+'</div><div class="stat-label">物料总数</div></div><div class="stat-card"><div class="stat-num" style="color:var(--green)">'+active+'</div><div class="stat-label">有效</div></div><div class="stat-card"><div class="stat-num" style="color:var(--yellow)">'+pending+'</div><div class="stat-label">待审</div></div><div class="stat-card"><div class="stat-num" style="color:var(--red)">'+stopped+'</div><div class="stat-label">停用</div></div><div class="stat-card"><div class="stat-num" style="color:var(--blue)">¥'+totalCost.toFixed(0)+'</div><div class="stat-label">总成本</div></div><div class="stat-card"><div class="stat-num" style="color:var(--orange)">¥'+avgPrice+'</div><div class="stat-label">均价</div></div>';
+}
+function sortMaterials(field) {
+  if (matSortField === field) matSortAsc = !matSortAsc;
+  else { matSortField = field; matSortAsc = true; }
+  matPage = 1;
+  renderMaterials();
+}
+function changePage(delta) { matPage += delta; renderMaterials(); }
+function changePageSize() { matPageSize = parseInt(document.getElementById('pageSizeSelect').value); matPage = 1; renderMaterials(); }
+function showMatDetail(id) {
+  const m = findNode(id);
+  if (!m) return;
+  const cat = getCategory(m.id);
+  const parent = findParent(m.id);
+  const parentName = parent ? parent.name : '—';
+  const sub = (m.price * m.qty).toFixed(2);
+  const cls = m.status==='有效'?'badge-green':m.status==='停用'?'badge-red':'badge-yellow';
+  document.getElementById('matDetailTitle').textContent = m.icon + ' ' + m.name;
+  document.getElementById('matDetailBody').innerHTML = '<div class="detail-grid"><div class="detail-field"><span class="label">物料编号</span><span class="value" style="color:var(--accent);font-weight:500">'+m.id+'</span></div><div class="detail-field"><span class="label">物料名称</span><span class="value">'+m.name+'</span></div><div class="detail-field"><span class="label">分类</span><span class="value"><span class="badge badge-purple">'+cat+'</span></span></div><div class="detail-field"><span class="label">所属组件</span><span class="value">'+parentName+'</span></div><div class="detail-field"><span class="label">规格型号</span><span class="value">'+m.spec+'</span></div><div class="detail-field"><span class="label">单位</span><span class="value">'+m.unit+'</span></div><div class="detail-field"><span class="label">用量</span><span class="value">'+m.qty+'</span></div><div class="detail-field"><span class="label">单价</span><span class="value">¥ '+m.price.toFixed(2)+'</span></div><div class="detail-field"><span class="label">小计</span><span class="value" style="font-weight:600">¥ '+sub+'</span></div><div class="detail-field"><span class="label">状态</span><span class="value"><span class="badge '+cls+'">'+m.status+'</span></span></div><div class="detail-field"><span class="label">供应商</span><span class="value">'+m.supplier+'</span></div><div class="detail-field"><span class="label">层级</span><span class="value">Level '+m.level+'</span></div></div><div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><h4 style="font-size:13px;font-weight:600;margin-bottom:12px">📦 供应商信息</h4><div class="detail-grid"><div class="detail-field"><span class="label">供应商名称</span><span class="value">'+m.supplier+'</span></div><div class="detail-field"><span class="label">供货周期</span><span class="value">'+Math.floor(Math.random()*14+3)+' 天</span></div><div class="detail-field"><span class="label">最小起订量</span><span class="value">'+Math.max(1, m.qty * 10)+' '+m.unit+'</span></div><div class="detail-field"><span class="label">交货方式</span><span class="value">快递 / 物流</span></div></div></div>';
+  document.getElementById('matDetailEditBtn').onclick = function() { hideModal('matDetailModal'); editMaterial(id); };
+  showModal('matDetailModal');
 }
 function toggleMatSelect(id, checked) { if (checked) selectedMatIds.add(id); else selectedMatIds.delete(id); renderMaterials(); }
-function toggleSelectAll() { const all = document.getElementById('selectAll').checked; materialsFlat.forEach(m => { if (all) selectedMatIds.add(m.id); else selectedMatIds.delete(m.id); }); renderMaterials(); }
+function toggleSelectAll() { const all = document.getElementById('selectAll').checked; const data = getFilteredMaterials(); data.forEach(m => { if (all) selectedMatIds.add(m.id); else selectedMatIds.delete(m.id); }); renderMaterials(); }
 function clearSelection() { selectedMatIds.clear(); document.getElementById('selectAll').checked = false; renderMaterials(); }
 function updateBatchBar() {
   const bar = document.getElementById('batchBar');
@@ -1344,7 +1449,7 @@ document.querySelectorAll('.tab-item').forEach(tab => {
 });
 
 // ===== SIDEBAR NAVIGATION =====
-const pageMap = { bom:'page-bom', materials:'page-bom', reports:'page-reports', settings:'page-settings' };
+const pageMap = { bom:'page-bom', materials:'page-materials', reports:'page-reports', settings:'page-settings' };
 document.querySelectorAll('.sidebar .nav-item').forEach(item => {
   item.addEventListener('click', () => {
     document.querySelectorAll('.sidebar .nav-item').forEach(i => i.classList.remove('active'));
@@ -1353,25 +1458,20 @@ document.querySelectorAll('.sidebar .nav-item').forEach(item => {
     document.querySelectorAll('.page-panel').forEach(p => p.classList.remove('active'));
     const page = pageMap[nav] || 'page-bom';
     document.getElementById(page).classList.add('active');
-    // Update breadcrumb
     const bc = document.getElementById('breadcrumb');
     const labels = { bom:'BOM管理', materials:'物料库', reports:'报表中心', settings:'系统设置' };
     bc.innerHTML = '<span>工作区</span><span class="sep">/</span><span style="color:var(--text-primary)">' + (labels[nav]||'BOM管理') + '</span>';
-    // Handle materials nav -> switch to materials tab
-    if (nav === 'materials') {
-      document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      document.querySelector('[data-tab="materials"]').classList.add('active');
-      document.getElementById('tab-materials').classList.add('active');
-    }
+    if (nav === 'materials') { buildFilterDropdowns(); renderMaterials(); }
     if (nav === 'reports') renderReports();
     if (nav === 'settings') renderSettings();
   });
 });
 
 // ===== SEARCH & FILTER =====
-document.getElementById('matSearch').addEventListener('input', e => { renderMaterials(document.getElementById('matFilter').value, e.target.value); });
-document.getElementById('matFilter').addEventListener('change', e => { renderMaterials(e.target.value, document.getElementById('matSearch').value); });
+document.getElementById('matSearch').addEventListener('input', () => { matPage = 1; renderMaterials(); });
+document.getElementById('matFilter').addEventListener('change', () => { matPage = 1; renderMaterials(); });
+document.getElementById('matCategoryFilter').addEventListener('change', () => { matPage = 1; renderMaterials(); });
+document.getElementById('matSupplierFilter').addEventListener('change', () => { matPage = 1; renderMaterials(); });
 
 // ===== MODALS =====
 function showModal(id) {
@@ -1399,26 +1499,21 @@ function showConfirm(msg, callback) {
 document.getElementById('globalSearch').addEventListener('input', function(e) {
   const q = e.target.value.trim().toLowerCase();
   if (!q) return;
-  // Search in materials
   const match = materialsFlat.find(m => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q));
   if (match) {
-    // Switch to materials tab
     document.querySelectorAll('.sidebar .nav-item').forEach(i => i.classList.remove('active'));
-    document.querySelector('[data-nav="bom"]').classList.add('active');
+    document.querySelector('[data-nav="materials"]').classList.add('active');
     document.querySelectorAll('.page-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-bom').classList.add('active');
-    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelector('[data-tab="materials"]').classList.add('active');
-    document.getElementById('tab-materials').classList.add('active');
+    document.getElementById('page-materials').classList.add('active');
     document.getElementById('matSearch').value = q;
-    renderMaterials('all', q);
+    matPage = 1; buildFilterDropdowns(); renderMaterials();
   }
 });
 
 // ===== INIT =====
 renderTree();
-renderMaterials('all', '');
+buildFilterDropdowns();
+renderMaterials();
 renderVersions();
 renderApprovals();
 showDetail(bomData);

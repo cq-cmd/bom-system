@@ -1192,7 +1192,7 @@ function findUserByIdentifier(identifier) {
   return demoUsers.find(u => u.name === identifier || u.account === identifier);
 }
 
-function setCurrentUser(user) {
+function setCurrentUser(user, skipNav) {
   currentUser = user;
   const app = document.getElementById('appRoot');
   const login = document.getElementById('loginScreen');
@@ -1202,6 +1202,7 @@ function setCurrentUser(user) {
   const menuRole = document.getElementById('userMenuRole');
   const dropdown = document.getElementById('userDropdown');
   if (user) {
+    try { localStorage.setItem('bom_user', user.name); } catch(e) {}
     avatar.textContent = user.initial || user.name.charAt(0);
     avatar.title = user.name;
     menuLabel.textContent = user.name;
@@ -1210,9 +1211,12 @@ function setCurrentUser(user) {
     if (login) login.style.display = 'none';
     if (app) app.style.display = 'flex';
     dropdown?.classList.remove('show');
-    navigateTo('dashboard');
-    showToast('欢迎回来，' + user.name, 'success');
+    if (!skipNav) {
+      navigateTo('dashboard');
+      showToast('欢迎回来，' + user.name, 'success');
+    }
   } else {
+    try { localStorage.removeItem('bom_user'); localStorage.removeItem('bom_page'); } catch(e) {}
     avatar.textContent = '—';
     avatar.title = '未登录';
     menuLabel.textContent = '未登录';
@@ -1255,6 +1259,18 @@ function initLoginUI() {
     const loginEl = document.getElementById('loginScreen');
     if (loginEl) loginEl.style.display = 'flex';
   });
+  try {
+    var savedUser = localStorage.getItem('bom_user');
+    if (savedUser) {
+      var user = findUserByIdentifier(savedUser);
+      if (user) {
+        setCurrentUser(user, true);
+        var savedPage = localStorage.getItem('bom_page') || 'dashboard';
+        navigateTo(savedPage);
+        return;
+      }
+    }
+  } catch(e) {}
   const userMenu = document.getElementById('userMenu');
   const dropdown = document.getElementById('userDropdown');
   userMenu?.addEventListener('click', e => {
@@ -2205,21 +2221,7 @@ document.querySelectorAll('.tab-item').forEach(tab => {
 // ===== SIDEBAR NAVIGATION =====
 const pageMap = { dashboard:'page-dashboard', bom:'page-bom', materials:'page-materials', reports:'page-reports', settings:'page-settings' };
 document.querySelectorAll('.sidebar .nav-item').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.sidebar .nav-item').forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
-    const nav = item.dataset.nav;
-    document.querySelectorAll('.page-panel').forEach(p => p.classList.remove('active'));
-    const page = pageMap[nav] || 'page-bom';
-    document.getElementById(page).classList.add('active');
-    const bc = document.getElementById('breadcrumb');
-    const labels = { dashboard:'仪表盘', bom:'BOM管理', materials:'物料库', reports:'报表中心', settings:'系统设置' };
-    bc.innerHTML = '<span onclick="navigateTo(\'dashboard\')" style="cursor:pointer">工作区</span><span class="sep">/</span><span style="color:var(--text-primary)">' + (labels[nav]||'仪表盘') + '</span>';
-    if (nav === 'dashboard') renderDashboard();
-    if (nav === 'materials') { buildFilterDropdowns(); renderMaterials(); }
-    if (nav === 'reports') renderReports();
-    if (nav === 'settings') renderSettings();
-  });
+  item.addEventListener('click', () => { navigateTo(item.dataset.nav); });
 });
 
 // ===== SEARCH & FILTER =====
@@ -2302,6 +2304,7 @@ function showToast(msg, type) {
 
 // ===== NAVIGATE HELPER =====
 function navigateTo(nav) {
+  try { localStorage.setItem('bom_page', nav); } catch(e) {}
   document.querySelectorAll('.sidebar .nav-item').forEach(i => i.classList.remove('active'));
   const target = document.querySelector('[data-nav="'+nav+'"]');
   if (target) target.classList.add('active');

@@ -491,11 +491,11 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
           </div>
           <div class="activity-feed">
             <h3>📰 最近动态</h3>
-            <div class="activity-item"><div class="activity-dot" style="background:var(--green)"></div><div><div class="activity-text">张工 创建了版本 V3.0，新增四大模组</div><div class="activity-time">2025-06-15 09:00</div></div></div>
-            <div class="activity-item"><div class="activity-dot" style="background:var(--green)"></div><div><div class="activity-text">赵品质 审批通过 V2.1 版本</div><div class="activity-time">2025-05-11 09:30</div></div></div>
-            <div class="activity-item"><div class="activity-dot" style="background:var(--yellow)"></div><div><div class="activity-text">V3.0 审批流程进入品质审核环节</div><div class="activity-time">2025-06-15 11:30</div></div></div>
-            <div class="activity-item"><div class="activity-dot" style="background:var(--blue)"></div><div><div class="activity-text">李工 新增 RF 屏蔽罩、SMA天线座等待审物料</div><div class="activity-time">2025-06-14 16:00</div></div></div>
-            <div class="activity-item"><div class="activity-dot" style="background:var(--red)"></div><div><div class="activity-text">V0.8-beta 被品质驳回：电阻规格不符</div><div class="activity-time">2024-09-11 11:00</div></div></div>
+            <div class="activity-item" style="cursor:pointer" onclick="navigateTo('bom');document.querySelector('[data-tab=versions]').click()"><div class="activity-dot" style="background:var(--green)"></div><div><div class="activity-text">张工 创建了版本 V3.0，新增四大模组</div><div class="activity-time">2025-06-15 09:00</div></div></div>
+            <div class="activity-item" style="cursor:pointer" onclick="navigateTo('bom');document.querySelector('[data-tab=approval]').click()"><div class="activity-dot" style="background:var(--green)"></div><div><div class="activity-text">赵品质 审批通过 V2.1 版本</div><div class="activity-time">2025-05-11 09:30</div></div></div>
+            <div class="activity-item" style="cursor:pointer" onclick="navigateTo('bom');document.querySelector('[data-tab=approval]').click()"><div class="activity-dot" style="background:var(--yellow)"></div><div><div class="activity-text">V3.0 审批流程进入品质审核环节</div><div class="activity-time">2025-06-15 11:30</div></div></div>
+            <div class="activity-item" style="cursor:pointer" onclick="navigateTo('materials');document.getElementById('matSearch').value='RF-20047';matPage=1;renderMaterials()"><div class="activity-dot" style="background:var(--blue)"></div><div><div class="activity-text">李工 新增 RF 屏蔽罩、SMA天线座等待审物料</div><div class="activity-time">2025-06-14 16:00</div></div></div>
+            <div class="activity-item" style="cursor:pointer" onclick="navigateTo('bom');document.querySelector('[data-tab=approval]').click()"><div class="activity-dot" style="background:var(--red)"></div><div><div class="activity-text">V0.8-beta 被品质驳回：电阻规格不符</div><div class="activity-time">2024-09-11 11:00</div></div></div>
           </div>
         </div>
       </div>
@@ -666,9 +666,9 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
 
   <!-- Status Bar -->
   <div class="statusbar">
-    <span id="sbMaterials">物料总计: <b style="color:var(--text-secondary)">70 种</b></span>
-    <span>BOM 层级: <b style="color:var(--text-secondary)">8 层</b></span>
-    <span>当前版本: <b style="color:var(--accent)">V3.0</b></span>
+    <span id="sbMaterials" style="cursor:pointer" onclick="navigateTo('materials')">物料总计: <b style="color:var(--text-secondary)">70 种</b></span>
+    <span style="cursor:pointer" onclick="navigateTo('bom')">BOM 层级: <b style="color:var(--text-secondary)">8 层</b></span>
+    <span style="cursor:pointer" onclick="navigateTo('bom');document.querySelector('[data-tab=versions]').click()">当前版本: <b style="color:var(--accent)">V3.0</b></span>
     <span style="margin-left:auto" id="sbUpdate">最后更新: 2025-03-08 14:32</span>
   </div>
 </div>
@@ -759,7 +759,7 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
     <div class="modal-body">
       <div class="form-group"><label>版本号</label><input type="text" id="verFormNum" placeholder="例如 V2.1" /></div>
       <div class="form-group"><label>变更说明</label><textarea id="verFormDesc" placeholder="描述本次变更内容…"></textarea></div>
-      <div class="form-group"><label>基于版本</label><select id="verFormBase"><option>V2.0 (当前)</option><option>V1.1</option><option>V1.0</option></select></div>
+      <div class="form-group"><label>基于版本</label><select id="verFormBase"></select></div>
     </div>
     <div class="modal-footer"><button class="btn btn-secondary" onclick="hideModal('versionModal')">取消</button><button class="btn btn-primary" onclick="createVersion()">创建</button></div>
   </div>
@@ -1704,12 +1704,12 @@ document.getElementById('batchStatus').addEventListener('change', function() {
 function renderVersions() {
   const list = document.getElementById('versionList');
   list.innerHTML = versions.map((v, i) => `
-    <div class="version-card${v.status==='当前'?' current':''}">
+    <div class="version-card${v.status==='当前'?' current':''}" onclick="viewVersion('${v.ver}')" style="cursor:pointer">
       <div class="version-num" style="${v.status==='当前'?'color:var(--accent)':''}">${v.ver}</div>
       <div class="version-info"><div class="desc">${v.desc}</div><div class="meta"><span>${v.creator}</span><span>${v.date}</span></div></div>
       <span class="badge ${v.statusClass}">${v.status}</span>
-      <button class="btn btn-ghost btn-sm" onclick="showCompare('${v.ver}')" style="${v.status==='当前'?'color:var(--accent)':''}">对比</button>
-      ${v.status!=='当前'?'<button class="btn btn-ghost btn-sm" onclick="viewVersion(\''+v.ver+'\')">查看</button>':''}
+      <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();showCompare('${v.ver}')" style="${v.status==='当前'?'color:var(--accent)':''}">对比</button>
+      ${v.status!=='当前'?'<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();viewVersion(\''+v.ver+'\')">查看</button>':''}
     </div>
   `).join('');
 }
@@ -1745,9 +1745,12 @@ function viewVersion(ver) {
 function createVersion() {
   const ver = document.getElementById('verFormNum').value.trim();
   const desc = document.getElementById('verFormDesc').value.trim();
-  if (!ver) return;
+  if (!ver) { showToast('请输入版本号', 'error'); return; }
+  if (!desc) { showToast('请输入变更说明', 'error'); return; }
+  if (versions.find(v => v.ver === ver)) { showToast('版本号 '+ver+' 已存在', 'error'); return; }
+  const creator = currentUser ? currentUser.name : '张工';
   versions.forEach(v => { if (v.status === '当前') { v.status = '历史'; v.statusClass = 'badge-gray'; } });
-  versions.unshift({ ver, creator: '张工', date: todayStr(), desc: desc || '新建版本', status: '当前', statusClass: 'badge-green' });
+  versions.unshift({ ver, creator: creator, date: todayStr(), desc: desc, status: '当前', statusClass: 'badge-green' });
   hideModal('versionModal');
   renderVersions();
   showToast('版本 ' + ver + ' 已创建', 'success');
@@ -2196,6 +2199,14 @@ function showModal(id) {
     if (aprMat) aprMat.value = '';
     const aprUrg = document.getElementById('aprFormUrgency');
     if (aprUrg) aprUrg.value = '普通';
+  }
+  if (id === 'versionModal') {
+    const baseSel = document.getElementById('verFormBase');
+    if (baseSel) baseSel.innerHTML = versions.map(v => `<option value="${v.ver}">${v.ver}${v.status==='当前'?' (当前)':''}</option>`).join('');
+    var numInput = document.getElementById('verFormNum');
+    if (numInput) numInput.value = '';
+    var descInput = document.getElementById('verFormDesc');
+    if (descInput) descInput.value = '';
   }
 }
 function hideModal(id) { document.getElementById(id).classList.remove('show'); }

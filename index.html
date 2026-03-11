@@ -54,6 +54,47 @@ a{color:var(--blue);text-decoration:none}
 .content-body{flex:1;overflow-y:auto;padding:20px}
 .statusbar{height:var(--statusbar-h);background:var(--bg-secondary);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:20px;font-size:11px;color:var(--text-muted);flex-shrink:0}
 
+/* Login */
+.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(39,35,58,.95));display:flex;align-items:center;justify-content:center;z-index:2000}
+.login-card{width:100%;max-width:380px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:32px 36px;box-shadow:0 25px 45px rgba(0,0,0,.35);text-align:center}
+.login-card h1{font-size:20px;font-weight:700;margin:12px 0 24px}
+.login-input{width:100%;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;color:var(--text-primary);margin-bottom:14px;transition:border-color .2s}
+.login-input:focus{border-color:var(--accent);outline:none}
+.login-remember{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);margin-bottom:18px}
+.login-btn{width:100%;border:none;background:var(--accent);color:#fff;font-weight:600;border-radius:var(--radius);padding:10px 0;font-size:13px;cursor:pointer;transition:background .2s}
+.login-btn:hover{background:var(--accent-hover)}
+.login-error{color:var(--red);font-size:12px;margin-bottom:10px;min-height:16px}
+.login-footer{text-align:center;font-size:11px;color:var(--text-muted);margin-top:16px}
+
+/* User menu */
+.user-menu{position:relative;display:flex;align-items:center;gap:6px;cursor:pointer}
+.user-menu-name{font-size:12px;color:var(--text-primary);font-weight:500}
+.user-menu-dropdown{position:absolute;right:0;top:36px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:12px;min-width:180px;box-shadow:0 12px 30px rgba(0,0,0,.35);display:none;flex-direction:column;gap:10px}
+.user-menu-dropdown.show{display:flex}
+.user-menu-dropdown .user-role{font-size:11px;color:var(--text-muted)}
+
+/* Detail enhancements */
+.detail-section{margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
+.detail-cost-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px}
+.detail-cost-item{background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius);padding:12px}
+.detail-cost-item .label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px}
+.detail-cost-item .value{font-size:15px;font-weight:600;color:var(--text-primary);margin-top:6px}
+.detail-actions-bottom{display:flex;gap:10px;margin-top:16px}
+
+.tree-stats{padding:10px 14px;border-top:1px solid var(--border);font-size:11px;color:var(--text-secondary);background:var(--bg-secondary)}
+.tree-stats span{display:inline-flex;align-items:center;gap:6px;margin-right:12px}
+.tree-stats .badge{font-size:10px;padding:0 8px}
+
+.health-card-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.health-item{display:flex;align-items:center;justify-content:space-between;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:12px}
+.health-item span{display:flex;align-items:center;gap:6px}
+
+.substitute-list{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+.substitute-list h4{font-size:13px;margin-bottom:8px}
+.substitute-pill{display:inline-flex;align-items:center;gap:6px;background:var(--bg-primary);border:1px solid var(--border);border-radius:16px;padding:4px 10px;font-size:11px;margin:2px}
+
+.hint-block{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.3);border-radius:var(--radius);padding:12px;font-size:12px;color:var(--text-secondary);margin-bottom:14px}
+
 /* Buttons */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all .15s;white-space:nowrap}
 .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn-primary:hover{background:var(--accent-hover)}
@@ -258,7 +299,19 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div style="font-size:36px">📦</div>
+    <h1>BOM 管理系统</h1>
+    <div class="login-error" id="loginError"></div>
+    <input class="login-input" type="text" id="loginUsername" placeholder="用户名" value="张工" />
+    <input class="login-input" type="password" id="loginPassword" placeholder="密码" />
+    <label class="login-remember"><input type="checkbox" id="loginRemember" /> 记住我</label>
+    <button class="login-btn" id="loginSubmit">登录</button>
+    <div class="login-footer">使用预设账号体验 · Demo 环境</div>
+  </div>
+</div>
+<div class="app" id="appRoot" style="display:none">
   <!-- Topbar -->
   <div class="topbar">
     <div class="logo">
@@ -271,7 +324,17 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
     <div class="global-search">
       <input type="text" placeholder="搜索物料、BOM、审批单…  ⌘K" id="globalSearch" />
     </div>
-    <div class="user-avatar" title="张工">张</div>
+    <div class="user-menu" id="userMenu">
+      <div class="user-avatar" id="userAvatar" title="当前用户">—</div>
+      <span class="user-menu-name" id="userMenuLabel">未登录</span>
+      <div class="user-menu-dropdown" id="userDropdown">
+        <div>
+          <div class="user-menu-name" id="userMenuName">—</div>
+          <div class="user-role" id="userMenuRole">—</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn">退出登录</button>
+      </div>
+    </div>
   </div>
 
   <div class="main-wrap">
@@ -307,15 +370,27 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
               <button class="btn btn-ghost btn-xs" onclick="collapseAll()" title="全部折叠">⊟</button>
             </div>
             <div class="tree-content" id="bomTree"></div>
+            <div class="tree-stats" id="treeStats">节点: 0 · 层级: 0 · 叶子: 0</div>
           </div>
           <div class="tree-right" id="bomDetail">
             <div class="detail-card">
               <h3 id="detailTitle">📦 整机 A100</h3>
               <div class="detail-grid" id="detailGrid"></div>
-              <div class="detail-actions">
+              <div class="detail-actions detail-actions-bottom">
                 <button class="btn btn-secondary btn-sm" onclick="editSelectedNode()">✏️ 编辑</button>
                 <button class="btn btn-secondary btn-sm" onclick="addChildToSelected()">＋ 新增子项</button>
+                <div style="flex:1"></div>
+                <button class="btn btn-primary btn-sm" onclick="exportCurrentBOM()">⤓ 导出当前 BOM</button>
               </div>
+              <div class="detail-section" id="detailCostSection">
+                <h4 style="font-size:13px;font-weight:600;margin-bottom:10px">💰 成本汇总</h4>
+                <div class="detail-cost-grid" id="detailCostGrid"></div>
+              </div>
+            </div>
+            <div class="detail-card">
+              <h3 style="font-size:15px">🩺 BOM 健康度</h3>
+              <div class="hint-block">自动检测停用、待审及单一供应商风险物料，帮助快速定位问题。</div>
+              <div class="health-card-list" id="healthList"></div>
             </div>
           </div>
         </div>
@@ -782,14 +857,39 @@ const approvals = [
      {title:'完成发布',user:'系统',date:'2024-10-15 17:00',state:'done'}
    ]},
   {id:'APR-2024-000',ver:'V0.8-beta',applicant:'李工',date:'2024-09-10',node:'品质审核',status:'已驳回',statusClass:'badge-red',
-   timeline:[
-     {title:'提交申请',user:'李工',date:'2024-09-10 09:00',state:'done'},
-     {title:'主管审批',user:'王主管',date:'2024-09-10 14:00',state:'done',note:'同意'},
-     {title:'品质审核',user:'赵品质',date:'2024-09-11 11:00',state:'rejected',note:'电阻规格不符，请修正后重新提交'},
-     {title:'总监审批',user:'—',date:'—',state:'pending'},
-     {title:'完成发布',user:'—',date:'—',state:'pending'}
-   ]}
+    timeline:[
+      {title:'提交申请',user:'李工',date:'2024-09-10 09:00',state:'done'},
+      {title:'主管审批',user:'王主管',date:'2024-09-10 14:00',state:'done',note:'同意'},
+      {title:'品质审核',user:'赵品质',date:'2024-09-11 11:00',state:'rejected',note:'电阻规格不符，请修正后重新提交'},
+      {title:'总监审批',user:'—',date:'—',state:'pending'},
+      {title:'完成发布',user:'—',date:'—',state:'pending'}
+    ]}
 ];
+
+const demoUsers = [
+  {name:'张工',account:'zhang',password:'zhang123',role:'高级工程师',initial:'张'},
+  {name:'王主管',account:'wang',password:'wang123',role:'研发主管',initial:'王'},
+  {name:'赵品质',account:'zhao',password:'zhao123',role:'品质工程师',initial:'赵'},
+  {name:'陈总监',account:'chen',password:'chen123',role:'技术总监',initial:'陈'},
+  {name:'李工',account:'li',password:'li123',role:'硬件工程师',initial:'李'}
+];
+
+const substituteMap = {
+  'R-20001': [
+    {id:'R-20101',name:'贴片电阻 10KΩ (厚膜)',supplier:'厚声电子'},
+    {id:'R-20155',name:'贴片电阻 10KΩ±0.5%',supplier:'厚德科技'}
+  ],
+  'IC-20003': [
+    {id:'IC-30001',name:'GD32F407 主控',supplier:'兆易创新'},
+    {id:'IC-30002',name:'STM32F427 替代',supplier:'意法半导体'}
+  ],
+  'CASE-20006': [
+    {id:'CASE-21001',name:'上盖 PC+ABS (灰)',supplier:'博创模具'}
+  ],
+  'LCD-20011': [
+    {id:'LCD-30011',name:'背光模组 (东贝)',supplier:'东贝光电'}
+  ]
+};
 
 // Mock diff data for version comparison
 const versionDiffs = {
@@ -835,6 +935,84 @@ let ctxNode = null;
 let ctxTreeNodeEl = null;
 let selectedMatIds = new Set();
 let importedData = null;
+let currentUser = null;
+
+function findUserByIdentifier(identifier) {
+  if (!identifier) return null;
+  return demoUsers.find(u => u.name === identifier || u.account === identifier);
+}
+
+function setCurrentUser(user) {
+  currentUser = user;
+  const app = document.getElementById('appRoot');
+  const login = document.getElementById('loginScreen');
+  const avatar = document.getElementById('userAvatar');
+  const menuLabel = document.getElementById('userMenuLabel');
+  const menuName = document.getElementById('userMenuName');
+  const menuRole = document.getElementById('userMenuRole');
+  const dropdown = document.getElementById('userDropdown');
+  if (user) {
+    avatar.textContent = user.initial || user.name.charAt(0);
+    avatar.title = user.name;
+    menuLabel.textContent = user.name;
+    menuName.textContent = user.name;
+    menuRole.textContent = user.role;
+    if (login) login.style.display = 'none';
+    if (app) app.style.display = 'flex';
+    dropdown?.classList.remove('show');
+  } else {
+    avatar.textContent = '—';
+    avatar.title = '未登录';
+    menuLabel.textContent = '未登录';
+    menuName.textContent = '—';
+    menuRole.textContent = '—';
+    if (app) app.style.display = 'none';
+    if (login) login.style.display = 'flex';
+    dropdown?.classList.remove('show');
+    const pwd = document.getElementById('loginPassword');
+    if (pwd) pwd.value = '';
+  }
+}
+
+function handleLoginSubmit() {
+  const nameInput = document.getElementById('loginUsername');
+  const passInput = document.getElementById('loginPassword');
+  const errorBox = document.getElementById('loginError');
+  const username = nameInput?.value.trim();
+  const password = passInput?.value.trim();
+  const user = findUserByIdentifier(username);
+  if (!user || user.password !== password) {
+    if (errorBox) errorBox.textContent = '账号或密码错误，请重试';
+    return;
+  }
+  if (errorBox) errorBox.textContent = '';
+  setCurrentUser(user);
+}
+
+function initLoginUI() {
+  const submitBtn = document.getElementById('loginSubmit');
+  const logoutBtn = document.getElementById('logoutBtn');
+  submitBtn?.addEventListener('click', handleLoginSubmit);
+  document.getElementById('loginPassword')?.addEventListener('keydown', e => { if (e.key === 'Enter') handleLoginSubmit(); });
+  document.getElementById('loginUsername')?.addEventListener('keydown', e => { if (e.key === 'Enter') handleLoginSubmit(); });
+  logoutBtn?.addEventListener('click', e => {
+    e.stopPropagation();
+    setCurrentUser(null);
+    const err = document.getElementById('loginError');
+    if (err) err.textContent = '';
+    const loginEl = document.getElementById('loginScreen');
+    if (loginEl) loginEl.style.display = 'flex';
+  });
+  const userMenu = document.getElementById('userMenu');
+  const dropdown = document.getElementById('userDropdown');
+  userMenu?.addEventListener('click', e => {
+    e.stopPropagation();
+    if (!currentUser) return;
+    dropdown?.classList.toggle('show');
+  });
+  document.addEventListener('click', () => dropdown?.classList.remove('show'));
+  setCurrentUser(null);
+}
 
 // ===== UTILITY =====
 function populateEnumSelect(selectId, enumKey, allowEmpty) {
@@ -873,6 +1051,7 @@ function renderTree() {
   const container = document.getElementById('bomTree');
   container.innerHTML = '';
   container.appendChild(buildTreeNode(bomData, 0));
+  updateTreeStats();
 }
 function buildTreeNode(node, depth) {
   const div = document.createElement('div');
@@ -934,11 +1113,69 @@ function showDetail(node) {
     ['版本', 'V2.0 (当前)'], ['创建时间', '2024-10-15'], ['最后修改', todayStr()]
   ];
   grid.innerHTML = fields.map(f => `<div class="detail-field"><span class="label">${f[0]}</span><span class="value">${f[1]}</span></div>`).join('');
+  updateCostSummary(node);
 }
 function expandAll() { document.querySelectorAll('.tree-children').forEach(c => c.classList.add('open')); document.querySelectorAll('.tree-arrow:not(.empty)').forEach(a => a.classList.add('expanded')); }
 function collapseAll() { document.querySelectorAll('.tree-children').forEach(c => c.classList.remove('open')); document.querySelectorAll('.tree-arrow').forEach(a => a.classList.remove('expanded')); }
 function editSelectedNode() { const node = findNode(selectedNodeId); if (node) { ctxNode = node; ctxAction('edit'); } }
 function addChildToSelected() { const node = findNode(selectedNodeId); if (node) { ctxNode = node; ctxAction('addChild'); } }
+
+function computeNodeCost(node) {
+  const self = (node.price || 0) * (node.qty || 1);
+  let children = 0;
+  if (node.children && node.children.length) {
+    node.children.forEach(child => { children += computeNodeCost(child).total; });
+  }
+  return {self, children, total: self + children};
+}
+
+function formatCurrency(val) {
+  return '¥ ' + (val || 0).toFixed(2);
+}
+
+function updateCostSummary(node) {
+  const costGrid = document.getElementById('detailCostGrid');
+  if (!costGrid || !node) return;
+  const cost = computeNodeCost(node);
+  const childCost = Math.max(cost.total - cost.self, 0);
+  costGrid.innerHTML = `
+    <div class="detail-cost-item"><span class="label">直接物料成本</span><span class="value">${formatCurrency(cost.self)}</span></div>
+    <div class="detail-cost-item"><span class="label">子组件成本</span><span class="value">${formatCurrency(childCost)}</span></div>
+    <div class="detail-cost-item"><span class="label">总成本</span><span class="value" style="color:var(--accent)">${formatCurrency(cost.total)}</span></div>
+  `;
+}
+
+function exportCurrentBOM() {
+  const node = findNode(selectedNodeId);
+  if (!node) return;
+  const lines = [];
+  (function walk(n, depth) {
+    const indent = '  '.repeat(depth);
+    lines.push(`${indent}- ${n.id} | ${n.name} | ×${n.qty}`);
+    if (n.children) n.children.forEach(child => walk(child, depth + 1));
+  })(node, 0);
+  const blob = new Blob([lines.join('\n')], {type:'text/plain;charset=utf-8'});
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `BOM_${node.id}_${todayStr()}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function updateTreeStats() {
+  const statsEl = document.getElementById('treeStats');
+  if (!statsEl) return;
+  const stats = {nodes:0, leaves:0, maxLevel:0};
+  (function walk(node) {
+    stats.nodes++;
+    const lvl = node.level || 0;
+    if (lvl > stats.maxLevel) stats.maxLevel = lvl;
+    if (node.children && node.children.length) node.children.forEach(walk);
+    else stats.leaves++;
+  })(bomData);
+  statsEl.innerHTML = `<span>节点数 <b>${stats.nodes}</b></span><span>层级 <b>${stats.maxLevel + 1}</b></span><span>叶子 <b>${stats.leaves}</b></span>`;
+}
 
 // Tree search
 document.getElementById('treeSearch').addEventListener('input', e => { treeSearchTerm = e.target.value; renderTree(); });
@@ -1082,6 +1319,7 @@ function renderMaterials() {
   document.getElementById('nextPage').disabled = matPage >= totalPages;
   updateBatchBar();
   renderMatStats(data, totalCost);
+  renderBomHealth();
 }
 function renderMatStats(data, totalCost) {
   const el = document.getElementById('matStatCards');
@@ -1091,6 +1329,25 @@ function renderMatStats(data, totalCost) {
   const stopped = data.filter(m => m.status==='停用').length;
   const avgPrice = data.length ? (totalCost / data.reduce((s,m) => s+m.qty, 0)).toFixed(2) : '0.00';
   el.innerHTML = '<div class="stat-card"><div class="stat-num" style="color:var(--accent)">'+data.length+'</div><div class="stat-label">物料总数</div></div><div class="stat-card"><div class="stat-num" style="color:var(--green)">'+active+'</div><div class="stat-label">有效</div></div><div class="stat-card"><div class="stat-num" style="color:var(--yellow)">'+pending+'</div><div class="stat-label">待审</div></div><div class="stat-card"><div class="stat-num" style="color:var(--red)">'+stopped+'</div><div class="stat-label">停用</div></div><div class="stat-card"><div class="stat-num" style="color:var(--blue)">¥'+totalCost.toFixed(0)+'</div><div class="stat-label">总成本</div></div><div class="stat-card"><div class="stat-num" style="color:var(--orange)">¥'+avgPrice+'</div><div class="stat-label">均价</div></div>';
+}
+
+function renderBomHealth() {
+  const el = document.getElementById('healthList');
+  if (!el) return;
+  const inactive = materialsFlat.filter(m => m.status === '停用');
+  const pending = materialsFlat.filter(m => m.status === '待审');
+  const supplierCount = {};
+  materialsFlat.forEach(m => {
+    if (!m.supplier || m.supplier === '—') return;
+    supplierCount[m.supplier] = (supplierCount[m.supplier] || 0) + 1;
+  });
+  const risk = materialsFlat.filter(m => m.status === '有效' && m.supplier && m.supplier !== '—' && supplierCount[m.supplier] === 1).slice(0,3);
+  const formatList = list => list.length ? list.map(m => m.name).slice(0,3).join('、') : '暂无';
+  el.innerHTML = `
+    <div class="health-item"><span>停用物料</span><span><span class="badge badge-red">${inactive.length}</span>${formatList(inactive)}</span></div>
+    <div class="health-item"><span>待审物料</span><span><span class="badge badge-yellow">${pending.length}</span>${formatList(pending)}</span></div>
+    <div class="health-item"><span>单一供应商风险</span><span><span class="badge badge-purple">${risk.length}</span>${formatList(risk)}</span></div>
+  `;
 }
 function sortMaterials(field) {
   if (matSortField === field) matSortAsc = !matSortAsc;
@@ -1106,10 +1363,41 @@ function showMatDetail(id) {
   const cat = getCategory(m.id);
   const parent = findParent(m.id);
   const parentName = parent ? parent.name : '—';
-  const sub = (m.price * m.qty).toFixed(2);
+  const subtotal = (m.price * m.qty).toFixed(2);
   const cls = m.status==='有效'?'badge-green':m.status==='停用'?'badge-red':'badge-yellow';
+  const leadTime = Math.floor(Math.random()*14+3);
+  const moq = Math.max(1, m.qty * 10);
   document.getElementById('matDetailTitle').textContent = m.icon + ' ' + m.name;
-  document.getElementById('matDetailBody').innerHTML = '<div class="detail-grid"><div class="detail-field"><span class="label">物料编号</span><span class="value" style="color:var(--accent);font-weight:500">'+m.id+'</span></div><div class="detail-field"><span class="label">物料名称</span><span class="value">'+m.name+'</span></div><div class="detail-field"><span class="label">分类</span><span class="value"><span class="badge badge-purple">'+cat+'</span></span></div><div class="detail-field"><span class="label">所属组件</span><span class="value">'+parentName+'</span></div><div class="detail-field"><span class="label">规格型号</span><span class="value">'+m.spec+'</span></div><div class="detail-field"><span class="label">单位</span><span class="value">'+m.unit+'</span></div><div class="detail-field"><span class="label">用量</span><span class="value">'+m.qty+'</span></div><div class="detail-field"><span class="label">单价</span><span class="value">¥ '+m.price.toFixed(2)+'</span></div><div class="detail-field"><span class="label">小计</span><span class="value" style="font-weight:600">¥ '+sub+'</span></div><div class="detail-field"><span class="label">状态</span><span class="value"><span class="badge '+cls+'">'+m.status+'</span></span></div><div class="detail-field"><span class="label">供应商</span><span class="value">'+m.supplier+'</span></div><div class="detail-field"><span class="label">层级</span><span class="value">Level '+m.level+'</span></div></div><div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><h4 style="font-size:13px;font-weight:600;margin-bottom:12px">📦 供应商信息</h4><div class="detail-grid"><div class="detail-field"><span class="label">供应商名称</span><span class="value">'+m.supplier+'</span></div><div class="detail-field"><span class="label">供货周期</span><span class="value">'+Math.floor(Math.random()*14+3)+' 天</span></div><div class="detail-field"><span class="label">最小起订量</span><span class="value">'+Math.max(1, m.qty * 10)+' '+m.unit+'</span></div><div class="detail-field"><span class="label">交货方式</span><span class="value">快递 / 物流</span></div></div></div>';
+  const baseHtml = `
+    <div class="detail-grid">
+      <div class="detail-field"><span class="label">物料编号</span><span class="value" style="color:var(--accent);font-weight:500">${m.id}</span></div>
+      <div class="detail-field"><span class="label">物料名称</span><span class="value">${m.name}</span></div>
+      <div class="detail-field"><span class="label">分类</span><span class="value"><span class="badge badge-purple">${cat}</span></span></div>
+      <div class="detail-field"><span class="label">所属组件</span><span class="value">${parentName}</span></div>
+      <div class="detail-field"><span class="label">规格型号</span><span class="value">${m.spec}</span></div>
+      <div class="detail-field"><span class="label">单位</span><span class="value">${m.unit}</span></div>
+      <div class="detail-field"><span class="label">用量</span><span class="value">${m.qty}</span></div>
+      <div class="detail-field"><span class="label">单价</span><span class="value">¥ ${m.price.toFixed(2)}</span></div>
+      <div class="detail-field"><span class="label">小计</span><span class="value" style="font-weight:600">¥ ${subtotal}</span></div>
+      <div class="detail-field"><span class="label">状态</span><span class="value"><span class="badge ${cls}">${m.status}</span></span></div>
+      <div class="detail-field"><span class="label">供应商</span><span class="value">${m.supplier}</span></div>
+      <div class="detail-field"><span class="label">层级</span><span class="value">Level ${m.level}</span></div>
+    </div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+      <h4 style="font-size:13px;font-weight:600;margin-bottom:12px">📦 供应商信息</h4>
+      <div class="detail-grid">
+        <div class="detail-field"><span class="label">供应商名称</span><span class="value">${m.supplier}</span></div>
+        <div class="detail-field"><span class="label">供货周期</span><span class="value">${leadTime} 天</span></div>
+        <div class="detail-field"><span class="label">最小起订量</span><span class="value">${moq} ${m.unit}</span></div>
+        <div class="detail-field"><span class="label">质量等级</span><span class="value">A</span></div>
+      </div>
+    </div>
+  `;
+  const subs = substituteMap[m.id] || [];
+  const subsHtml = subs.length
+    ? subs.map(s => `<span class="substitute-pill">${s.id} · ${s.name}（${s.supplier}）</span>`).join('')
+    : '<span class="badge badge-gray">暂无推荐</span>';
+  document.getElementById('matDetailBody').innerHTML = baseHtml + `<div class="substitute-list"><h4>🔁 替代物料</h4>${subsHtml}</div>`;
   document.getElementById('matDetailEditBtn').onclick = function() { hideModal('matDetailModal'); editMaterial(id); };
   showModal('matDetailModal');
 }
@@ -1559,6 +1847,7 @@ renderMaterials();
 renderVersions();
 renderApprovals();
 showDetail(bomData);
+initLoginUI();
 </script>
 </body>
 </html>

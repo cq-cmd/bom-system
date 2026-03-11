@@ -482,6 +482,7 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
             <div class="sub" id="dashRole">请登录以查看仪表盘</div>
           </div>
           <div class="stat-cards" id="dashStats"></div>
+          <div class="activity-feed" id="dashTodos" style="margin-bottom:20px"></div>
           <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">⚡ 快捷操作</h3>
           <div class="quick-actions">
             <div class="quick-action" onclick="navigateTo('materials');showMaterialModal()"><span class="qa-icon">➕</span>新增物料</div>
@@ -607,6 +608,7 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
               <option value="待审">设为待审</option>
             </select>
             <button class="btn btn-danger btn-xs" onclick="batchDelete()">批量删除</button>
+            <button class="btn btn-secondary btn-xs" onclick="showBatchEditModal()">✏️ 批量编辑</button>
             <button class="btn btn-ghost btn-xs" onclick="clearSelection()">取消选择</button>
           </div>
           <div class="table-wrap">
@@ -681,6 +683,7 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
   <div class="context-menu-sep"></div>
   <div class="context-menu-item" onclick="ctxAction('expandChildren')"><span class="cm-icon">⊞</span>展开所有子项</div>
   <div class="context-menu-item" onclick="ctxAction('collapseChildren')"><span class="cm-icon">⊟</span>折叠所有子项</div>
+  <div class="context-menu-item" onclick="ctxAction('clone')"><span class="cm-icon">📋</span>克隆节点</div>
   <div class="context-menu-sep"></div>
   <div class="context-menu-item danger" onclick="ctxAction('delete')"><span class="cm-icon">🗑</span>删除</div>
 </div>
@@ -870,8 +873,43 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
     <div class="modal-body" id="matDetailBody"></div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="hideModal('matDetailModal')">关闭</button>
+      <button class="btn btn-ghost" id="matDetailWhereUsedBtn">🔗 引用查询</button>
+      <button class="btn btn-ghost" id="matDetailSubBtn">🔁 替代物料</button>
       <button class="btn btn-primary" id="matDetailEditBtn">编辑</button>
     </div>
+  </div>
+</div>
+
+
+<!-- Where-Used Modal -->
+<div class="modal-overlay" id="whereUsedModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h3 id="whereUsedTitle">物料引用</h3><button class="modal-close" onclick="hideModal('whereUsedModal')">✕</button></div>
+    <div class="modal-body" id="whereUsedBody"></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="hideModal('whereUsedModal')">关闭</button></div>
+  </div>
+</div>
+
+<!-- Substitute Edit Modal -->
+<div class="modal-overlay" id="subEditModal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="subEditTitle">替代物料</h3><button class="modal-close" onclick="hideModal('subEditModal')">✕</button></div>
+    <div class="modal-body"><input type="hidden" id="subEditMatId" /><div id="subEditBody"></div></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="hideModal('subEditModal')">关闭</button></div>
+  </div>
+</div>
+
+<!-- Batch Edit Modal -->
+<div class="modal-overlay" id="batchEditModal">
+  <div class="modal" style="width:420px">
+    <div class="modal-header"><h3>批量编辑 — <span id="batchEditCount">0</span> 项物料</h3><button class="modal-close" onclick="hideModal('batchEditModal')">✕</button></div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px">留空表示不修改该字段</div>
+      <div class="form-group"><label>供应商</label><input type="text" id="batchEditSupplier" placeholder="不修改" /></div>
+      <div class="form-group"><label>单价 (¥)</label><input type="number" id="batchEditPrice" placeholder="不修改" step="0.01" /></div>
+      <div class="form-group"><label>状态</label><select id="batchEditStatus"><option value="">不修改</option><option value="有效">有效</option><option value="待审">待审</option><option value="停用">停用</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="hideModal('batchEditModal')">取消</button><button class="btn btn-primary" onclick="doBatchEdit()">确认修改</button></div>
   </div>
 </div>
 
@@ -1455,6 +1493,8 @@ function ctxAction(action) {
   } else if (action === 'collapseChildren') {
     if (ctxTreeNodeEl) ctxTreeNodeEl.querySelectorAll('.tree-children').forEach(c => c.classList.remove('open'));
     if (ctxTreeNodeEl) ctxTreeNodeEl.querySelectorAll('.tree-arrow').forEach(a => a.classList.remove('expanded'));
+  } else if (action === 'clone') {
+    if (ctxNode) cloneNode(ctxNode.id);
   }
 }
 function saveNode() {
@@ -1622,6 +1662,8 @@ function showMatDetail(id) {
     : '<span class="badge badge-gray">暂无推荐</span>';
   document.getElementById('matDetailBody').innerHTML = baseHtml + `<div class="substitute-list"><h4>🔁 替代物料</h4>${subsHtml}</div>`;
   document.getElementById('matDetailEditBtn').onclick = function() { hideModal('matDetailModal'); editMaterial(id); };
+  document.getElementById('matDetailWhereUsedBtn').onclick = function() { hideModal('matDetailModal'); showWhereUsed(id); };
+  document.getElementById('matDetailSubBtn').onclick = function() { hideModal('matDetailModal'); editSubstitutes(id); };
   showModal('matDetailModal');
 }
 function toggleMatSelect(id, checked) { if (checked) selectedMatIds.add(id); else selectedMatIds.delete(id); renderMaterials(); }
@@ -1710,6 +1752,7 @@ function renderVersions() {
       <span class="badge ${v.statusClass}">${v.status}</span>
       <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();showCompare('${v.ver}')" style="${v.status==='当前'?'color:var(--accent)':''}">对比</button>
       ${v.status!=='当前'?'<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();viewVersion(\''+v.ver+'\')">查看</button>':''}
+      ${v.status!=='当前'?'<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();rollbackVersion(\''+v.ver+'\')" title="回滚到此版本">↩ 回滚</button>':''}
     </div>
   `).join('');
 }
@@ -2110,7 +2153,7 @@ function renderReports() {
     <div class="chart-card"><h4>📋 版本发布统计</h4>
       ${versions.map(v => `<div class="stat-row"><span style="width:60px;font-weight:600;color:${v.status==='当前'?'var(--accent)':'var(--text-secondary)'}">${v.ver}</span><span style="flex:1;color:var(--text-muted);font-size:11px">${v.desc.substring(0,30)}${v.desc.length>30?'…':''}</span><span class="badge ${v.statusClass}">${v.status}</span></div>`).join('')}
     </div>
-  `;
+  ` + renderCostTrend() + renderDuplicateCheck() + renderSingleSourceRisk();
 }
 
 // ===== SETTINGS =====
@@ -2293,6 +2336,7 @@ function renderDashboard() {
     <div class="stat-card"><div class="stat-num" style="color:var(--blue)">${curVer ? curVer.ver : '—'}</div><div class="stat-label">当前版本</div></div>
   `;
   updateNavBadges();
+  renderDashTodos();
 }
 
 function updateNavBadges() {
@@ -2325,6 +2369,225 @@ function renderLoginPills() {
     document.getElementById('loginUsername').value = pill.dataset.name;
     document.getElementById('loginPassword').value = pill.dataset.pw;
   });
+}
+
+
+// ===== DASHBOARD TODO LIST =====
+function renderDashTodos() {
+  var el = document.getElementById('dashTodos');
+  if (!el) return;
+  var name = currentUser ? currentUser.name : '';
+  var myApprovals = approvals.filter(function(a) {
+    var active = a.timeline.find(function(t) { return t.state === 'active'; });
+    return active && active.user === name;
+  });
+  var pendingMats = materialsFlat.filter(function(m) { return m.status === '待审'; });
+  var html = '<h3 style="font-size:15px;font-weight:600;margin-bottom:14px">📌 我的待办</h3>';
+  if (myApprovals.length === 0 && pendingMats.length === 0) {
+    html += '<div style="text-align:center;padding:20px;color:var(--text-muted)">🎉 暂无待办事项</div>';
+  } else {
+    myApprovals.forEach(function(a) {
+      html += '<div class="todo-item" style="display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-left:3px solid var(--yellow);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:all .15s;font-size:12px" onclick="navigateTo(\'bom\');setTimeout(function(){document.querySelector(\'[data-tab=approval]\').click()},100)">'
+        + '<span style="font-size:16px">📋</span>'
+        + '<div style="flex:1"><div style="color:var(--text-primary);font-weight:500">审批 '+a.id+' — '+a.ver+'</div><div style="color:var(--text-muted);margin-top:2px">等待您审批 · '+(a.type||'新版本发布')+'</div></div>'
+        + '<span class="badge badge-yellow">待审批</span></div>';
+    });
+    pendingMats.slice(0,3).forEach(function(m) {
+      html += '<div class="todo-item" style="display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:all .15s;font-size:12px" onclick="navigateTo(\'materials\');document.getElementById(\'matFilter\').value=\'待审\';matPage=1;renderMaterials()">'
+        + '<span style="font-size:16px">📦</span>'
+        + '<div style="flex:1"><div style="color:var(--text-primary);font-weight:500">'+m.name+' ('+m.id+')</div><div style="color:var(--text-muted);margin-top:2px">物料待审核 · '+m.supplier+'</div></div>'
+        + '<span class="badge badge-yellow">待审</span></div>';
+    });
+    if (pendingMats.length > 3) html += '<div style="text-align:center;font-size:11px;color:var(--text-muted);padding:4px">还有 '+(pendingMats.length-3)+' 项待审物料…</div>';
+  }
+  el.innerHTML = html;
+}
+
+// ===== BATCH EDIT =====
+function showBatchEditModal() {
+  if (selectedMatIds.size === 0) { showToast('请先选择物料', 'error'); return; }
+  document.getElementById('batchEditCount').textContent = selectedMatIds.size;
+  document.getElementById('batchEditSupplier').value = '';
+  document.getElementById('batchEditPrice').value = '';
+  document.getElementById('batchEditStatus').value = '';
+  showModal('batchEditModal');
+}
+function doBatchEdit() {
+  var supplier = document.getElementById('batchEditSupplier').value.trim();
+  var price = document.getElementById('batchEditPrice').value.trim();
+  var status = document.getElementById('batchEditStatus').value;
+  var count = 0;
+  selectedMatIds.forEach(function(id) {
+    var node = findNode(id);
+    if (!node) return;
+    if (supplier) node.supplier = supplier;
+    if (price && !isNaN(parseFloat(price))) node.price = parseFloat(price);
+    if (status) node.status = status;
+    count++;
+  });
+  hideModal('batchEditModal');
+  rebuildFlat(); renderTree(); renderMaterials(); updateStatusBar();
+  var changes = [];
+  if (supplier) changes.push('供应商→'+supplier);
+  if (price) changes.push('单价→¥'+price);
+  if (status) changes.push('状态→'+status);
+  showToast('已批量更新 '+count+' 项物料：'+changes.join('、'), 'success');
+}
+
+// ===== WHERE-USED =====
+function showWhereUsed(matId) {
+  var mat = materialsFlat.find(function(m) { return m.id === matId; });
+  if (!mat) return;
+  var parents = [];
+  function searchParents(node, path) {
+    if (node.children) {
+      node.children.forEach(function(child) {
+        if (child.id === matId) parents.push({node: node, path: path + ' > ' + node.name});
+        searchParents(child, path + ' > ' + node.name);
+      });
+    }
+  }
+  searchParents(bomData, bomData.name);
+  document.getElementById('whereUsedTitle').textContent = '物料引用 — ' + mat.name;
+  var html = '<div style="margin-bottom:12px;font-size:12px;color:var(--text-secondary)">物料 <b style="color:var(--accent)">'+mat.id+'</b> 被以下节点引用：</div>';
+  if (parents.length === 0) {
+    html += '<div style="text-align:center;padding:20px;color:var(--text-muted)">未找到引用</div>';
+  } else {
+    parents.forEach(function(p) {
+      html += '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;font-size:12px;cursor:pointer;transition:background .15s" onmouseover="this.style.background=\'var(--bg-hover)\'" onmouseout="this.style.background=\'transparent\'" onclick="hideModal(\'whereUsedModal\');navigateTo(\'bom\');selectedNodeId=\''+p.node.id+'\';renderTree();showDetail(findNode(\''+p.node.id+'\'))">'
+        + '<span style="font-size:14px">'+p.node.icon+'</span>'
+        + '<div><div style="font-weight:500">'+p.node.name+'</div><div style="color:var(--text-muted);font-size:11px">'+p.path+'</div></div></div>';
+    });
+  }
+  document.getElementById('whereUsedBody').innerHTML = html;
+  showModal('whereUsedModal');
+}
+
+// ===== SUBSTITUTE EDIT =====
+function editSubstitutes(matId) {
+  var mat = materialsFlat.find(function(m) { return m.id === matId; });
+  if (!mat) return;
+  var subs = substituteMap[matId] || [];
+  document.getElementById('subEditTitle').textContent = '替代物料 — ' + mat.name;
+  document.getElementById('subEditMatId').value = matId;
+  var html = '<div style="margin-bottom:12px;font-size:12px;color:var(--text-secondary)">当前 <b style="color:var(--accent)">'+mat.id+'</b> 的替代物料：</div>';
+  html += '<div id="subEditList">';
+  subs.forEach(function(s, i) {
+    html += '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;font-size:12px"><span style="flex:1"><b>'+s.id+'</b> · '+s.name+' ('+s.supplier+')</span><button class="btn btn-ghost btn-xs" onclick="removeSubstitute(\''+matId+'\','+i+')">✕</button></div>';
+  });
+  html += '</div>';
+  html += '<div style="display:flex;gap:8px;margin-top:12px"><input type="text" id="subAddId" placeholder="物料编号" style="flex:1;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;color:var(--text-primary);outline:none;font-size:12px" /><button class="btn btn-primary btn-sm" onclick="addSubstitute()">添加</button></div>';
+  document.getElementById('subEditBody').innerHTML = html;
+  showModal('subEditModal');
+}
+function addSubstitute() {
+  var matId = document.getElementById('subEditMatId').value;
+  var subId = document.getElementById('subAddId').value.trim();
+  if (!subId) return;
+  var subMat = materialsFlat.find(function(m) { return m.id === subId; });
+  if (!subMat) { showToast('物料 '+subId+' 不存在', 'error'); return; }
+  if (!substituteMap[matId]) substituteMap[matId] = [];
+  if (substituteMap[matId].find(function(s) { return s.id === subId; })) { showToast('已存在该替代物料', 'error'); return; }
+  substituteMap[matId].push({id:subMat.id, name:subMat.name, supplier:subMat.supplier});
+  editSubstitutes(matId);
+  showToast('替代物料 '+subId+' 已添加', 'success');
+}
+function removeSubstitute(matId, idx) {
+  if (!substituteMap[matId]) return;
+  substituteMap[matId].splice(idx, 1);
+  editSubstitutes(matId);
+  showToast('已移除替代物料', 'info');
+}
+
+// ===== CLONE BOM NODE =====
+function cloneNode(nodeId) {
+  var node = findNode(nodeId);
+  if (!node) return;
+  var parent = findParent(nodeId);
+  if (!parent || !parent.children) return;
+  var clone = JSON.parse(JSON.stringify(node));
+  clone.id = node.id + '-COPY';
+  clone.name = node.name + ' (副本)';
+  function fixIds(n) { n.id = n.id + '-C'; if (n.children) n.children.forEach(fixIds); }
+  if (clone.children) clone.children.forEach(fixIds);
+  parent.children.push(clone);
+  rebuildFlat(); renderTree(); renderMaterials(); updateStatusBar();
+  showToast('已克隆节点 '+node.name, 'success');
+}
+
+// ===== VERSION ROLLBACK =====
+function rollbackVersion(ver) {
+  var v = versions.find(function(x) { return x.ver === ver; });
+  if (!v) return;
+  if (v.status === '当前') { showToast('当前版本无需回滚', 'error'); return; }
+  showConfirm('确定回滚到版本 '+ver+' 吗？当前版本将标记为历史版本。', function() {
+    versions.forEach(function(x) { if (x.status === '当前') { x.status = '历史'; x.statusClass = 'badge-gray'; } });
+    v.status = '当前'; v.statusClass = 'badge-green';
+    renderVersions();
+    showToast('已回滚到版本 '+ver, 'success');
+  });
+}
+
+// ===== ENHANCED REPORTS =====
+function renderCostTrend() {
+  var data = versions.slice().reverse();
+  var maxCost = materialsFlat.reduce(function(s,m){return s+m.price*m.qty;},0);
+  var html = '<div class="chart-card"><h4>📈 版本成本趋势</h4>';
+  data.forEach(function(v, i) {
+    var cost = maxCost * (0.6 + i * 0.08);
+    if (v.status === '当前') cost = maxCost;
+    var pct = Math.min(100, (cost/maxCost*100));
+    html += '<div class="stat-row"><span style="width:50px;font-weight:600;color:'+(v.status==='当前'?'var(--accent)':'var(--text-secondary)')+'">'+v.ver+'</span><div class="stat-bar"><div class="stat-bar-fill" style="width:'+pct.toFixed(0)+'%;background:linear-gradient(90deg,var(--accent),var(--blue))"></div></div><span style="width:80px;text-align:right;font-weight:500">¥'+cost.toFixed(0)+'</span></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderDuplicateCheck() {
+  var nameMap = {};
+  materialsFlat.forEach(function(m) {
+    var key = m.name.replace(/\s/g,'').toLowerCase();
+    if (!nameMap[key]) nameMap[key] = [];
+    nameMap[key].push(m);
+  });
+  var dupes = Object.entries(nameMap).filter(function(e) { return e[1].length > 1; });
+  var html = '<div class="chart-card"><h4>🔍 重复物料检测</h4>';
+  if (dupes.length === 0) {
+    html += '<div style="text-align:center;padding:16px;color:var(--green);font-size:12px">✅ 未发现重复物料</div>';
+  } else {
+    dupes.forEach(function(d) {
+      html += '<div style="padding:8px 0;border-bottom:1px solid var(--border-light);font-size:12px">';
+      html += '<div style="font-weight:500;color:var(--yellow);margin-bottom:4px">⚠ "'+d[1][0].name+'" 出现 '+d[1].length+' 次</div>';
+      d[1].forEach(function(m) {
+        html += '<span style="display:inline-block;margin-right:8px;color:var(--text-secondary)">'+m.id+' ('+m.supplier+')</span>';
+      });
+      html += '</div>';
+    });
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderSingleSourceRisk() {
+  var supplierMats = {};
+  materialsFlat.forEach(function(m) {
+    if (!supplierMats[m.id]) supplierMats[m.id] = {mat:m, suppliers:new Set()};
+    supplierMats[m.id].suppliers.add(m.supplier);
+  });
+  var singleSource = Object.values(supplierMats).filter(function(x) { return x.suppliers.size === 1 && !substituteMap[x.mat.id]; });
+  var html = '<div class="chart-card"><h4>⚠️ 单一来源风险</h4>';
+  if (singleSource.length === 0) {
+    html += '<div style="text-align:center;padding:16px;color:var(--green);font-size:12px">✅ 所有物料均有替代方案</div>';
+  } else {
+    html += '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">以下物料仅有单一供应商且无替代物料：</div>';
+    singleSource.slice(0,8).forEach(function(x) {
+      var cost = x.mat.price * x.mat.qty;
+      html += '<div class="stat-row" style="font-size:12px"><span style="width:80px;color:var(--accent)">'+x.mat.id+'</span><span style="flex:1">'+x.mat.name+'</span><span style="width:60px;color:var(--text-muted)">'+x.mat.supplier+'</span><span style="width:60px;text-align:right;font-weight:500;color:var(--red)">¥'+cost.toFixed(0)+'</span></div>';
+    });
+    if (singleSource.length > 8) html += '<div style="text-align:center;font-size:11px;color:var(--text-muted);padding:4px">还有 '+(singleSource.length-8)+' 项…</div>';
+  }
+  html += '</div>';
+  return html;
 }
 
 // ===== KEYBOARD SHORTCUTS =====

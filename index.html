@@ -1529,10 +1529,30 @@ function updateStatusBar() {
 
 // ===== BOM TREE =====
 let treeSearchTerm = '';
+let expandedNodeIds = new Set();
+function saveTreeState() {
+  expandedNodeIds.clear();
+  document.querySelectorAll('.tree-children.open').forEach(function(el) {
+    var parent = el.closest('.tree-node');
+    if (parent && parent.dataset.nodeId) expandedNodeIds.add(parent.dataset.nodeId);
+  });
+}
+function restoreTreeState() {
+  expandedNodeIds.forEach(function(id) {
+    var node = document.querySelector('.tree-node[data-node-id="'+id+'"]');
+    if (!node) return;
+    var children = node.querySelector(':scope > .tree-children');
+    var arrow = node.querySelector(':scope > .tree-row > .tree-arrow');
+    if (children) children.classList.add('open');
+    if (arrow) arrow.classList.add('expanded');
+  });
+}
 function renderTree() {
+  saveTreeState();
   const container = document.getElementById('bomTree');
   container.innerHTML = '';
   container.appendChild(buildTreeNode(bomData, 0));
+  restoreTreeState();
   updateTreeStats();
 }
 function buildTreeNode(node, depth) {
@@ -1745,12 +1765,14 @@ function saveNode() {
     data.level = (ctxNode.level || 0) + 1;
     if (!ctxNode.children) ctxNode.children = [];
     ctxNode.children.push(data);
+    expandedNodeIds.add(ctxNode.id);
   } else {
     Object.assign(ctxNode, data);
   }
   hideModal('nodeModal');
   rebuildFlat(); renderTree(); renderMaterials(); updateStatusBar();
   showDetail(findNode(selectedNodeId) || bomData);
+  showToast(mode === 'add' ? '子项 "'+data.name+'" 已添加' : '"'+data.name+'" 已更新', 'success');
 }
 
 // ===== MATERIALS TABLE (Enhanced) =====

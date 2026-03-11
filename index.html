@@ -504,6 +504,10 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
       <!-- Page: BOM Management -->
       <div class="page-panel" id="page-bom">
         <div class="tab-bar">
+          <div style="display:flex;align-items:center;gap:8px;margin-right:12px">
+            <select class="filter-select" id="bomSelector" onchange="switchBOM(this.selectedIndex)" style="font-weight:600;min-width:180px"></select>
+            <button class="btn btn-primary btn-xs" onclick="showNewBOMModal()">＋ 新建</button>
+          </div>
           <div class="tab-item active" data-tab="structure">BOM 结构</div>
           <div class="tab-item" data-tab="versions">版本管理</div>
           <div class="tab-item" data-tab="approval">审批流程</div>
@@ -913,6 +917,27 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
   </div>
 </div>
 
+<div class="modal-overlay" id="newBOMModal">
+  <div class="modal" style="width:420px">
+    <div class="modal-header"><h3>新建 BOM</h3><button class="modal-close" onclick="hideModal('newBOMModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>产品编号</label><input type="text" id="newBomId" placeholder="例如: D400-00001" /></div>
+      <div class="form-row">
+        <div class="form-group"><label>产品名称</label><input type="text" id="newBomName" placeholder="例如: 智能手环 D400" /></div>
+        <div class="form-group"><label>图标</label><input type="text" id="newBomIcon" value="📦" style="width:60px" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>规格型号</label><input type="text" id="newBomSpec" placeholder="例如: D400-STD-2025" /></div>
+        <div class="form-group"><label>单位</label><input type="text" id="newBomUnit" value="台" style="width:80px" /></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="hideModal('newBOMModal')">取消</button>
+      <button class="btn btn-primary" onclick="createNewBOM()">创建</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- Version View Modal -->
@@ -951,7 +976,8 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
 
 <script>
 // ===== DATA =====
-const bomData = {
+let bomData;
+const bomDataA100 = {
   id:'A100-00001',name:'整机 A100',spec:'A100-STD-2024',unit:'台',qty:1,price:1280,supplier:'—',status:'有效',level:0,icon:'📦',
   children:[
     {id:'PCB-10001',name:'PCBA 主板',spec:'MB-V3.2',unit:'块',qty:1,price:320,supplier:'华芯电子',status:'有效',level:1,icon:'🔧',children:[
@@ -1076,6 +1102,88 @@ const bomData = {
     ]}
   ]
 };
+
+const bomDataB200 = {
+  id:'B200-00001',name:'智能网关 B200',spec:'B200-GW-2025',unit:'台',qty:1,price:680,supplier:'—',status:'有效',level:0,icon:'📡',
+  children:[
+    {id:'B-PCB-10001',name:'主控板',spec:'GW-MB-V1.0',unit:'块',qty:1,price:180,supplier:'华芯电子',status:'有效',level:1,icon:'🔧',children:[
+      {id:'B-IC-20001',name:'主控芯片 MT7621A',spec:'BGA-399/双核MIPS',unit:'个',qty:1,price:42.0,supplier:'联发科',status:'有效',level:2,icon:'⬛'},
+      {id:'B-IC-20002',name:'DDR3 内存 128MB',spec:'BGA-96/DDR3L',unit:'个',qty:1,price:8.5,supplier:'华邦电子',status:'有效',level:2,icon:'⬛'},
+      {id:'B-IC-20003',name:'SPI NOR Flash 16MB',spec:'SOP-8/W25Q128',unit:'个',qty:1,price:4.2,supplier:'华邦电子',status:'有效',level:2,icon:'⬛'},
+      {id:'B-IC-20004',name:'以太网 PHY芯片',spec:'QFN-48/RTL8211F',unit:'个',qty:1,price:12.5,supplier:'瑞昱半导体',status:'有效',level:2,icon:'🌐'},
+      {id:'B-R-20005',name:'贴片电阻套件',spec:'0402混装/100种',unit:'套',qty:1,price:1.5,supplier:'国巨电子',status:'有效',level:2,icon:'🔴'},
+      {id:'B-C-20006',name:'贴片电容套件',spec:'0402-0805混装',unit:'套',qty:1,price:2.8,supplier:'三星电机',status:'有效',level:2,icon:'🟡'},
+      {id:'B-CN-20007',name:'RJ45网口 双联',spec:'2x1/带LED/沉板',unit:'个',qty:1,price:6.8,supplier:'泰科电子',status:'有效',level:2,icon:'🔌'},
+      {id:'B-CN-20008',name:'RJ45网口 单口',spec:'1x1/带LED/千兆',unit:'个',qty:3,price:3.5,supplier:'泰科电子',status:'有效',level:2,icon:'🔌'},
+      {id:'B-USB-20009',name:'USB 2.0 Type-A母座',spec:'直插/4Pin',unit:'个',qty:1,price:0.8,supplier:'莫仕',status:'有效',level:2,icon:'🔌'},
+      {id:'B-LED-20010',name:'指示灯 LED',spec:'0603/红绿蓝各2',unit:'个',qty:6,price:0.03,supplier:'亿光电子',status:'有效',level:2,icon:'💡'},
+      {id:'B-X-20011',name:'晶振 25MHz',spec:'3225/25MHz±20ppm',unit:'个',qty:1,price:0.55,supplier:'泰晶科技',status:'有效',level:2,icon:'💎'},
+      {id:'B-PWR-20012',name:'DC-DC模块 12V转3.3V',spec:'SOP-8/2A',unit:'个',qty:1,price:2.2,supplier:'圣邦微',status:'有效',level:2,icon:'⚡'},
+      {id:'B-PWR-20013',name:'DC-DC模块 12V转1.8V',spec:'SOT-23-5/LDO',unit:'个',qty:1,price:0.8,supplier:'圣邦微',status:'有效',level:2,icon:'⚡'}
+    ]},
+    {id:'B-RF-10002',name:'WiFi模组',spec:'WiFi6-AX1800',unit:'个',qty:1,price:85,supplier:'乐鑫科技',status:'有效',level:1,icon:'📶',children:[
+      {id:'B-RF-20020',name:'WiFi6芯片 MT7905D',spec:'QFN/2.4G+5G',unit:'个',qty:1,price:38.0,supplier:'联发科',status:'有效',level:2,icon:'📶'},
+      {id:'B-RF-20021',name:'功率放大器 2.4G',spec:'QFN-16/+22dBm',unit:'个',qty:1,price:5.5,supplier:'卓胜微',status:'有效',level:2,icon:'📡'},
+      {id:'B-RF-20022',name:'功率放大器 5G',spec:'QFN-16/+20dBm',unit:'个',qty:1,price:6.2,supplier:'卓胜微',status:'有效',level:2,icon:'📡'},
+      {id:'B-RF-20023',name:'PCB天线 2.4G',spec:'内置/FPC/3dBi',unit:'个',qty:2,price:1.2,supplier:'信维通信',status:'有效',level:2,icon:'📡'},
+      {id:'B-RF-20024',name:'PCB天线 5G',spec:'内置/FPC/4dBi',unit:'个',qty:2,price:1.5,supplier:'信维通信',status:'有效',level:2,icon:'📡'},
+      {id:'B-RF-20025',name:'RF滤波器 BAW',spec:'0805/2.4GHz',unit:'个',qty:2,price:2.8,supplier:'中电55所',status:'待审',level:2,icon:'🔵'}
+    ]},
+    {id:'B-CASE-10003',name:'外壳组件',spec:'GW-CASE-V1',unit:'套',qty:1,price:45,supplier:'精模科技',status:'有效',level:1,icon:'🔧',children:[
+      {id:'B-CS-20030',name:'上盖(ABS)',spec:'160x120x15mm/白色',unit:'个',qty:1,price:15.0,supplier:'精模科技',status:'有效',level:2,icon:'📐'},
+      {id:'B-CS-20031',name:'底壳(ABS)',spec:'160x120x20mm/白色',unit:'个',qty:1,price:16.0,supplier:'精模科技',status:'有效',level:2,icon:'📐'},
+      {id:'B-CS-20032',name:'散热栅格',spec:'铝合金/CNC/阳极黑',unit:'个',qty:1,price:8.5,supplier:'精模科技',status:'有效',level:2,icon:'🧊'},
+      {id:'B-CS-20033',name:'螺丝 M2×5',spec:'304不锈钢/自攻',unit:'个',qty:8,price:0.04,supplier:'标准件厂',status:'有效',level:2,icon:'🔩'},
+      {id:'B-CS-20034',name:'脚垫',spec:'Φ8/硅胶/灰色',unit:'个',qty:4,price:0.05,supplier:'精模科技',status:'有效',level:2,icon:'⚫'}
+    ]},
+    {id:'B-PWR-10004',name:'电源适配器',spec:'12V2A-DC',unit:'个',qty:1,price:25,supplier:'航嘉驰源',status:'有效',level:1,icon:'⚡',children:[
+      {id:'B-PA-20040',name:'12V2A适配器',spec:'DC5.5x2.1/Class II',unit:'个',qty:1,price:18.0,supplier:'航嘉驰源',status:'有效',level:2,icon:'🔌'},
+      {id:'B-PA-20041',name:'DC电源插座',spec:'DC-005/5.5x2.1/贴片',unit:'个',qty:1,price:0.6,supplier:'韩荣电子',status:'有效',level:2,icon:'🔌'},
+      {id:'B-PA-20042',name:'TVS保护管',spec:'SOD-123/15V/双向',unit:'个',qty:1,price:0.25,supplier:'长电科技',status:'有效',level:2,icon:'🛡'}
+    ]},
+    {id:'B-PKG-10005',name:'包装',spec:'GW-PKG',unit:'套',qty:1,price:8,supplier:'裕同包装',status:'有效',level:1,icon:'📦',children:[
+      {id:'B-PK-20050',name:'彩盒',spec:'200x150x60mm/灰卡',unit:'个',qty:1,price:3.0,supplier:'裕同包装',status:'有效',level:2,icon:'📦'},
+      {id:'B-PK-20051',name:'说明书',spec:'折页/铜版纸',unit:'本',qty:1,price:0.4,supplier:'永丰印务',status:'有效',level:2,icon:'📖'},
+      {id:'B-PK-20052',name:'网线 1m',spec:'Cat5e/RJ45/灰色',unit:'条',qty:1,price:2.5,supplier:'绿联',status:'有效',level:2,icon:'〰️'}
+    ]}
+  ]
+};
+
+const bomDataC300 = {
+  id:'C300-00001',name:'工业传感器 C300',spec:'C300-IND-2025',unit:'台',qty:1,price:420,supplier:'—',status:'有效',level:0,icon:'🔬',
+  children:[
+    {id:'C-PCB-10001',name:'采集板',spec:'C3-ACQ-V2.0',unit:'块',qty:1,price:120,supplier:'华芯电子',status:'有效',level:1,icon:'🔧',children:[
+      {id:'C-IC-20001',name:'MCU STM32L476',spec:'LQFP-64/低功耗',unit:'个',qty:1,price:18.5,supplier:'意法半导体',status:'有效',level:2,icon:'⬛'},
+      {id:'C-ADC-20002',name:'24位ADC ADS1256',spec:'SSOP-28/8通道',unit:'个',qty:1,price:32.0,supplier:'德州仪器',status:'有效',level:2,icon:'⬛'},
+      {id:'C-AMP-20003',name:'仪表放大器 INA128',spec:'SOP-8/精密',unit:'个',qty:4,price:12.0,supplier:'德州仪器',status:'有效',level:2,icon:'⬛'},
+      {id:'C-REF-20004',name:'基准源 REF5050',spec:'SOP-8/5V/0.05%',unit:'个',qty:1,price:15.0,supplier:'德州仪器',status:'有效',level:2,icon:'⬛'},
+      {id:'C-R-20005',name:'精密电阻套件',spec:'0603/0.1%/薄膜',unit:'套',qty:1,price:8.5,supplier:'威世',status:'有效',level:2,icon:'🔴'},
+      {id:'C-C-20006',name:'MLCC低噪声套件',spec:'C0G/NPO混装',unit:'套',qty:1,price:5.2,supplier:'村田制作所',status:'有效',level:2,icon:'🟡'},
+      {id:'C-OPT-20007',name:'数字隔离器 ISO7741',spec:'SOIC-16/4通道',unit:'个',qty:1,price:8.8,supplier:'德州仪器',status:'有效',level:2,icon:'🛡'},
+      {id:'C-PWR-20008',name:'隔离DC-DC B0505S',spec:'SIP-4/5V转5V/1W',unit:'个',qty:1,price:12.0,supplier:'金升阳',status:'有效',level:2,icon:'⚡'}
+    ]},
+    {id:'C-SENS-10002',name:'探头组件',spec:'C3-PROBE-SET',unit:'套',qty:1,price:180,supplier:'—',status:'有效',level:1,icon:'🌡',children:[
+      {id:'C-PT-20010',name:'PT100温度探头',spec:'A级/Φ3x50mm/三线制',unit:'个',qty:2,price:25.0,supplier:'西门子',status:'有效',level:2,icon:'🌡'},
+      {id:'C-PR-20011',name:'压力变送器 4-20mA',spec:'0-1MPa/G1/4/316L',unit:'个',qty:1,price:85.0,supplier:'恩德斯豪斯',status:'有效',level:2,icon:'🔵'},
+      {id:'C-FL-20012',name:'流量传感器',spec:'DN15/脉冲输出/黄铜',unit:'个',qty:1,price:45.0,supplier:'横河电机',status:'待审',level:2,icon:'💧'}
+    ]},
+    {id:'C-COM-10003',name:'通信模块',spec:'C3-COM-RS485+4G',unit:'个',qty:1,price:65,supplier:'—',status:'有效',level:1,icon:'📡',children:[
+      {id:'C-RS-20020',name:'RS485收发器 MAX3485',spec:'SOP-8/半双工',unit:'个',qty:1,price:3.5,supplier:'美信半导体',status:'有效',level:2,icon:'🔌'},
+      {id:'C-4G-20021',name:'4G模组 EC200S',spec:'LCC/Cat.1/移远',unit:'个',qty:1,price:38.0,supplier:'移远通信',status:'有效',level:2,icon:'📶'},
+      {id:'C-SIM-20022',name:'Nano SIM卡座',spec:'推拉式/6Pin/贴片',unit:'个',qty:1,price:1.2,supplier:'泰科电子',status:'有效',level:2,icon:'📱'},
+      {id:'C-ANT-20023',name:'4G全频天线',spec:'FPC/内置/全频段',unit:'个',qty:1,price:5.5,supplier:'信维通信',status:'有效',level:2,icon:'📡'}
+    ]},
+    {id:'C-CASE-10004',name:'工业外壳',spec:'C3-ENCL-IP65',unit:'个',qty:1,price:55,supplier:'威图',status:'有效',level:1,icon:'🔧',children:[
+      {id:'C-EN-20030',name:'铝壳体',spec:'180x120x60mm/压铸/IP65',unit:'个',qty:1,price:35.0,supplier:'威图',status:'有效',level:2,icon:'📐'},
+      {id:'C-EN-20031',name:'防水接头 M12',spec:'4Pin/IP67/公头',unit:'个',qty:3,price:4.5,supplier:'宾德',status:'有效',level:2,icon:'🔌'},
+      {id:'C-EN-20032',name:'DIN导轨卡扣',spec:'35mm标准/PA66',unit:'个',qty:2,price:1.0,supplier:'菲尼克斯',status:'有效',level:2,icon:'📎'},
+      {id:'C-EN-20033',name:'密封胶条',spec:'硅胶/IP65/定制',unit:'条',qty:1,price:3.5,supplier:'威图',status:'有效',level:2,icon:'⭕'}
+    ]}
+  ]
+};
+
+const allBOMs = [bomDataA100, bomDataB200, bomDataC300];
+bomData = allBOMs[0];
 
 let materialsFlat = [];
 function rebuildFlat() {
@@ -2699,6 +2807,65 @@ function renderSingleSourceRisk() {
   return html;
 }
 
+
+// ===== MULTI-BOM MANAGEMENT =====
+function populateBOMSelector() {
+  var sel = document.getElementById('bomSelector');
+  if (!sel) return;
+  var currentIdx = allBOMs.indexOf(bomData);
+  sel.innerHTML = allBOMs.map(function(b, i) {
+    return '<option value="'+i+'"'+(i===currentIdx?' selected':'')+'>'+b.icon+' '+b.name+' ('+b.id+')</option>';
+  }).join('');
+}
+
+function switchBOM(idx) {
+  if (idx < 0 || idx >= allBOMs.length) return;
+  bomData = allBOMs[idx];
+  selectedNodeId = bomData.id;
+  rebuildFlat();
+  renderTree();
+  buildFilterDropdowns();
+  renderMaterials();
+  showDetail(bomData);
+  updateStatusBar();
+  updateNavBadges();
+  var bc = document.getElementById('breadcrumb');
+  if (bc) bc.innerHTML = '<span onclick="navigateTo(\'dashboard\')" style="cursor:pointer">工作区</span><span class="sep">/</span><span>BOM管理</span><span class="sep">/</span><span style="color:var(--text-primary)">'+bomData.name+'</span>';
+  try { localStorage.setItem('bom_active_idx', idx); } catch(e) {}
+  showToast('已切换到 '+bomData.name, 'info');
+}
+
+function showNewBOMModal() { showModal('newBOMModal'); }
+
+function createNewBOM() {
+  var id = document.getElementById('newBomId').value.trim();
+  var name = document.getElementById('newBomName').value.trim();
+  var icon = document.getElementById('newBomIcon').value.trim() || '📦';
+  var spec = document.getElementById('newBomSpec').value.trim();
+  var unit = document.getElementById('newBomUnit').value.trim() || '台';
+  if (!id || !name) { showToast('请填写产品编号和名称', 'error'); return; }
+  if (allBOMs.find(function(b) { return b.id === id; })) { showToast('产品编号已存在', 'error'); return; }
+  var newBom = {id:id, name:name, spec:spec||id, unit:unit, qty:1, price:0, supplier:'—', status:'有效', level:0, icon:icon, children:[]};
+  allBOMs.push(newBom);
+  hideModal('newBOMModal');
+  populateBOMSelector();
+  document.getElementById('bomSelector').value = allBOMs.length - 1;
+  switchBOM(allBOMs.length - 1);
+  showToast('BOM "'+name+'" 已创建', 'success');
+}
+
+function deleteBOM(idx) {
+  if (idx < 0 || idx >= allBOMs.length) return;
+  if (allBOMs.length <= 1) { showToast('至少保留一个BOM', 'error'); return; }
+  var b = allBOMs[idx];
+  showConfirm('确定删除 BOM "'+b.name+'" 吗？此操作不可恢复。', function() {
+    allBOMs.splice(idx, 1);
+    if (bomData === b) switchBOM(0);
+    populateBOMSelector();
+    showToast('BOM "'+b.name+'" 已删除', 'info');
+  });
+}
+
 // ===== KEYBOARD SHORTCUTS =====
 document.addEventListener('keydown', function(e) {
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -2846,7 +3013,10 @@ function markAllNotifRead() {
 }
 
 // ===== INIT =====
+try { var savedBomIdx = parseInt(localStorage.getItem('bom_active_idx')); if (!isNaN(savedBomIdx) && savedBomIdx >= 0 && savedBomIdx < allBOMs.length) { bomData = allBOMs[savedBomIdx]; selectedNodeId = bomData.id; } } catch(e) {}
 populateAllEnumSelects();
+populateBOMSelector();
+rebuildFlat();
 renderTree();
 buildFilterDropdowns();
 renderMaterials();

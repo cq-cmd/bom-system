@@ -12,7 +12,7 @@
   --text-primary:#e6edf3;--text-secondary:#8b949e;--text-muted:#484f58;
   --accent:#7c3aed;--accent-hover:#6d28d9;--blue:#2563eb;--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--orange:#f97316;
   --border:#30363d;--border-light:#21262d;
-  --radius:6px;--radius-sm:4px;
+  --radius:8px;--radius-sm:4px;
   --sidebar-w:240px;--topbar-h:52px;--statusbar-h:32px;
 }
 html,body{height:100%;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;line-height:1.5;color:var(--text-primary);background:var(--bg-primary)}
@@ -41,9 +41,10 @@ a{color:var(--blue);text-decoration:none}
 .sidebar{width:var(--sidebar-w);background:var(--bg-secondary);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;padding:12px 0;overflow-y:auto}
 .sidebar .nav-group{margin-bottom:8px}
 .sidebar .nav-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;padding:4px 16px;margin-bottom:2px}
-.sidebar .nav-item{display:flex;align-items:center;gap:10px;padding:7px 16px;cursor:pointer;color:var(--text-secondary);transition:all .15s;border-radius:0;font-size:13px}
-.sidebar .nav-item:hover{background:var(--bg-hover);color:var(--text-primary)}
+.sidebar .nav-item{display:flex;align-items:center;gap:10px;padding:7px 16px;cursor:pointer;color:var(--text-secondary);transition:all .15s;border-radius:0;font-size:13px;border-left:2px solid transparent}
+.sidebar .nav-item:hover{background:var(--bg-hover);color:var(--text-primary);border-left-color:var(--text-muted)}
 .sidebar .nav-item.active{background:var(--bg-tertiary);color:var(--text-primary);border-left:2px solid var(--accent);padding-left:14px}
+.sidebar .nav-badge{font-size:10px;padding:1px 6px;border-radius:8px;background:rgba(124,58,237,.2);color:var(--accent);font-weight:600;margin-left:auto}
 .sidebar .nav-item .icon{width:18px;text-align:center;font-size:15px;flex-shrink:0}
 .content-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .tab-bar{display:flex;align-items:center;gap:0;background:var(--bg-secondary);border-bottom:1px solid var(--border);padding:0 20px;flex-shrink:0}
@@ -55,11 +56,12 @@ a{color:var(--blue);text-decoration:none}
 .statusbar{height:var(--statusbar-h);background:var(--bg-secondary);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:20px;font-size:11px;color:var(--text-muted);flex-shrink:0}
 
 /* Login */
-.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(39,35,58,.95));display:flex;align-items:center;justify-content:center;z-index:2000}
-.login-card{width:100%;max-width:380px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:32px 36px;box-shadow:0 25px 45px rgba(0,0,0,.35);text-align:center}
+.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0d1117 0%,#1a1040 50%,#0d1117 100%);background-size:200% 200%;animation:loginGrad 8s ease infinite;display:flex;align-items:center;justify-content:center;z-index:2000}
+@keyframes loginGrad{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.login-card{width:100%;max-width:380px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:32px 36px;box-shadow:0 25px 60px rgba(124,58,237,.15),0 0 0 1px rgba(124,58,237,.1);text-align:center}
 .login-card h1{font-size:20px;font-weight:700;margin:12px 0 24px}
 .login-input{width:100%;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;color:var(--text-primary);margin-bottom:14px;transition:border-color .2s}
-.login-input:focus{border-color:var(--accent);outline:none}
+.login-input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(124,58,237,.15)}
 .login-remember{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);margin-bottom:18px}
 .login-btn{width:100%;border:none;background:var(--accent);color:#fff;font-weight:600;border-radius:var(--radius);padding:10px 0;font-size:13px;cursor:pointer;transition:background .2s}
 .login-btn:hover{background:var(--accent-hover)}
@@ -88,6 +90,9 @@ a{color:var(--blue);text-decoration:none}
 .health-card-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .health-item{display:flex;align-items:center;justify-content:space-between;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:12px}
 .health-item span{display:flex;align-items:center;gap:6px}
+.health-item:nth-child(1){border-left:3px solid var(--red)}
+.health-item:nth-child(2){border-left:3px solid var(--yellow)}
+.health-item:nth-child(3){border-left:3px solid var(--accent)}
 
 .substitute-list{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
 .substitute-list h4{font-size:13px;margin-bottom:8px}
@@ -105,6 +110,7 @@ a{color:var(--blue);text-decoration:none}
 .btn-sm{padding:4px 10px;font-size:11px}
 .btn-xs{padding:2px 8px;font-size:11px}
 .btn[disabled]{opacity:.5;cursor:not-allowed;pointer-events:none}
+.btn:active:not([disabled]){transform:scale(.97)}
 
 /* Badges */
 .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500}
@@ -118,10 +124,11 @@ a{color:var(--blue);text-decoration:none}
 /* Tables */
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
-th{text-align:left;font-weight:600;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+th{text-align:left;font-weight:600;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--bg-secondary);z-index:2}
 th:hover{color:var(--text-secondary)}
 td{padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:13px;white-space:nowrap}
-tr:hover td{background:var(--bg-hover)}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+tr:hover td{background:var(--bg-hover);box-shadow:inset 3px 0 0 var(--accent)}
 tr.selected-row td{background:rgba(124,58,237,.08)}
 .table-footer{display:flex;justify-content:space-between;align-items:center;padding:12px 0;font-size:12px;color:var(--text-secondary)}
 .text-right{text-align:right}
@@ -175,9 +182,9 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
 
 /* Version Cards */
 .version-list{display:flex;flex-direction:column;gap:12px}
-.version-card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:16px;transition:border-color .15s;cursor:pointer}
+.version-card{background:var(--bg-secondary);border:1px solid var(--border);border-left:4px solid var(--border);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:16px;transition:all .15s;cursor:pointer}
 .version-card:hover{border-color:var(--text-muted)}
-.version-card.current{border-color:var(--accent)}
+.version-card.current{border-color:var(--accent);border-left-color:var(--accent)}
 .version-num{font-size:16px;font-weight:700;width:60px;flex-shrink:0}
 .version-info{flex:1}
 .version-info .desc{font-size:13px;color:var(--text-primary);margin-bottom:4px}
@@ -214,9 +221,10 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
 .timeline-actions{display:flex;gap:8px;margin-top:8px}
 
 /* Modal */
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center}
 .modal-overlay.show{display:flex}
-.modal{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);width:480px;max-width:90vw;max-height:85vh;overflow-y:auto}
+.modal{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);width:480px;max-width:90vw;max-height:85vh;overflow-y:auto;animation:modalIn .15s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
 .modal.modal-lg{width:720px}
 .modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
 .modal-header h3{font-size:15px;font-weight:600}
@@ -269,6 +277,8 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
 .stat-card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center}
 .stat-card .stat-num{font-size:24px;font-weight:700;margin-bottom:4px}
 .stat-card .stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase}
+.stat-card{transition:transform .2s,box-shadow .2s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
 
 /* Settings */
 .settings-section{margin-bottom:24px}
@@ -286,6 +296,46 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
 .confirm-content{text-align:center;padding:12px 0}
 .confirm-content .confirm-icon{font-size:36px;margin-bottom:12px}
 .confirm-content p{font-size:13px;color:var(--text-secondary)}
+
+/* Toast */
+.toast-container{position:fixed;bottom:20px;right:20px;z-index:3000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{pointer-events:auto;padding:12px 20px;border-radius:var(--radius);font-size:12px;font-weight:500;color:#fff;animation:toastIn .25s ease,toastOut .3s ease 2.7s forwards;box-shadow:0 8px 24px rgba(0,0,0,.4);display:flex;align-items:center;gap:8px}
+.toast-success{background:var(--green)}.toast-error{background:var(--red)}.toast-info{background:var(--blue)}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
+
+/* Notifications */
+.notif-bell{position:relative;cursor:pointer;font-size:16px;padding:4px}
+.notif-dot{position:absolute;top:0;right:-2px;width:8px;height:8px;background:var(--red);border-radius:50%;border:2px solid var(--bg-secondary)}
+.notif-dropdown{position:absolute;right:0;top:36px;width:300px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 12px 30px rgba(0,0,0,.4);display:none;z-index:200}
+.notif-dropdown.show{display:block}
+.notif-header{padding:12px 16px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.notif-item{padding:10px 16px;border-bottom:1px solid var(--border-light);font-size:12px;cursor:pointer;transition:background .1s}
+.notif-item:hover{background:var(--bg-hover)}
+.notif-item .notif-title{color:var(--text-primary);font-weight:500}
+.notif-item .notif-time{color:var(--text-muted);font-size:10px;margin-top:2px}
+.notif-item:last-child{border-bottom:none}
+
+/* Dashboard */
+.dashboard-welcome{margin-bottom:24px}
+.dashboard-welcome h2{font-size:22px;font-weight:700;margin-bottom:4px}
+.dashboard-welcome .sub{font-size:13px;color:var(--text-secondary)}
+.quick-actions{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.quick-action{display:flex;align-items:center;gap:10px;padding:14px 20px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .15s;font-size:13px;font-weight:500;color:var(--text-primary)}
+.quick-action:hover{border-color:var(--accent);background:var(--bg-tertiary);transform:translateY(-1px)}
+.quick-action .qa-icon{font-size:18px}
+.activity-feed{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.activity-feed h3{font-size:15px;font-weight:600;margin-bottom:16px}
+.activity-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:12px}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.activity-text{color:var(--text-primary)}
+.activity-time{color:var(--text-muted);margin-top:2px;font-size:11px}
+
+/* Login pills */
+.login-accounts{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:16px}
+.login-pill{padding:4px 12px;border-radius:16px;font-size:11px;background:var(--bg-primary);border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;transition:all .15s}
+.login-pill:hover{border-color:var(--accent);color:var(--text-primary)}
 
 /* Responsive */
 @media(max-width:900px){
@@ -309,6 +359,7 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
     <label class="login-remember"><input type="checkbox" id="loginRemember" /> 记住我</label>
     <button class="login-btn" id="loginSubmit">登录</button>
     <div class="login-footer">使用预设账号体验 · Demo 环境</div>
+    <div class="login-accounts" id="loginAccounts"></div>
   </div>
 </div>
 <div class="app" id="appRoot" style="display:none">
@@ -323,6 +374,15 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
     </div>
     <div class="global-search">
       <input type="text" placeholder="搜索物料、BOM、审批单…  ⌘K" id="globalSearch" />
+    </div>
+    <div class="notif-bell" id="notifBell" style="position:relative">
+      🔔<span class="notif-dot"></span>
+      <div class="notif-dropdown" id="notifDropdown">
+        <div class="notif-header"><span>通知</span><span class="badge badge-red">3</span></div>
+        <div class="notif-item"><div class="notif-title">V3.0 审批等待品质审核</div><div class="notif-time">10 分钟前</div></div>
+        <div class="notif-item"><div class="notif-title">新物料 RF-20047 待审批</div><div class="notif-time">1 小时前</div></div>
+        <div class="notif-item"><div class="notif-title">系统将于今晚 22:00 维护</div><div class="notif-time">3 小时前</div></div>
+      </div>
     </div>
     <div class="user-menu" id="userMenu">
       <div class="user-avatar" id="userAvatar" title="当前用户">—</div>
@@ -342,8 +402,9 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
     <div class="sidebar">
       <div class="nav-group">
         <div class="nav-label">主导航</div>
-        <div class="nav-item active" data-nav="bom"><span class="icon">📦</span><span>BOM 管理</span></div>
-        <div class="nav-item" data-nav="materials"><span class="icon">🗂</span><span>物料库</span></div>
+        <div class="nav-item active" data-nav="dashboard"><span class="icon">🏠</span><span>仪表盘</span></div>
+        <div class="nav-item" data-nav="bom"><span class="icon">📦</span><span>BOM 管理</span><span class="nav-badge" id="navBadgeBom">2</span></div>
+        <div class="nav-item" data-nav="materials"><span class="icon">🗂</span><span>物料库</span><span class="nav-badge" id="navBadgeMat">70</span></div>
         <div class="nav-item" data-nav="reports"><span class="icon">📊</span><span>报表中心</span></div>
       </div>
       <div class="nav-group">
@@ -354,8 +415,34 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
 
     <!-- Content -->
     <div class="content-area">
+      <!-- Page: Dashboard -->
+      <div class="page-panel active" id="page-dashboard">
+        <div class="content-body">
+          <div class="dashboard-welcome">
+            <h2 id="dashWelcome">欢迎回来</h2>
+            <div class="sub" id="dashRole">请登录以查看仪表盘</div>
+          </div>
+          <div class="stat-cards" id="dashStats"></div>
+          <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">⚡ 快捷操作</h3>
+          <div class="quick-actions">
+            <div class="quick-action" onclick="navigateTo('materials');showMaterialModal()"><span class="qa-icon">➕</span>新增物料</div>
+            <div class="quick-action" onclick="navigateTo('bom');document.querySelector('[data-tab=approval]').click();showModal('newApprovalModal')"><span class="qa-icon">📋</span>发起审批</div>
+            <div class="quick-action" onclick="navigateTo('bom');exportCurrentBOM()"><span class="qa-icon">⤓</span>导出 BOM</div>
+            <div class="quick-action" onclick="navigateTo('reports')"><span class="qa-icon">📊</span>查看报表</div>
+          </div>
+          <div class="activity-feed">
+            <h3>📰 最近动态</h3>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--green)"></div><div><div class="activity-text">张工 创建了版本 V3.0，新增四大模组</div><div class="activity-time">2025-06-15 09:00</div></div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--green)"></div><div><div class="activity-text">赵品质 审批通过 V2.1 版本</div><div class="activity-time">2025-05-11 09:30</div></div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--yellow)"></div><div><div class="activity-text">V3.0 审批流程进入品质审核环节</div><div class="activity-time">2025-06-15 11:30</div></div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--blue)"></div><div><div class="activity-text">李工 新增 RF 屏蔽罩、SMA天线座等待审物料</div><div class="activity-time">2025-06-14 16:00</div></div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--red)"></div><div><div class="activity-text">V0.8-beta 被品质驳回：电阻规格不符</div><div class="activity-time">2024-09-11 11:00</div></div></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Page: BOM Management -->
-      <div class="page-panel active" id="page-bom">
+      <div class="page-panel" id="page-bom">
         <div class="tab-bar">
           <div class="tab-item active" data-tab="structure">BOM 结构</div>
           <div class="tab-item" data-tab="versions">版本管理</div>
@@ -704,6 +791,8 @@ tr.selected-row td{background:rgba(124,58,237,.08)}
   </div>
 </div>
 
+<div class="toast-container" id="toastContainer"></div>
+
 <script>
 // ===== DATA =====
 const bomData = {
@@ -965,6 +1054,8 @@ function setCurrentUser(user) {
     if (login) login.style.display = 'none';
     if (app) app.style.display = 'flex';
     dropdown?.classList.remove('show');
+    navigateTo('dashboard');
+    showToast('欢迎回来，' + user.name, 'success');
   } else {
     avatar.textContent = '—';
     avatar.title = '未登录';
@@ -1166,6 +1257,7 @@ function exportCurrentBOM() {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  showToast('BOM 导出完成', 'success');
 }
 
 function updateTreeStats() {
@@ -1450,7 +1542,8 @@ function saveMaterial() {
     }
   }
   hideModal('materialModal');
-  rebuildFlat(); renderTree(); renderMaterials(); updateStatusBar();
+  rebuildFlat(); renderTree(); renderMaterials(); updateStatusBar(); updateNavBadges();
+  showToast('物料保存成功', 'success');
 }
 function deleteMaterial(id) {
   const m = findNode(id);
@@ -1459,7 +1552,8 @@ function deleteMaterial(id) {
     const parent = findParent(id);
     if (parent && parent.children) parent.children = parent.children.filter(c => c.id !== id);
     selectedMatIds.delete(id);
-    rebuildFlat(); renderTree(); renderMaterials(); updateStatusBar();
+    rebuildFlat(); renderTree(); renderMaterials(); updateStatusBar(); updateNavBadges();
+    showToast('物料已删除', 'info');
   });
 }
 function batchDelete() {
@@ -1498,6 +1592,7 @@ function createVersion() {
   versions.unshift({ ver, creator: '张工', date: todayStr(), desc: desc || '新建版本', status: '当前', statusClass: 'badge-green' });
   hideModal('versionModal');
   renderVersions();
+  showToast('版本 ' + ver + ' 已创建', 'success');
 }
 
 // ===== VERSION COMPARE =====
@@ -1580,7 +1675,8 @@ function submitApproval() {
     ]
   });
   hideModal('newApprovalModal');
-  renderApprovals();
+  renderApprovals(); updateNavBadges();
+  showToast('审批已提交', 'success');
 }
 function showApproveModal(idx, action) {
   document.getElementById('approveIdx').value = idx;
@@ -1640,6 +1736,7 @@ function exportCSV() {
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob); link.download = 'BOM_物料清单_' + todayStr() + '.csv';
   document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  showToast('导出完成', 'success');
 }
 function downloadTemplate(e) {
   e.preventDefault();
@@ -1783,7 +1880,7 @@ document.querySelectorAll('.tab-item').forEach(tab => {
 });
 
 // ===== SIDEBAR NAVIGATION =====
-const pageMap = { bom:'page-bom', materials:'page-materials', reports:'page-reports', settings:'page-settings' };
+const pageMap = { dashboard:'page-dashboard', bom:'page-bom', materials:'page-materials', reports:'page-reports', settings:'page-settings' };
 document.querySelectorAll('.sidebar .nav-item').forEach(item => {
   item.addEventListener('click', () => {
     document.querySelectorAll('.sidebar .nav-item').forEach(i => i.classList.remove('active'));
@@ -1793,8 +1890,9 @@ document.querySelectorAll('.sidebar .nav-item').forEach(item => {
     const page = pageMap[nav] || 'page-bom';
     document.getElementById(page).classList.add('active');
     const bc = document.getElementById('breadcrumb');
-    const labels = { bom:'BOM管理', materials:'物料库', reports:'报表中心', settings:'系统设置' };
-    bc.innerHTML = '<span>工作区</span><span class="sep">/</span><span style="color:var(--text-primary)">' + (labels[nav]||'BOM管理') + '</span>';
+    const labels = { dashboard:'仪表盘', bom:'BOM管理', materials:'物料库', reports:'报表中心', settings:'系统设置' };
+    bc.innerHTML = '<span>工作区</span><span class="sep">/</span><span style="color:var(--text-primary)">' + (labels[nav]||'仪表盘') + '</span>';
+    if (nav === 'dashboard') renderDashboard();
     if (nav === 'materials') { buildFilterDropdowns(); renderMaterials(); }
     if (nav === 'reports') renderReports();
     if (nav === 'settings') renderSettings();
@@ -1844,6 +1942,88 @@ document.getElementById('globalSearch').addEventListener('input', function(e) {
   }
 });
 
+// ===== TOAST =====
+function showToast(msg, type) {
+  type = type || 'info';
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+  const t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.textContent = msg;
+  container.appendChild(t);
+  setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 3200);
+}
+
+// ===== NAVIGATE HELPER =====
+function navigateTo(nav) {
+  document.querySelectorAll('.sidebar .nav-item').forEach(i => i.classList.remove('active'));
+  const target = document.querySelector('[data-nav="'+nav+'"]');
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.page-panel').forEach(p => p.classList.remove('active'));
+  const page = pageMap[nav] || 'page-dashboard';
+  document.getElementById(page)?.classList.add('active');
+  const labels = { dashboard:'仪表盘', bom:'BOM管理', materials:'物料库', reports:'报表中心', settings:'系统设置' };
+  const bc = document.getElementById('breadcrumb');
+  if (bc) bc.innerHTML = '<span>工作区</span><span class="sep">/</span><span style="color:var(--text-primary)">' + (labels[nav]||'仪表盘') + '</span>';
+  if (nav === 'dashboard') renderDashboard();
+  if (nav === 'materials') { buildFilterDropdowns(); renderMaterials(); }
+  if (nav === 'reports') renderReports();
+  if (nav === 'settings') renderSettings();
+}
+
+// ===== DASHBOARD =====
+function renderDashboard() {
+  const name = currentUser ? currentUser.name : '访客';
+  const role = currentUser ? currentUser.role : '';
+  document.getElementById('dashWelcome').textContent = '欢迎回来，' + name;
+  document.getElementById('dashRole').innerHTML = role ? '<span class="badge badge-purple">' + role + '</span>' : '';
+  const totalMats = materialsFlat.length;
+  const activeMats = materialsFlat.filter(m => m.status === '有效').length;
+  const pendingMats = materialsFlat.filter(m => m.status === '待审').length;
+  const pendingApprovals = approvals.filter(a => a.status === '待审批').length;
+  const curVer = versions.find(v => v.status === '当前');
+  document.getElementById('dashStats').innerHTML = `
+    <div class="stat-card"><div class="stat-num" style="color:var(--accent)">${totalMats}</div><div class="stat-label">物料总数</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--green)">${activeMats}</div><div class="stat-label">有效物料</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--yellow)">${pendingMats}</div><div class="stat-label">待审物料</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--orange)">${pendingApprovals}</div><div class="stat-label">待审批</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--blue)">${curVer ? curVer.ver : '—'}</div><div class="stat-label">当前版本</div></div>
+  `;
+  updateNavBadges();
+}
+
+function updateNavBadges() {
+  const pendingApprovals = approvals.filter(a => a.status === '待审批').length;
+  const el1 = document.getElementById('navBadgeBom');
+  const el2 = document.getElementById('navBadgeMat');
+  if (el1) el1.textContent = pendingApprovals;
+  if (el2) el2.textContent = materialsFlat.length;
+}
+
+// ===== NOTIFICATION BELL =====
+function initNotifBell() {
+  const bell = document.getElementById('notifBell');
+  const dropdown = document.getElementById('notifDropdown');
+  if (!bell || !dropdown) return;
+  bell.addEventListener('click', e => { e.stopPropagation(); dropdown.classList.toggle('show'); });
+  document.addEventListener('click', () => dropdown.classList.remove('show'));
+}
+
+// ===== LOGIN ACCOUNT PILLS =====
+function renderLoginPills() {
+  const container = document.getElementById('loginAccounts');
+  if (!container) return;
+  container.innerHTML = demoUsers.map(u =>
+    '<span class="login-pill" data-name="'+u.name+'" data-pw="'+u.password+'">'+u.name+'</span>'
+  ).join('');
+  container.addEventListener('click', e => {
+    const pill = e.target.closest('.login-pill');
+    if (!pill) return;
+    document.getElementById('loginUsername').value = pill.dataset.name;
+    document.getElementById('loginPassword').value = pill.dataset.pw;
+  });
+}
+
 // ===== INIT =====
 populateAllEnumSelects();
 renderTree();
@@ -1852,6 +2032,8 @@ renderMaterials();
 renderVersions();
 renderApprovals();
 showDetail(bomData);
+renderLoginPills();
+initNotifBell();
 initLoginUI();
 </script>
 </body>

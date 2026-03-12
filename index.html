@@ -498,17 +498,14 @@ tr.selected-row td{background:rgba(37,99,235,.06)}
           <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">⚡ 快捷操作</h3>
           <div class="quick-actions">
             <div class="quick-action" onclick="navigateTo('materials');showMaterialModal()"><span class="qa-icon">➕</span>新增物料</div>
+            <div class="quick-action" onclick="navigateTo('changes');showChgModal()"><span class="qa-icon">🔄</span>发起变更</div>
             <div class="quick-action" onclick="navigateTo('bom');document.querySelector('[data-tab=approval]').click();showModal('newApprovalModal')"><span class="qa-icon">📋</span>发起审批</div>
-            <div class="quick-action" onclick="navigateTo('bom');exportCurrentBOM()"><span class="qa-icon">⤓</span>导出 BOM</div>
+            <div class="quick-action" onclick="navigateTo('quality');showModal('qaModal')"><span class="qa-icon">🔬</span>新建质量问题</div>
+            <div class="quick-action" onclick="navigateTo('documents');showModal('docModal')"><span class="qa-icon">📑</span>上传文档</div>
             <div class="quick-action" onclick="navigateTo('reports')"><span class="qa-icon">📊</span>查看报表</div>
           </div>
-          <div class="activity-feed">
+          <div class="activity-feed" id="dashActivity">
             <h3>📰 最近动态</h3>
-            <div class="activity-item" style="cursor:pointer" onclick="navigateTo('bom');document.querySelector('[data-tab=versions]').click()"><div class="activity-dot" style="background:var(--green)"></div><div><div class="activity-text">张工 创建了版本 V3.0，新增四大模组</div><div class="activity-time">2025-06-15 09:00</div></div></div>
-            <div class="activity-item" style="cursor:pointer" onclick="navigateTo('bom');document.querySelector('[data-tab=approval]').click()"><div class="activity-dot" style="background:var(--green)"></div><div><div class="activity-text">赵品质 审批通过 V2.1 版本</div><div class="activity-time">2025-05-11 09:30</div></div></div>
-            <div class="activity-item" style="cursor:pointer" onclick="navigateTo('bom');document.querySelector('[data-tab=approval]').click()"><div class="activity-dot" style="background:var(--yellow)"></div><div><div class="activity-text">V3.0 审批流程进入品质审核环节</div><div class="activity-time">2025-06-15 11:30</div></div></div>
-            <div class="activity-item" style="cursor:pointer" onclick="navigateTo('materials');document.getElementById('matSearch').value='RF-20047';matPage=1;renderMaterials()"><div class="activity-dot" style="background:var(--blue)"></div><div><div class="activity-text">李工 新增 RF 屏蔽罩、SMA天线座等待审物料</div><div class="activity-time">2025-06-14 16:00</div></div></div>
-            <div class="activity-item" style="cursor:pointer" onclick="navigateTo('bom');document.querySelector('[data-tab=approval]').click()"><div class="activity-dot" style="background:var(--red)"></div><div><div class="activity-text">V0.8-beta 被品质驳回：电阻规格不符</div><div class="activity-time">2024-09-11 11:00</div></div></div>
           </div>
         </div>
       </div>
@@ -2645,6 +2642,12 @@ function renderReports() {
       ${versions.map(v => `<div class="stat-row"><span style="width:60px;font-weight:600;color:${v.status==='当前'?'var(--accent)':'var(--text-secondary)'}">${v.ver}</span><span style="flex:1;color:var(--text-muted);font-size:11px">${v.desc.substring(0,30)}${v.desc.length>30?'…':''}</span><span class="badge ${v.statusClass}">${v.status}</span></div>`).join('')}
     </div>
   ` + renderCostTrend() + renderDuplicateCheck() + renderSingleSourceRisk();
+  var extra = '';
+  if(typeof changesData!=='undefined'){var chgTypes={ECR:0,ECO:0,ECN:0};var chgSt={草稿:0,待审批:0,审批中:0,执行中:0,已关闭:0,已驳回:0};changesData.forEach(function(c){chgTypes[c.type]=(chgTypes[c.type]||0)+1;chgSt[c.status]=(chgSt[c.status]||0)+1});var maxChg=Math.max.apply(null,Object.values(chgTypes).concat([1]));extra+='<div class="chart-card"><h4>🔄 变更类型分布</h4>'+Object.entries(chgTypes).map(function(e,i){return '<div class="stat-row"><span style="width:60px;font-weight:600">'+e[0]+'</span><div class="stat-bar"><div class="stat-bar-fill" style="width:'+(e[1]/maxChg*100).toFixed(0)+'%;background:'+['#2563eb','#7c3aed','#22c55e'][i]+'"></div></div><span style="width:40px;text-align:right;font-weight:500">'+e[1]+'</span></div>'}).join('')+'</div>';var maxChgSt=Math.max.apply(null,Object.values(chgSt).concat([1]));extra+='<div class="chart-card"><h4>🔄 变更状态分布</h4>'+Object.entries(chgSt).filter(function(e){return e[1]>0}).map(function(e){var c=({草稿:'#9ca3af',待审批:'#f59e0b',审批中:'#f59e0b',执行中:'#2563eb',已关闭:'#22c55e',已驳回:'#ef4444'})[e[0]]||'#9ca3af';return '<div class="stat-row"><span style="width:60px;color:'+c+'">'+e[0]+'</span><div class="stat-bar"><div class="stat-bar-fill" style="width:'+(e[1]/maxChgSt*100).toFixed(0)+'%;background:'+c+'"></div></div><span style="width:40px;text-align:right;font-weight:500">'+e[1]+'</span></div>'}).join('')+'</div>'}
+  if(typeof projectsData!=='undefined'){var projPhases={P0:0,P1:0,P2:0,EVT:0,DVT:0,PVT:0,MP:0};projectsData.forEach(function(p){projPhases[p.phase]=(projPhases[p.phase]||0)+1});extra+='<div class="chart-card"><h4>📁 项目阶段分布</h4>'+Object.entries(projPhases).filter(function(e){return e[1]>0}).map(function(e){return '<div class="stat-row"><span style="width:40px;font-weight:600">'+e[0]+'</span><div class="stat-bar"><div class="stat-bar-fill" style="width:'+(e[1]/projectsData.length*100).toFixed(0)+'%;background:var(--accent)"></div></div><span style="width:40px;text-align:right;font-weight:500">'+e[1]+'</span></div>'}).join('')+'</div>'}
+  if(typeof qualityData!=='undefined'){var qaTypes={};qualityData.forEach(function(r){qaTypes[r.type]=(qaTypes[r.type]||0)+1});var maxQa=Math.max.apply(null,Object.values(qaTypes).concat([1]));var qaColors={'来料不良':'#ef4444','制程不良':'#f97316','客诉':'#7c3aed','内部发现':'#2563eb'};extra+='<div class="chart-card"><h4>🔬 质量问题类型</h4>'+Object.entries(qaTypes).sort(function(a,b){return b[1]-a[1]}).map(function(e){return '<div class="stat-row"><span style="width:70px;color:'+(qaColors[e[0]]||'#9ca3af')+'">'+e[0]+'</span><div class="stat-bar"><div class="stat-bar-fill" style="width:'+(e[1]/maxQa*100).toFixed(0)+'%;background:'+(qaColors[e[0]]||'#9ca3af')+'"></div></div><span style="width:40px;text-align:right;font-weight:500">'+e[1]+'</span></div>'}).join('')+'</div>';var sevMap={};qualityData.forEach(function(r){sevMap[r.severity]=(sevMap[r.severity]||0)+1});var maxSev=Math.max.apply(null,Object.values(sevMap).concat([1]));var sevColors={致命:'#ef4444',严重:'#f97316',一般:'#f59e0b',轻微:'#9ca3af'};extra+='<div class="chart-card"><h4>🔬 严重程度分布</h4>'+Object.entries(sevMap).sort(function(a,b){var o={致命:0,严重:1,一般:2,轻微:3};return (o[a[0]]||9)-(o[b[0]]||9)}).map(function(e){return '<div class="stat-row"><span style="width:40px;color:'+(sevColors[e[0]]||'#9ca3af')+'">'+e[0]+'</span><div class="stat-bar"><div class="stat-bar-fill" style="width:'+(e[1]/maxSev*100).toFixed(0)+'%;background:'+(sevColors[e[0]]||'#9ca3af')+'"></div></div><span style="width:40px;text-align:right;font-weight:500">'+e[1]+'</span></div>'}).join('')+'</div>'}
+  if(typeof suppliersData!=='undefined'){var topSup=suppliersData.slice().sort(function(a,b){return b.score-a.score}).slice(0,8);extra+='<div class="chart-card"><h4>🏭 供应商评分 TOP8</h4>'+topSup.map(function(s){var c=s.score>=90?'#22c55e':s.score>=80?'#2563eb':s.score>=70?'#f59e0b':'#ef4444';return '<div class="stat-row"><span style="width:80px;color:var(--text-secondary)">'+s.name+'</span><div class="stat-bar"><div class="stat-bar-fill" style="width:'+s.score+'%;background:'+c+'"></div></div><span style="width:40px;text-align:right;font-weight:600;color:'+c+'">'+s.score+'</span></div>'}).join('')+'</div>'}
+  document.getElementById('chartGrid').innerHTML += extra;
 }
 
 // ===== SETTINGS =====
@@ -2812,15 +2815,27 @@ function renderDashboard() {
   const pendingMats = materialsFlat.filter(m => m.status === '待审').length;
   const pendingApprovals = approvals.filter(a => a.status === '待审批').length;
   const curVer = versions.find(v => v.status === '当前');
-  document.getElementById('dashStats').innerHTML = `
-    <div class="stat-card"><div class="stat-num" style="color:var(--accent)">${totalMats}</div><div class="stat-label">物料总数</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--green)">${activeMats}</div><div class="stat-label">有效物料</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--yellow)">${pendingMats}</div><div class="stat-label">待审物料</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--orange)">${pendingApprovals}</div><div class="stat-label">待审批</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--blue)">${curVer ? curVer.ver : '—'}</div><div class="stat-label">当前版本</div></div>
-  `;
+  const activeProj = typeof projectsData!=='undefined'?projectsData.filter(p=>p.status==='进行中').length:0;
+  const pendChg = typeof changesData!=='undefined'?changesData.filter(c=>c.status==='待审批'||c.status==='审批中').length:0;
+  const openQa = typeof qualityData!=='undefined'?qualityData.filter(r=>r.status!=='已关闭').length:0;
+  document.getElementById('dashStats').innerHTML =
+    '<div class="stat-card" style="cursor:pointer" onclick="navigateTo(\'materials\')"><div class="stat-num" style="color:var(--accent)">'+totalMats+'</div><div class="stat-label">物料总数</div></div>'
+    +'<div class="stat-card" style="cursor:pointer" onclick="navigateTo(\'projects\')"><div class="stat-num" style="color:var(--blue)">'+activeProj+'</div><div class="stat-label">进行中项目</div></div>'
+    +'<div class="stat-card" style="cursor:pointer" onclick="navigateTo(\'changes\')"><div class="stat-num" style="color:var(--yellow)">'+pendChg+'</div><div class="stat-label">待审变更</div></div>'
+    +'<div class="stat-card" style="cursor:pointer" onclick="navigateTo(\'approvals\')"><div class="stat-num" style="color:var(--orange)">'+pendingApprovals+'</div><div class="stat-label">待审批</div></div>'
+    +'<div class="stat-card" style="cursor:pointer" onclick="navigateTo(\'quality\')"><div class="stat-num" style="color:var(--red)">'+openQa+'</div><div class="stat-label">质量问题</div></div>'
+    +'<div class="stat-card"><div class="stat-num" style="color:var(--green)">'+(curVer?curVer.ver:'—')+'</div><div class="stat-label">当前版本</div></div>';
   updateNavBadges();
   renderDashTodos();
+  var activities = [
+    {text:'张工 创建了版本 V3.0，新增四大模组',time:'2025-06-15 09:00',color:'var(--green)',nav:'bom',act:"document.querySelector('[data-tab=versions]').click()"}
+  ];
+  if(typeof changesData!=='undefined')changesData.slice(0,3).forEach(function(c){activities.push({text:c.initiator+' '+({草稿:'创建了',待审批:'提交了',审批中:'审批中',执行中:'执行中',已关闭:'完成了',已驳回:'被驳回'}[c.status]||'更新了')+' '+c.type+' '+c.title,time:c.date+' 10:00',color:c.status==='已关闭'?'var(--green)':c.status==='已驳回'?'var(--red)':'var(--blue)',nav:'changes',act:"showChgDetail('"+c.id+"')"})});
+  if(typeof qualityData!=='undefined')qualityData.filter(function(r){return r.status!=='已关闭'}).slice(0,2).forEach(function(r){activities.push({text:r.owner+' 发现 '+r.severity+'问题: '+r.title,time:r.date+' 14:00',color:r.severity==='致命'?'var(--red)':r.severity==='严重'?'var(--orange)':'var(--yellow)',nav:'quality',act:"showQaDetail('"+r.id+"')"})});
+  if(typeof documentsData!=='undefined')documentsData.filter(function(d){return d.status==='已发布'}).slice(0,2).forEach(function(d){activities.push({text:d.uploader+' 发布了文档 '+d.name,time:d.date+' 11:00',color:'var(--green)',nav:'documents',act:"showDocDetail('"+d.id+"')"})});
+  activities.sort(function(a,b){return b.time.localeCompare(a.time)});
+  var af=document.getElementById('dashActivity');
+  if(af)af.innerHTML='<h3>📰 最近动态</h3>'+activities.slice(0,8).map(function(a){return '<div class="activity-item" style="cursor:pointer" onclick="navigateTo(\''+a.nav+'\');setTimeout(function(){'+a.act+'},200)"><div class="activity-dot" style="background:'+a.color+'"></div><div><div class="activity-text">'+a.text+'</div><div class="activity-time">'+a.time+'</div></div></div>'}).join('');
 }
 
 function updateNavBadges() {
@@ -2866,23 +2881,27 @@ function renderDashTodos() {
     return active && active.user === name;
   });
   var pendingMats = materialsFlat.filter(function(m) { return m.status === '待审'; });
-  var html = '<h3 style="font-size:15px;font-weight:600;margin-bottom:14px">📌 我的待办</h3>';
-  if (myApprovals.length === 0 && pendingMats.length === 0) {
+  var myChanges = typeof changesData!=='undefined'?changesData.filter(function(c){return c.reviewer===name&&(c.status==='待审批'||c.status==='审批中')}):[];
+  var myQa = typeof qualityData!=='undefined'?qualityData.filter(function(r){return r.owner===name&&r.status!=='已关闭'}):[];
+  var totalTodos = myApprovals.length+pendingMats.length+myChanges.length+myQa.length;
+  var html = '<h3 style="font-size:15px;font-weight:600;margin-bottom:14px">📌 我的待办 <span class="badge badge-yellow" style="font-size:11px;vertical-align:middle">'+totalTodos+'</span></h3>';
+  if (totalTodos === 0) {
     html += '<div style="text-align:center;padding:20px;color:var(--text-muted)">🎉 暂无待办事项</div>';
   } else {
     myApprovals.forEach(function(a) {
-      html += '<div class="todo-item" style="display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-left:3px solid var(--yellow);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:all .15s;font-size:12px" onclick="navigateTo(\'bom\');setTimeout(function(){document.querySelector(\'[data-tab=approval]\').click()},100)">'
-        + '<span style="font-size:16px">📋</span>'
-        + '<div style="flex:1"><div style="color:var(--text-primary);font-weight:500">审批 '+a.id+' — '+a.ver+'</div><div style="color:var(--text-muted);margin-top:2px">等待您审批 · '+(a.type||'新版本发布')+'</div></div>'
-        + '<span class="badge badge-yellow">待审批</span></div>';
+      html += '<div class="todo-item" style="display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-left:3px solid var(--yellow);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:all .15s;font-size:12px" onclick="navigateTo(\'bom\');setTimeout(function(){document.querySelector(\'[data-tab=approval]\').click()},100)"><span style="font-size:16px">📋</span><div style="flex:1"><div style="color:var(--text-primary);font-weight:500">审批 '+a.id+' — '+a.ver+'</div><div style="color:var(--text-muted);margin-top:2px">等待您审批 · '+(a.type||'新版本发布')+'</div></div><span class="badge badge-yellow">待审批</span></div>';
+    });
+    myChanges.forEach(function(c) {
+      html += '<div class="todo-item" style="display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:all .15s;font-size:12px" onclick="navigateTo(\'changes\');setTimeout(function(){showChgDetail(\''+c.id+'\')},200)"><span style="font-size:16px">🔄</span><div style="flex:1"><div style="color:var(--text-primary);font-weight:500">'+c.id+' '+c.title+'</div><div style="color:var(--text-muted);margin-top:2px">变更审批 · '+c.initiator+' 发起</div></div><span class="badge badge-purple">'+c.type+'</span></div>';
+    });
+    myQa.slice(0,3).forEach(function(r) {
+      html += '<div class="todo-item" style="display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-left:3px solid var(--red);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:all .15s;font-size:12px" onclick="navigateTo(\'quality\');setTimeout(function(){showQaDetail(\''+r.id+'\')},200)"><span style="font-size:16px">🔬</span><div style="flex:1"><div style="color:var(--text-primary);font-weight:500">'+r.id+' '+r.title+'</div><div style="color:var(--text-muted);margin-top:2px">'+r.type+' · '+r.status+'</div></div><span class="badge badge-red">'+r.severity+'</span></div>';
     });
     pendingMats.slice(0,3).forEach(function(m) {
-      html += '<div class="todo-item" style="display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:all .15s;font-size:12px" onclick="navigateTo(\'materials\');document.getElementById(\'matFilter\').value=\'待审\';matPage=1;renderMaterials()">'
-        + '<span style="font-size:16px">📦</span>'
-        + '<div style="flex:1"><div style="color:var(--text-primary);font-weight:500">'+m.name+' ('+m.id+')</div><div style="color:var(--text-muted);margin-top:2px">物料待审核 · '+m.supplier+'</div></div>'
-        + '<span class="badge badge-yellow">待审</span></div>';
+      html += '<div class="todo-item" style="display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:all .15s;font-size:12px" onclick="navigateTo(\'materials\');document.getElementById(\'matFilter\').value=\'待审\';matPage=1;renderMaterials()"><span style="font-size:16px">📦</span><div style="flex:1"><div style="color:var(--text-primary);font-weight:500">'+m.name+' ('+m.id+')</div><div style="color:var(--text-muted);margin-top:2px">物料待审核 · '+m.supplier+'</div></div><span class="badge badge-yellow">待审</span></div>';
     });
     if (pendingMats.length > 3) html += '<div style="text-align:center;font-size:11px;color:var(--text-muted);padding:4px">还有 '+(pendingMats.length-3)+' 项待审物料…</div>';
+    if (myQa.length > 3) html += '<div style="text-align:center;font-size:11px;color:var(--text-muted);padding:4px">还有 '+(myQa.length-3)+' 项质量问题…</div>';
   }
   el.innerHTML = html;
 }

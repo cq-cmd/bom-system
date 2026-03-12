@@ -701,7 +701,11 @@ tr.selected-row td{background:rgba(37,99,235,.06)}
           <h2 style="font-size:18px;font-weight:700;margin-bottom:20px">🔄 变更管理</h2>
           <div class="stat-cards" id="chgStatCards"></div>
           <div class="toolbar">
-            <input class="search-input" type="text" id="chgSearch" placeholder="搜索变更单号、标题…" oninput="renderChanges()" />
+            <button class="btn btn-primary btn-sm" id="chgTabAll" onclick="switchChgTab('all')" style="box-shadow:none">全部</button>
+            <button class="btn btn-secondary btn-sm" id="chgTabMine" onclick="switchChgTab('mine')">我发起的</button>
+            <button class="btn btn-secondary btn-sm" id="chgTabReview" onclick="switchChgTab('review')">待我审批</button>
+            <span style="width:1px;height:20px;background:var(--border);margin:0 4px"></span>
+            <input class="search-input" type="text" id="chgSearch" placeholder="搜索变更单号、标题…" style="width:180px" oninput="renderChanges()" />
             <select class="filter-select" id="chgTypeFilter" onchange="renderChanges()">
               <option value="all">全部类型</option><option value="ECR">ECR</option><option value="ECO">ECO</option><option value="ECN">ECN</option>
             </select>
@@ -712,11 +716,11 @@ tr.selected-row td{background:rgba(37,99,235,.06)}
               <option value="all">全部优先级</option><option value="普通">普通</option><option value="紧急">紧急</option><option value="特急">特急</option>
             </select>
             <div style="flex:1"></div>
-            <button class="btn btn-primary btn-sm" onclick="showModal('chgModal')">＋ 发起变更</button>
+            <button class="btn btn-primary btn-sm" onclick="showChgModal()">＋ 发起变更</button>
             <button class="btn btn-secondary btn-sm" onclick="exportModuleCSV('changes')">↓ 导出</button>
           </div>
           <div class="table-wrap"><table><thead><tr>
-            <th style="width:40px">#</th><th>变更单号</th><th>类型</th><th>标题</th><th>影响范围</th><th>发起人</th><th>发起日期</th><th>优先级</th><th>状态</th>
+            <th style="width:40px">#</th><th>变更单号</th><th>类型</th><th>标题</th><th>影响范围</th><th>发起人</th><th>审批人</th><th>发起日期</th><th>优先级</th><th>状态</th><th style="width:130px">操作</th>
           </tr></thead><tbody id="chgBody"></tbody></table></div>
         </div>
       </div>
@@ -1103,14 +1107,16 @@ tr.selected-row td{background:rgba(37,99,235,.06)}
 
 <div class="modal-overlay" id="chgModal">
   <div class="modal">
-    <div class="modal-header"><h3>发起变更</h3><button class="modal-close" onclick="hideModal('chgModal')">✕</button></div>
+    <div class="modal-header"><h3 id="chgModalTitle">发起变更</h3><button class="modal-close" onclick="hideModal('chgModal')">✕</button></div>
     <div class="modal-body">
+      <input type="hidden" id="chgEditId" />
       <div class="form-row"><div class="form-group"><label>变更类型</label><select id="chgFormType"><option>ECR</option><option>ECO</option><option>ECN</option></select></div><div class="form-group"><label>优先级</label><select id="chgFormPriority"><option>普通</option><option>紧急</option><option>特急</option></select></div></div>
       <div class="form-group"><label>变更标题</label><input type="text" id="chgFormTitle" placeholder="简要描述变更内容" /></div>
       <div class="form-row"><div class="form-group"><label>影响范围</label><input type="text" id="chgFormScope" placeholder="如: A100 整机" /></div><div class="form-group"><label>发起人</label><select id="chgFormInit"><option>张工</option><option>李工</option><option>王主管</option><option>赵品质</option><option>陈总监</option></select></div></div>
+      <div class="form-row"><div class="form-group"><label>影响物料</label><input type="text" id="chgFormMaterials" placeholder="物料编号，逗号分隔 如: R-20001, IC-20003" /></div><div class="form-group"><label>审批人</label><select id="chgFormReviewer"><option>王主管</option><option>赵品质</option><option>陈总监</option></select></div></div>
       <div class="form-group"><label>变更原因</label><textarea id="chgFormReason" placeholder="详细描述变更原因…" style="min-height:60px"></textarea></div>
     </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="hideModal('chgModal')">取消</button><button class="btn btn-primary" onclick="saveChange()">提交</button></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="hideModal('chgModal')">取消</button><button class="btn btn-primary" id="chgFormSubmitBtn" onclick="saveChange()">提交</button></div>
   </div>
 </div>
 
@@ -3306,25 +3312,38 @@ function renderProjects() {
 }
 
 const changesData = [
-  {id:'ECN-2025-0042',type:'ECN',title:'主板PCBA电源模块IC替换',scope:'A100 整机',initiator:'张工',date:'2025-06-10',priority:'紧急',status:'待审批'},
-  {id:'ECO-2025-0038',type:'ECO',title:'屏蔽罩结构优化降本',scope:'P12A 手机',initiator:'李工',date:'2025-06-08',priority:'普通',status:'执行中'},
-  {id:'ECR-2025-0055',type:'ECR',title:'电容供应商切换至太阳诱电',scope:'D400 手环',initiator:'王主管',date:'2025-06-12',priority:'普通',status:'草稿'},
-  {id:'ECN-2025-0041',type:'ECN',title:'USB Type-C接口升级至3.1',scope:'T800 平板',initiator:'张工',date:'2025-06-05',priority:'特急',status:'审批中'},
-  {id:'ECO-2025-0037',type:'ECO',title:'天线布局调整提升信号',scope:'P12A 手机',initiator:'李工',date:'2025-05-28',priority:'紧急',status:'已关闭'},
-  {id:'ECR-2025-0054',type:'ECR',title:'Flash存储芯片容量升级',scope:'A100 整机',initiator:'赵品质',date:'2025-06-11',priority:'普通',status:'待审批'},
-  {id:'ECN-2025-0040',type:'ECN',title:'ESD保护方案统一',scope:'全产品线',initiator:'陈总监',date:'2025-05-25',priority:'普通',status:'已关闭'},
-  {id:'ECO-2025-0036',type:'ECO',title:'主板Layout优化减少层数',scope:'R900 路由器',initiator:'张工',date:'2025-05-20',priority:'紧急',status:'执行中'},
-  {id:'ECR-2025-0053',type:'ECR',title:'晶振供应商增加备选',scope:'A100 整机',initiator:'李工',date:'2025-06-13',priority:'普通',status:'待审批'},
-  {id:'ECN-2025-0039',type:'ECN',title:'LED指示灯颜色规范统一',scope:'全产品线',initiator:'王主管',date:'2025-05-15',priority:'普通',status:'已关闭'},
-  {id:'ECO-2025-0035',type:'ECO',title:'电池连接器更换为防呆型',scope:'W100 手表',initiator:'张工',date:'2025-06-09',priority:'紧急',status:'审批中'},
-  {id:'ECR-2025-0052',type:'ECR',title:'散热片材料从铝改为铜',scope:'C300 车载终端',initiator:'陈总监',date:'2025-06-14',priority:'普通',status:'草稿'}
+  {id:'ECN-2025-0042',type:'ECN',title:'主板PCBA电源模块IC替换',scope:'A100 整机',initiator:'张工',date:'2025-06-10',priority:'紧急',status:'待审批',reason:'当前电源IC TPS563200 存在批次良率问题，需替换为 TPS563201 改良版',materials:'IC-20004',reviewer:'王主管',timeline:[{title:'发起变更',user:'张工',date:'2025-06-10 14:30',state:'done',note:''},{title:'主管审批',user:'王主管',date:'',state:'active',note:''},{title:'品质审核',user:'赵品质',date:'',state:'pending',note:''},{title:'执行确认',user:'张工',date:'',state:'pending',note:''}]},
+  {id:'ECO-2025-0038',type:'ECO',title:'屏蔽罩结构优化降本',scope:'P12A 手机',initiator:'李工',date:'2025-06-08',priority:'普通',status:'执行中',reason:'通过结构优化将屏蔽罩从冲压改为MIM工艺，预计单件降本0.8元',materials:'RF-20047',reviewer:'王主管',timeline:[{title:'发起变更',user:'李工',date:'2025-06-08 09:00',state:'done',note:''},{title:'主管审批',user:'王主管',date:'2025-06-08 15:20',state:'done',note:'同意变更'},{title:'品质审核',user:'赵品质',date:'2025-06-09 10:00',state:'done',note:'需关注新工艺CPK'},{title:'执行确认',user:'李工',date:'',state:'active',note:''}]},
+  {id:'ECR-2025-0055',type:'ECR',title:'电容供应商切换至太阳诱电',scope:'D400 手环',initiator:'王主管',date:'2025-06-12',priority:'普通',status:'草稿',reason:'三星电机交期不稳定，计划切换100nF电容供应商为太阳诱电',materials:'C-20002, C-20018',reviewer:'王主管',timeline:[{title:'创建草稿',user:'王主管',date:'2025-06-12 10:00',state:'done',note:''},{title:'主管审批',user:'陈总监',date:'',state:'pending',note:''},{title:'品质审核',user:'赵品质',date:'',state:'pending',note:''},{title:'执行确认',user:'王主管',date:'',state:'pending',note:''}]},
+  {id:'ECN-2025-0041',type:'ECN',title:'USB Type-C接口升级至3.1',scope:'T800 平板',initiator:'张工',date:'2025-06-05',priority:'特急',status:'审批中',reason:'客户要求支持USB 3.1 Gen2 10Gbps传输速率，需更换Type-C母座',materials:'CN-20028',reviewer:'赵品质',timeline:[{title:'发起变更',user:'张工',date:'2025-06-05 10:00',state:'done',note:''},{title:'主管审批',user:'王主管',date:'2025-06-05 14:30',state:'done',note:'紧急通过'},{title:'品质审核',user:'赵品质',date:'',state:'active',note:''},{title:'执行确认',user:'张工',date:'',state:'pending',note:''}]},
+  {id:'ECO-2025-0037',type:'ECO',title:'天线布局调整提升信号',scope:'P12A 手机',initiator:'李工',date:'2025-05-28',priority:'紧急',status:'已关闭',reason:'EVT阶段测试发现WiFi信号弱-3dB，调整天线净空区布局',materials:'CN-20029',reviewer:'王主管',timeline:[{title:'发起变更',user:'李工',date:'2025-05-28 09:00',state:'done',note:''},{title:'主管审批',user:'王主管',date:'2025-05-28 16:00',state:'done',note:'同意'},{title:'品质审核',user:'赵品质',date:'2025-05-29 10:00',state:'done',note:'验证通过'},{title:'执行确认',user:'李工',date:'2025-05-30 14:00',state:'done',note:'Layout已更新'}]},
+  {id:'ECR-2025-0054',type:'ECR',title:'Flash存储芯片容量升级',scope:'A100 整机',initiator:'赵品质',date:'2025-06-11',priority:'普通',status:'待审批',reason:'OTA升级包体积增大，128Mbit Flash空间不足，建议升级至256Mbit',materials:'IC-20021',reviewer:'王主管',timeline:[{title:'发起变更',user:'赵品质',date:'2025-06-11 11:00',state:'done',note:''},{title:'主管审批',user:'王主管',date:'',state:'active',note:''},{title:'品质审核',user:'赵品质',date:'',state:'pending',note:''},{title:'执行确认',user:'赵品质',date:'',state:'pending',note:''}]},
+  {id:'ECN-2025-0040',type:'ECN',title:'ESD保护方案统一',scope:'全产品线',initiator:'陈总监',date:'2025-05-25',priority:'普通',status:'已关闭',reason:'统一全产品线ESD保护标准为IEC 61000-4-2 Level 4',materials:'IC-20022',reviewer:'王主管',timeline:[{title:'发起变更',user:'陈总监',date:'2025-05-25 09:00',state:'done',note:''},{title:'主管审批',user:'王主管',date:'2025-05-25 14:00',state:'done',note:'同意'},{title:'品质审核',user:'赵品质',date:'2025-05-26 09:00',state:'done',note:'标准已确认'},{title:'执行确认',user:'陈总监',date:'2025-05-27 10:00',state:'done',note:'全线已切换'}]},
+  {id:'ECO-2025-0036',type:'ECO',title:'主板Layout优化减少层数',scope:'R900 路由器',initiator:'张工',date:'2025-05-20',priority:'紧急',status:'执行中',reason:'将8层PCB优化为6层以降低成本，需重新布线RF走线',materials:'PCB-10001',reviewer:'王主管',timeline:[{title:'发起变更',user:'张工',date:'2025-05-20 09:00',state:'done',note:''},{title:'主管审批',user:'王主管',date:'2025-05-20 16:00',state:'done',note:'注意信号完整性'},{title:'品质审核',user:'赵品质',date:'2025-05-21 11:00',state:'done',note:'SI仿真需重做'},{title:'执行确认',user:'张工',date:'',state:'active',note:''}]},
+  {id:'ECR-2025-0053',type:'ECR',title:'晶振供应商增加备选',scope:'A100 整机',initiator:'李工',date:'2025-06-13',priority:'普通',status:'待审批',reason:'泰晶科技产能紧张，需增加NDK作为8MHz晶振二供',materials:'X-20026, X-20027',reviewer:'王主管',timeline:[{title:'发起变更',user:'李工',date:'2025-06-13 09:30',state:'done',note:''},{title:'主管审批',user:'王主管',date:'',state:'active',note:''},{title:'品质审核',user:'赵品质',date:'',state:'pending',note:''},{title:'执行确认',user:'李工',date:'',state:'pending',note:''}]},
+  {id:'ECN-2025-0039',type:'ECN',title:'LED指示灯颜色规范统一',scope:'全产品线',initiator:'王主管',date:'2025-05-15',priority:'普通',status:'已关闭',reason:'统一产品LED指示灯颜色定义：电源绿、充电橙、告警红',materials:'LED-20024, LED-20025',reviewer:'陈总监',timeline:[{title:'发起变更',user:'王主管',date:'2025-05-15 09:00',state:'done',note:''},{title:'总监审批',user:'陈总监',date:'2025-05-15 16:00',state:'done',note:'同意'},{title:'品质审核',user:'赵品质',date:'2025-05-16 10:00',state:'done',note:'规范已更新'},{title:'执行确认',user:'王主管',date:'2025-05-17 09:00',state:'done',note:'全线已切换'}]},
+  {id:'ECO-2025-0035',type:'ECO',title:'电池连接器更换为防呆型',scope:'W100 手表',initiator:'张工',date:'2025-06-09',priority:'紧急',status:'审批中',reason:'产线反馈电池连接器反插率高达2%，需更换为防呆设计',materials:'CN-20028',reviewer:'赵品质',timeline:[{title:'发起变更',user:'张工',date:'2025-06-09 08:00',state:'done',note:''},{title:'主管审批',user:'王主管',date:'2025-06-09 11:00',state:'done',note:'紧急处理'},{title:'品质审核',user:'赵品质',date:'',state:'active',note:''},{title:'执行确认',user:'张工',date:'',state:'pending',note:''}]},
+  {id:'ECR-2025-0052',type:'ECR',title:'散热片材料从铝改为铜',scope:'C300 车载终端',initiator:'陈总监',date:'2025-06-14',priority:'普通',status:'草稿',reason:'车载环境温度高，铝散热片无法满足85°C环境温度要求',materials:'',reviewer:'王主管',timeline:[{title:'创建草稿',user:'陈总监',date:'2025-06-14 15:00',state:'done',note:''},{title:'主管审批',user:'王主管',date:'',state:'pending',note:''},{title:'品质审核',user:'赵品质',date:'',state:'pending',note:''},{title:'执行确认',user:'陈总监',date:'',state:'pending',note:''}]}
 ];
+let chgTab = 'all';
+function switchChgTab(tab) {
+  chgTab = tab;
+  ['all','mine','review'].forEach(t => {
+    const btn = document.getElementById('chgTab' + (t==='all'?'All':t==='mine'?'Mine':'Review'));
+    if (btn) { btn.className = 'btn btn-sm ' + (t===tab?'btn-primary':'btn-secondary'); if(t===tab) btn.style.boxShadow='none'; else btn.style.boxShadow=''; }
+  });
+  renderChanges();
+}
 function renderChanges() {
   const q = (document.getElementById('chgSearch')?.value||'').toLowerCase();
   const tf = document.getElementById('chgTypeFilter')?.value||'all';
   const sf = document.getElementById('chgStatusFilter')?.value||'all';
   const pf = document.getElementById('chgPriorityFilter')?.value||'all';
-  const data = changesData.filter(c => {
+  const uname = currentUser ? currentUser.name : '张工';
+  let data = changesData;
+  if (chgTab === 'mine') data = data.filter(c => c.initiator === uname);
+  else if (chgTab === 'review') data = data.filter(c => c.reviewer === uname && (c.status==='待审批'||c.status==='审批中'));
+  data = data.filter(c => {
     if (q && !c.id.toLowerCase().includes(q) && !c.title.toLowerCase().includes(q)) return false;
     if (tf !== 'all' && c.type !== tf) return false;
     if (sf !== 'all' && c.status !== sf) return false;
@@ -3332,12 +3351,18 @@ function renderChanges() {
     return true;
   });
   const sc = document.getElementById('chgStatCards');
-  if (sc) sc.innerHTML = [{l:'总变更单',v:changesData.length,c:'var(--accent)'},{l:'待审批',v:changesData.filter(c=>c.status==='待审批'||c.status==='审批中').length,c:'var(--yellow)'},{l:'执行中',v:changesData.filter(c=>c.status==='执行中').length,c:'var(--blue)'},{l:'已关闭',v:changesData.filter(c=>c.status==='已关闭').length,c:'var(--green)'}].map(s=>'<div class="stat-card"><div class="stat-num" style="color:'+s.c+'">'+s.v+'</div><div class="stat-label">'+s.l+'</div></div>').join('');
+  if (sc) sc.innerHTML = [{l:'总变更单',v:changesData.length,c:'var(--accent)'},{l:'待审批',v:changesData.filter(c=>c.status==='待审批'||c.status==='审批中').length,c:'var(--yellow)'},{l:'执行中',v:changesData.filter(c=>c.status==='执行中').length,c:'var(--blue)'},{l:'已关闭',v:changesData.filter(c=>c.status==='已关闭').length,c:'var(--green)'},{l:'已驳回',v:changesData.filter(c=>c.status==='已驳回').length,c:'var(--red)'}].map(s=>'<div class="stat-card"><div class="stat-num" style="color:'+s.c+'">'+s.v+'</div><div class="stat-label">'+s.l+'</div></div>').join('');
   const typeBadge = t => ({ECR:'badge-blue',ECO:'badge-purple',ECN:'badge-green'}[t]||'badge-gray');
   const statusBadge = s => ({草稿:'badge-gray',待审批:'badge-yellow',审批中:'badge-yellow',执行中:'badge-blue',已关闭:'badge-green',已驳回:'badge-red'}[s]||'badge-gray');
   const priBadge = p => p==='特急'?'<span class="badge badge-red">🔥 '+p+'</span>':p==='紧急'?'<span class="badge badge-yellow">⚡ '+p+'</span>':'<span class="badge badge-gray">'+p+'</span>';
   const tb = document.getElementById('chgBody');
-  if (tb) tb.innerHTML = data.map((c,i) => '<tr style="cursor:pointer" onclick="showChgDetail(\''+c.id+'\')"><td>'+(i+1)+'</td><td style="color:var(--accent);font-weight:500">'+c.id+'</td><td><span class="badge '+typeBadge(c.type)+'">'+c.type+'</span></td><td style="font-weight:500">'+c.title+'</td><td>'+c.scope+'</td><td>'+c.initiator+'</td><td>'+c.date+'</td><td>'+priBadge(c.priority)+'</td><td><span class="badge '+statusBadge(c.status)+'">'+c.status+'</span></td></tr>').join('');
+  if (!tb) return;
+  tb.innerHTML = data.map((c,i) => {
+    let ops = '<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();showChgDetail(\''+c.id+'\')">查看</button>';
+    if (c.status==='草稿') ops += '<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();editChange(\''+c.id+'\')">编辑</button><button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="event.stopPropagation();deleteChange(\''+c.id+'\')">删除</button>';
+    if ((c.status==='待审批') && c.reviewer===uname) ops += '<button class="btn btn-success btn-xs" onclick="event.stopPropagation();chgAction(\''+c.id+'\',\'approve\')">通过</button>';
+    return '<tr style="cursor:pointer" onclick="showChgDetail(\''+c.id+'\')"><td>'+(i+1)+'</td><td style="color:var(--accent);font-weight:500">'+c.id+'</td><td><span class="badge '+typeBadge(c.type)+'">'+c.type+'</span></td><td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis">'+c.title+'</td><td>'+c.scope+'</td><td>'+c.initiator+'</td><td>'+c.reviewer+'</td><td>'+c.date+'</td><td>'+priBadge(c.priority)+'</td><td><span class="badge '+statusBadge(c.status)+'">'+c.status+'</span></td><td style="white-space:nowrap">'+ops+'</td></tr>';
+  }).join('');
 }
 
 const aprCenterData = [
@@ -3489,8 +3514,121 @@ function showNewProjectModal(){document.getElementById('projFormId').value=genId
 function saveProject(){const n=document.getElementById('projFormName').value.trim();if(!n){showToast('请填写项目名称','error');return}projectsData.unshift({id:document.getElementById('projFormId').value,name:n,phase:document.getElementById('projFormPhase').value,owner:document.getElementById('projFormOwner').value,start:document.getElementById('projFormStart').value,end:document.getElementById('projFormEnd').value||'待定',status:document.getElementById('projFormStatus').value,progress:parseInt(document.getElementById('projFormProgress').value)||0});hideModal('projModal');renderProjects();showToast('项目 '+n+' 创建成功','success')}
 function showProjDetail(id){const p=projectsData.find(x=>x.id===id);if(!p)return;const sb=s=>({进行中:'badge-blue',已完成:'badge-green',暂停:'badge-gray',延期:'badge-red'}[s]||'badge-gray');document.getElementById('genericDetailTitle').textContent='📁 '+p.name;document.getElementById('genericDetailBody').innerHTML=detailGrid([['项目编号',p.id],['项目名称',p.name],['当前阶段','<span class="badge badge-purple">'+p.phase+'</span>'],['负责人',p.owner],['开始日期',p.start],['计划完成',p.end],['状态','<span class="badge '+sb(p.status)+'">'+p.status+'</span>'],['进度',p.progress+'%']])+'<div style="margin-top:16px"><div style="height:8px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+p.progress+'%;background:var(--accent);border-radius:4px;transition:width .5s"></div></div></div>';document.getElementById('genericDetailActions').innerHTML='';showModal('genericDetailModal')}
 
-function saveChange(){const t=document.getElementById('chgFormTitle').value.trim();if(!t){showToast('请填写变更标题','error');return}changesData.unshift({id:genId(document.getElementById('chgFormType').value,changesData),type:document.getElementById('chgFormType').value,title:t,scope:document.getElementById('chgFormScope').value||'—',initiator:document.getElementById('chgFormInit').value,date:todayISO(),priority:document.getElementById('chgFormPriority').value,status:'草稿'});hideModal('chgModal');renderChanges();showToast('变更单 '+t+' 已创建','success')}
-function showChgDetail(id){const c=changesData.find(x=>x.id===id);if(!c)return;const sb=s=>({草稿:'badge-gray',待审批:'badge-yellow',审批中:'badge-yellow',执行中:'badge-blue',已关闭:'badge-green',已驳回:'badge-red'}[s]||'badge-gray');const tb=t=>({ECR:'badge-blue',ECO:'badge-purple',ECN:'badge-green'}[t]||'badge-gray');document.getElementById('genericDetailTitle').textContent='🔄 '+c.title;document.getElementById('genericDetailBody').innerHTML=detailGrid([['变更单号',c.id],['类型','<span class="badge '+tb(c.type)+'">'+c.type+'</span>'],['标题',c.title],['影响范围',c.scope],['发起人',c.initiator],['发起日期',c.date],['优先级',c.priority==='特急'?'<span class="badge badge-red">🔥 特急</span>':c.priority==='紧急'?'<span class="badge badge-yellow">⚡ 紧急</span>':'<span class="badge badge-gray">普通</span>'],['状态','<span class="badge '+sb(c.status)+'">'+c.status+'</span>']]);document.getElementById('genericDetailActions').innerHTML=c.status==='草稿'?'<button class="btn btn-primary btn-sm" onclick="changesData.find(x=>x.id===\''+c.id+'\').status=\'待审批\';hideModal(\'genericDetailModal\');renderChanges();showToast(\'已提交审批\',\'success\')">提交审批</button>':'';showModal('genericDetailModal')}
+function showChgModal(editId) {
+  document.getElementById('chgEditId').value = editId||'';
+  document.getElementById('chgModalTitle').textContent = editId ? '编辑变更' : '发起变更';
+  document.getElementById('chgFormSubmitBtn').textContent = editId ? '保存' : '提交';
+  if (editId) {
+    const c = changesData.find(x=>x.id===editId);
+    if (!c) return;
+    document.getElementById('chgFormType').value = c.type;
+    document.getElementById('chgFormPriority').value = c.priority;
+    document.getElementById('chgFormTitle').value = c.title;
+    document.getElementById('chgFormScope').value = c.scope;
+    document.getElementById('chgFormInit').value = c.initiator;
+    document.getElementById('chgFormMaterials').value = c.materials||'';
+    document.getElementById('chgFormReviewer').value = c.reviewer||'王主管';
+    document.getElementById('chgFormReason').value = c.reason||'';
+  } else {
+    document.getElementById('chgFormTitle').value='';document.getElementById('chgFormScope').value='';document.getElementById('chgFormMaterials').value='';document.getElementById('chgFormReason').value='';document.getElementById('chgFormPriority').value='普通';document.getElementById('chgFormType').value='ECR';
+    if (currentUser) { var initSel=document.getElementById('chgFormInit'); for(var o of initSel.options){if(o.value===currentUser.name){initSel.value=currentUser.name;break}} }
+  }
+  showModal('chgModal');
+}
+function saveChange(){
+  const t=document.getElementById('chgFormTitle').value.trim();
+  if(!t){showToast('请填写变更标题','error');return}
+  const editId=document.getElementById('chgEditId').value;
+  const type=document.getElementById('chgFormType').value;
+  const priority=document.getElementById('chgFormPriority').value;
+  const scope=document.getElementById('chgFormScope').value||'—';
+  const initiator=document.getElementById('chgFormInit').value;
+  const materials=document.getElementById('chgFormMaterials').value.trim();
+  const reviewer=document.getElementById('chgFormReviewer').value;
+  const reason=document.getElementById('chgFormReason').value.trim();
+  if(editId){
+    const c=changesData.find(x=>x.id===editId);
+    if(c){c.type=type;c.title=t;c.scope=scope;c.priority=priority;c.materials=materials;c.reviewer=reviewer;c.reason=reason}
+    hideModal('chgModal');renderChanges();showToast('变更单已更新','success');
+  }else{
+    const id=type+'-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*9000)+1000).padStart(4,'0');
+    changesData.unshift({id:id,type:type,title:t,scope:scope,initiator:initiator,date:todayISO(),priority:priority,status:'草稿',reason:reason,materials:materials,reviewer:reviewer,
+      timeline:[{title:'创建草稿',user:initiator,date:nowStr(),state:'done',note:''},{title:'主管审批',user:reviewer,date:'',state:'pending',note:''},{title:'品质审核',user:'赵品质',date:'',state:'pending',note:''},{title:'执行确认',user:initiator,date:'',state:'pending',note:''}]
+    });
+    hideModal('chgModal');renderChanges();showToast('变更单 '+t+' 已创建','success');
+  }
+}
+function editChange(id){showChgModal(id)}
+function deleteChange(id){
+  const c=changesData.find(x=>x.id===id);
+  if(!c)return;
+  showConfirm('确定删除变更单 "'+c.id+' '+c.title+'" 吗？此操作不可恢复。',function(){
+    const idx=changesData.indexOf(c);if(idx>-1)changesData.splice(idx,1);
+    renderChanges();showToast('变更单已删除','info');
+  });
+}
+function chgAction(id, action) {
+  const c=changesData.find(x=>x.id===id);if(!c)return;
+  const ns=nowStr();
+  if(action==='submit'){
+    c.status='待审批';
+    const step=c.timeline.find(t=>t.state==='pending');
+    if(step){step.state='active'}
+    showToast('已提交审批','success');
+  }else if(action==='approve'){
+    const activeStep=c.timeline.find(t=>t.state==='active');
+    if(activeStep){activeStep.state='done';activeStep.date=ns;activeStep.note='审批通过'}
+    const nextPending=c.timeline.find(t=>t.state==='pending');
+    if(nextPending){nextPending.state='active';c.status=nextPending.title.includes('执行')?'执行中':'审批中'}
+    else{c.status='已关闭'}
+    showToast('审批通过','success');
+  }else if(action==='reject'){
+    const activeStep=c.timeline.find(t=>t.state==='active');
+    if(activeStep){activeStep.state='rejected';activeStep.date=ns;activeStep.note='审批驳回'}
+    c.status='已驳回';
+    showToast('已驳回','error');
+  }else if(action==='execute'){
+    c.timeline.forEach(t=>{if(t.state==='active'||t.state==='pending'){t.state='done';t.date=t.date||ns;t.note=t.note||'确认完成'}});
+    c.status='已关闭';
+    showToast('变更已关闭','success');
+  }else if(action==='withdraw'){
+    c.status='草稿';
+    c.timeline.forEach((t,i)=>{if(i===0){t.state='done'}else{t.state='pending';t.date='';t.note=''}});
+    showToast('已撤回','info');
+  }else if(action==='resubmit'){
+    c.status='待审批';
+    c.timeline.forEach((t,i)=>{if(t.state==='rejected'){t.state='active';t.date='';t.note=''}});
+    showToast('已重新提交','success');
+  }
+  hideModal('genericDetailModal');renderChanges();
+}
+function showChgDetail(id){
+  const c=changesData.find(x=>x.id===id);if(!c)return;
+  const uname=currentUser?currentUser.name:'张工';
+  const sb=s=>({草稿:'badge-gray',待审批:'badge-yellow',审批中:'badge-yellow',执行中:'badge-blue',已关闭:'badge-green',已驳回:'badge-red'}[s]||'badge-gray');
+  const tb=t=>({ECR:'badge-blue',ECO:'badge-purple',ECN:'badge-green'}[t]||'badge-gray');
+  const priBadge=p=>p==='特急'?'<span class="badge badge-red">🔥 特急</span>':p==='紧急'?'<span class="badge badge-yellow">⚡ 紧急</span>':'<span class="badge badge-gray">普通</span>';
+  let matBadges='—';
+  if(c.materials){matBadges=c.materials.split(',').map(m=>m.trim()).filter(Boolean).map(m=>'<span class="badge badge-blue" style="margin:2px;cursor:pointer" onclick="event.stopPropagation();navigateTo(\'materials\');document.getElementById(\'matSearch\').value=\''+m+'\';matPage=1;renderMaterials()">'+m+'</span>').join(' ')}
+  let timelineHtml='<div class="timeline" style="margin-top:0">';
+  if(c.timeline){c.timeline.forEach(function(t){
+    const icon=t.state==='done'?'✓':t.state==='active'?'◉':t.state==='rejected'?'✕':'○';
+    timelineHtml+='<div class="timeline-item"><div class="timeline-dot '+t.state+'">'+icon+'</div><div class="timeline-content"><div class="tl-title">'+t.title+(t.user!=='—'?' <span style="color:var(--text-muted);font-weight:400"> · '+t.user+'</span>':'')+'</div><div class="tl-meta">'+(t.date||'待处理')+(t.note?' · '+t.note:'')+'</div></div></div>';
+  });timelineHtml+='</div>'}
+  document.getElementById('genericDetailTitle').textContent='🔄 '+c.id+' '+c.title;
+  document.getElementById('genericDetailBody').innerHTML=
+    '<div class="detail-card" style="margin-bottom:14px"><h3 style="font-size:14px">📋 基本信息</h3>'+detailGrid([['变更单号','<span style="color:var(--accent);font-weight:600">'+c.id+'</span>'],['类型','<span class="badge '+tb(c.type)+'">'+c.type+'</span>'],['标题',c.title],['影响范围',c.scope],['发起人',c.initiator],['审批人',c.reviewer],['发起日期',c.date],['优先级',priBadge(c.priority)],['状态','<span class="badge '+sb(c.status)+'">'+c.status+'</span>'],['影响物料',matBadges]])+'</div>'
+    +'<div class="detail-card" style="margin-bottom:14px"><h3 style="font-size:14px">📝 变更说明</h3><div style="font-size:13px;color:var(--text-secondary);line-height:1.6;padding:4px 0">'+(c.reason||'暂无说明')+'</div></div>'
+    +'<div class="detail-card" style="margin-bottom:0"><h3 style="font-size:14px">⏱ 审批流程</h3>'+timelineHtml+'</div>';
+  let acts='';
+  if(c.status==='草稿'){acts='<button class="btn btn-secondary btn-sm" onclick="hideModal(\'genericDetailModal\');editChange(\''+c.id+'\')">✏️ 编辑</button><button class="btn btn-primary btn-sm" onclick="chgAction(\''+c.id+'\',\'submit\')">提交审批</button><button class="btn btn-danger btn-sm" onclick="hideModal(\'genericDetailModal\');deleteChange(\''+c.id+'\')">删除</button>'}
+  else if((c.status==='待审批'||c.status==='审批中')&&c.reviewer===uname){acts='<button class="btn btn-success btn-sm" onclick="chgAction(\''+c.id+'\',\'approve\')">✓ 审批通过</button><button class="btn btn-danger btn-sm" onclick="chgAction(\''+c.id+'\',\'reject\')">✕ 驳回</button>'}
+  else if(c.status==='待审批'&&c.initiator===uname){acts='<button class="btn btn-secondary btn-sm" onclick="chgAction(\''+c.id+'\',\'withdraw\')">↩ 撤回</button>'}
+  else if(c.status==='执行中'&&c.initiator===uname){acts='<button class="btn btn-primary btn-sm" onclick="chgAction(\''+c.id+'\',\'execute\')">✓ 确认完成</button>'}
+  else if(c.status==='已驳回'&&c.initiator===uname){acts='<button class="btn btn-primary btn-sm" onclick="chgAction(\''+c.id+'\',\'resubmit\')">🔄 重新提交</button>'}
+  document.getElementById('genericDetailActions').innerHTML=acts;
+  showModal('genericDetailModal');
+}
 
 function saveDocument(){const n=document.getElementById('docFormName').value.trim();if(!n){showToast('请填写文档名称','error');return}documentsData.unshift({id:genId('DOC',documentsData),name:n,type:document.getElementById('docFormType').value,ver:document.getElementById('docFormVer').value||'V1.0',project:document.getElementById('docFormProject').value,uploader:currentUser?currentUser.name:'张工',date:todayISO(),status:'草稿'});hideModal('docModal');renderDocuments();showToast('文档 '+n+' 已上传','success')}
 function showDocDetail(id){const d=documentsData.find(x=>x.id===id);if(!d)return;const sb=s=>({草稿:'badge-gray',审核中:'badge-yellow',已发布:'badge-green',已归档:'badge-blue'}[s]||'badge-gray');const ti=t=>({'设计图纸':'📐','测试报告':'📋','规格书':'📄','工艺文件':'🔧','会议纪要':'📝'}[t]||'📄');document.getElementById('genericDetailTitle').textContent=ti(d.type)+' '+d.name;document.getElementById('genericDetailBody').innerHTML=detailGrid([['文档编号',d.id],['文档名称',d.name],['类型',d.type],['版本','<span class="badge badge-purple">'+d.ver+'</span>'],['关联项目',d.project],['上传人',d.uploader],['更新日期',d.date],['状态','<span class="badge '+sb(d.status)+'">'+d.status+'</span>']]);document.getElementById('genericDetailActions').innerHTML=d.status==='草稿'?'<button class="btn btn-primary btn-sm" onclick="documentsData.find(x=>x.id===\''+d.id+'\').status=\'审核中\';hideModal(\'genericDetailModal\');renderDocuments();showToast(\'已提交审核\',\'success\')">提交审核</button>':'';showModal('genericDetailModal')}

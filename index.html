@@ -8,16 +8,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg-primary:#0a0e14;--bg-secondary:#12161e;--bg-tertiary:#1a1f2b;--bg-hover:#1e2433;--bg-elevated:#161b26;
-  --text-primary:#e8edf5;--text-secondary:#8891a4;--text-muted:#4a5168;
-  --accent:#7c3aed;--accent-hover:#6d28d9;--accent-light:#a78bfa;--accent-dark:#5b21b6;--accent-glow:rgba(124,58,237,.35);
-  --blue:#3b82f6;--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--orange:#f97316;--cyan:#06b6d4;--pink:#ec4899;
-  --border:#1e2536;--border-light:#171c28;--border-accent:rgba(124,58,237,.25);
+  --bg-primary:#F8FAFC;--bg-secondary:#FFFFFF;--bg-tertiary:#F1F5F9;--bg-hover:#EFF6FF;--bg-elevated:#FFFFFF;
+  --text-primary:#1E293B;--text-secondary:#64748B;--text-muted:#94A3B8;
+  --accent:#2563EB;--accent-hover:#1D4ED8;--accent-light:#60A5FA;--accent-dark:#1E40AF;--accent-glow:rgba(37,99,235,.18);
+  --blue:#3B82F6;--green:#10B981;--red:#EF4444;--yellow:#F59E0B;--orange:#F97316;--cyan:#06B6D4;--pink:#EC4899;
+  --border:#E2E8F0;--border-light:#F1F5F9;--border-accent:rgba(37,99,235,.2);
   --radius:10px;--radius-sm:6px;--radius-lg:14px;--radius-xl:20px;
   --sidebar-w:240px;--topbar-h:54px;--statusbar-h:34px;
   --gap-xs:4px;--gap-sm:8px;--gap-md:16px;--gap-lg:24px;--gap-xl:32px;
-  --shadow-sm:0 2px 8px rgba(0,0,0,.2);--shadow-md:0 4px 16px rgba(0,0,0,.3);--shadow-lg:0 8px 32px rgba(0,0,0,.4);--shadow-xl:0 16px 48px rgba(0,0,0,.5);
-  --shadow-glow:0 0 20px rgba(124,58,237,.2),0 0 40px rgba(124,58,237,.1);--shadow-glow-sm:0 0 10px rgba(124,58,237,.15);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--shadow-md:0 4px 12px rgba(0,0,0,.07);--shadow-lg:0 8px 24px rgba(0,0,0,.09);--shadow-xl:0 16px 40px rgba(0,0,0,.1);
+  --shadow-glow:0 0 16px rgba(37,99,235,.12),0 0 32px rgba(37,99,235,.06);--shadow-glow-sm:0 0 8px rgba(37,99,235,.1);
   --transition-fast:.15s ease;--transition-normal:.25s cubic-bezier(.4,0,.2,1);--transition-slow:.4s cubic-bezier(.4,0,.2,1);
 }
 html,body{height:100%;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;line-height:1.5;color:var(--text-primary);background:var(--bg-primary)}
@@ -25,11 +25,11 @@ input,select,textarea,button{font-family:inherit;font-size:inherit;color:inherit
 a{color:var(--blue);text-decoration:none;transition:color var(--transition-fast)}
 a:hover{color:var(--accent-light)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--radius-sm)}
-::selection{background:rgba(124,58,237,.3);color:#fff}
+::selection{background:rgba(37,99,235,.15);color:#1E293B}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(124,58,237,.2);border-radius:6px}
-::-webkit-scrollbar-thumb:hover{background:rgba(124,58,237,.35)}
+::-webkit-scrollbar-thumb{background:rgba(37,99,235,.18);border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:rgba(37,99,235,.3)}
 /* Animations */
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -44,7 +44,7 @@ a:hover{color:var(--accent-light)}
 .animate-in{animation:fadeIn .3s ease both}
 .animate-slide-up{animation:slideUp .4s cubic-bezier(.4,0,.2,1) both}
 .animate-scale-in{animation:scaleIn .3s cubic-bezier(.4,0,.2,1) both}
-.glass{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(18,22,30,.75);border:1px solid rgba(124,58,237,.12)}
+.glass{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(255,255,255,.85);border:1px solid rgba(37,99,235,.1)}
 
 /* Layout */
 .app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
@@ -60,18 +60,18 @@ a:hover{color:var(--accent-light)}
 .global-search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.12);background:var(--bg-tertiary)}
 .global-search::before{content:"⌕";position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:14px;pointer-events:none;transition:color var(--transition-fast)}
 .global-search:focus-within::before{color:var(--accent-light)}
-.user-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;transition:all var(--transition-normal);box-shadow:0 0 0 2px transparent}
-.user-avatar:hover{box-shadow:0 0 0 2px var(--accent-glow);transform:scale(1.05)}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#2563EB,#1D4ED8);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;transition:all var(--transition-normal);box-shadow:0 0 0 2px transparent;color:#fff}
+.user-avatar:hover{box-shadow:0 0 0 2px rgba(37,99,235,.2);transform:scale(1.05)}
 .main-wrap{display:flex;flex:1;overflow:hidden}
 .sidebar{width:var(--sidebar-w);background:var(--bg-secondary);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;padding:14px 0;overflow-y:auto}
 .sidebar .nav-group{margin-bottom:10px}
 .sidebar .nav-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;padding:6px 18px;margin-bottom:4px}
 .sidebar .nav-item{display:flex;align-items:center;gap:10px;padding:8px 18px;cursor:pointer;color:var(--text-secondary);transition:all var(--transition-normal);border-radius:0;font-size:13px;border-left:2px solid transparent;position:relative}
 .sidebar .nav-item:hover{background:var(--bg-hover);color:var(--text-primary);border-left-color:var(--text-muted)}
-.sidebar .nav-item.active{background:linear-gradient(90deg,rgba(124,58,237,.1),transparent);color:var(--text-primary);border-left:2px solid var(--accent);padding-left:16px}
-.sidebar .nav-item.active::after{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:2px;height:60%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow);border-radius:1px}
-.sidebar .nav-badge{font-size:10px;padding:2px 7px;border-radius:8px;background:rgba(124,58,237,.15);color:var(--accent-light);font-weight:600;margin-left:auto;transition:all var(--transition-normal)}
-.sidebar .nav-item:hover .nav-badge{background:rgba(124,58,237,.25)}
+.sidebar .nav-item.active{background:linear-gradient(90deg,rgba(37,99,235,.08),transparent);color:var(--accent);border-left:2px solid var(--accent);padding-left:16px}
+.sidebar .nav-item.active::after{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:2px;height:60%;background:var(--accent);box-shadow:0 0 6px rgba(37,99,235,.2);border-radius:1px}
+.sidebar .nav-badge{font-size:10px;padding:2px 7px;border-radius:8px;background:rgba(37,99,235,.08);color:var(--accent);font-weight:600;margin-left:auto;transition:all var(--transition-normal)}
+.sidebar .nav-item:hover .nav-badge{background:rgba(37,99,235,.15)}
 .sidebar .nav-item .icon{width:18px;text-align:center;font-size:15px;flex-shrink:0;transition:transform var(--transition-normal)}
 .sidebar .nav-item:hover .icon{transform:scale(1.1)}
 .content-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
@@ -85,20 +85,20 @@ a:hover{color:var(--accent-light)}
 .statusbar{height:var(--statusbar-h);background:var(--bg-secondary);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:20px;font-size:11px;color:var(--text-muted);flex-shrink:0;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 
 /* Login */
-.login-screen{position:fixed;inset:0;background:#080b11;display:flex;align-items:center;justify-content:center;z-index:2000;overflow:hidden}
-.login-screen::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.15) 0%,transparent 70%);top:-100px;right:-100px;animation:float 12s ease-in-out infinite;pointer-events:none}
-.login-screen::after{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(59,130,246,.1) 0%,transparent 70%);bottom:-150px;left:-100px;animation:float 15s ease-in-out infinite reverse;pointer-events:none}
-.login-card{width:100%;max-width:400px;background:rgba(18,22,30,.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(124,58,237,.15);border-radius:var(--radius-lg);padding:36px 40px;box-shadow:0 25px 60px rgba(0,0,0,.4),0 0 80px rgba(124,58,237,.08),inset 0 1px 0 rgba(255,255,255,.04);text-align:center;animation:scaleIn .5s cubic-bezier(.4,0,.2,1) both;position:relative;z-index:1}
-.login-card h1{font-size:22px;font-weight:700;margin:14px 0 28px;letter-spacing:-.3px;background:linear-gradient(135deg,var(--text-primary),var(--accent-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.login-input{width:100%;background:rgba(10,14,20,.6);border:1px solid var(--border);border-radius:var(--radius);padding:11px 16px;color:var(--text-primary);margin-bottom:14px;transition:all var(--transition-normal)}
-.login-input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(124,58,237,.12),var(--shadow-glow-sm);background:rgba(10,14,20,.9)}
+.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#EFF6FF 0%,#DBEAFE 50%,#F0F9FF 100%);display:flex;align-items:center;justify-content:center;z-index:2000;overflow:hidden}
+.login-screen::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(37,99,235,.08) 0%,transparent 70%);top:-100px;right:-100px;animation:float 12s ease-in-out infinite;pointer-events:none}
+.login-screen::after{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(59,130,246,.06) 0%,transparent 70%);bottom:-150px;left:-100px;animation:float 15s ease-in-out infinite reverse;pointer-events:none}
+.login-card{width:100%;max-width:400px;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(37,99,235,.1);border-radius:var(--radius-lg);padding:36px 40px;box-shadow:0 25px 60px rgba(0,0,0,.08),0 0 0 1px rgba(37,99,235,.05);text-align:center;animation:scaleIn .5s cubic-bezier(.4,0,.2,1) both;position:relative;z-index:1}
+.login-card h1{font-size:22px;font-weight:700;margin:14px 0 28px;letter-spacing:-.3px;background:linear-gradient(135deg,#1E293B,#2563EB);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.login-input{width:100%;background:#F8FAFC;border:1px solid var(--border);border-radius:var(--radius);padding:11px 16px;color:var(--text-primary);margin-bottom:14px;transition:all var(--transition-normal)}
+.login-input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.1);background:#fff}
 .login-input::placeholder{color:var(--text-muted);transition:color var(--transition-fast)}
 .login-input:focus::placeholder{color:var(--text-secondary)}
 .login-remember{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);margin-bottom:20px}
-.login-btn{width:100%;border:none;background:linear-gradient(135deg,var(--accent),#6033cc);color:#fff;font-weight:600;border-radius:var(--radius);padding:11px 0;font-size:13px;cursor:pointer;transition:all var(--transition-normal);position:relative;overflow:hidden;letter-spacing:.3px}
-.login-btn:hover{background:linear-gradient(135deg,var(--accent-hover),#5525b8);box-shadow:var(--shadow-glow);transform:translateY(-1px)}
+.login-btn{width:100%;border:none;background:linear-gradient(135deg,#2563EB,#1D4ED8);color:#fff;font-weight:600;border-radius:var(--radius);padding:11px 0;font-size:13px;cursor:pointer;transition:all var(--transition-normal);position:relative;overflow:hidden;letter-spacing:.3px}
+.login-btn:hover{background:linear-gradient(135deg,#1D4ED8,#1E40AF);box-shadow:var(--shadow-glow);transform:translateY(-1px)}
 .login-btn:active{transform:translateY(0);box-shadow:none}
-.login-btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transition:left .5s ease}
+.login-btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transition:left .5s ease}
 .login-btn:hover::after{left:100%}
 .login-error{color:var(--red);font-size:12px;margin-bottom:10px;min-height:16px;animation:fadeIn .2s ease}
 .login-footer{text-align:center;font-size:11px;color:var(--text-muted);margin-top:18px}
@@ -106,7 +106,7 @@ a:hover{color:var(--accent-light)}
 /* User menu */
 .user-menu{position:relative;display:flex;align-items:center;gap:8px;cursor:pointer}
 .user-menu-name{font-size:12px;color:var(--text-primary);font-weight:500}
-.user-menu-dropdown{position:absolute;right:0;top:40px;background:var(--bg-elevated);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--radius);padding:14px;min-width:190px;box-shadow:var(--shadow-xl);display:none;flex-direction:column;gap:10px;animation:slideUp .2s ease both}
+.user-menu-dropdown{position:absolute;right:0;top:40px;background:#fff;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--radius);padding:14px;min-width:190px;box-shadow:var(--shadow-xl);display:none;flex-direction:column;gap:10px;animation:slideUp .2s ease both}
 .user-menu-dropdown.show{display:flex}
 .user-menu-dropdown .user-role{font-size:11px;color:var(--text-muted)}
 
@@ -140,7 +140,7 @@ a:hover{color:var(--accent-light)}
 
 /* Buttons */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all var(--transition-normal);white-space:nowrap;position:relative}
-.btn-primary{background:linear-gradient(135deg,var(--accent),#6033cc);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(124,58,237,.2)}.btn-primary:hover{background:linear-gradient(135deg,var(--accent-hover),#5525b8);box-shadow:0 4px 16px rgba(124,58,237,.3);transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(135deg,#2563EB,#1D4ED8);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(37,99,235,.2)}.btn-primary:hover{background:linear-gradient(135deg,#1D4ED8,#1E40AF);box-shadow:0 4px 16px rgba(37,99,235,.25);transform:translateY(-1px)}
 .btn-secondary{background:var(--bg-tertiary);color:var(--text-primary);border-color:var(--border)}.btn-secondary:hover{background:var(--bg-hover);border-color:var(--accent);box-shadow:var(--shadow-glow-sm)}
 .btn-ghost{background:transparent;color:var(--text-secondary);border:none;border-radius:var(--radius-sm)}.btn-ghost:hover{color:var(--text-primary);background:var(--bg-hover)}
 .btn-danger{background:linear-gradient(135deg,var(--red),#dc2626);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(239,68,68,.2)}.btn-danger:hover{box-shadow:0 4px 16px rgba(239,68,68,.3);transform:translateY(-1px)}
@@ -152,12 +152,12 @@ a:hover{color:var(--accent-light)}
 
 /* Badges */
 .badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:500;letter-spacing:.2px}
-.badge-green{background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.15)}
-.badge-yellow{background:rgba(245,158,11,.12);color:#fbbf24;border:1px solid rgba(245,158,11,.15)}
-.badge-red{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.15)}
-.badge-blue{background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.15)}
-.badge-purple{background:rgba(124,58,237,.12);color:var(--accent-light);border:1px solid rgba(124,58,237,.15)}
-.badge-gray{background:rgba(139,148,158,.08);color:var(--text-secondary);border:1px solid rgba(139,148,158,.1)}
+.badge-green{background:rgba(16,185,129,.08);color:#059669;border:1px solid rgba(16,185,129,.15)}
+.badge-yellow{background:rgba(245,158,11,.08);color:#D97706;border:1px solid rgba(245,158,11,.15)}
+.badge-red{background:rgba(239,68,68,.08);color:#DC2626;border:1px solid rgba(239,68,68,.15)}
+.badge-blue{background:rgba(59,130,246,.08);color:#2563EB;border:1px solid rgba(59,130,246,.15)}
+.badge-purple{background:rgba(37,99,235,.08);color:#2563EB;border:1px solid rgba(37,99,235,.15)}
+.badge-gray{background:rgba(148,163,184,.08);color:var(--text-secondary);border:1px solid rgba(148,163,184,.12)}
 
 /* Tables */
 .table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-secondary)}
@@ -165,9 +165,9 @@ table{width:100%;border-collapse:collapse}
 th{text-align:left;font-weight:600;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;padding:10px 14px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--bg-elevated);z-index:2;transition:color var(--transition-fast)}
 th:hover{color:var(--text-secondary)}
 td{padding:10px 14px;border-bottom:1px solid var(--border-light);font-size:13px;white-space:nowrap;transition:all var(--transition-fast)}
-tbody tr:nth-child(even) td{background:rgba(255,255,255,.01)}
-tr:hover td{background:rgba(124,58,237,.04)}
-tr.selected-row td{background:rgba(124,58,237,.06)}
+tbody tr:nth-child(even) td{background:rgba(248,250,252,.5)}
+tr:hover td{background:rgba(37,99,235,.04)}
+tr.selected-row td{background:rgba(37,99,235,.06)}
 .table-footer{display:flex;justify-content:space-between;align-items:center;padding:14px 0;font-size:12px;color:var(--text-secondary)}
 .text-right{text-align:right}
 
@@ -211,10 +211,10 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
 .detail-actions{display:flex;gap:8px;margin-top:18px}
 
 /* Context Menu */
-.context-menu{position:fixed;background:var(--bg-elevated);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--radius);padding:5px 0;min-width:190px;z-index:2000;box-shadow:var(--shadow-xl);display:none;animation:scaleIn .15s ease both}
+.context-menu{position:fixed;background:#fff;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--radius);padding:5px 0;min-width:190px;z-index:2000;box-shadow:var(--shadow-xl);display:none;animation:scaleIn .15s ease both}
 .context-menu.show{display:block}
 .context-menu-item{display:flex;align-items:center;gap:10px;padding:7px 14px;font-size:12px;color:var(--text-primary);cursor:pointer;transition:all var(--transition-fast);border-radius:0;margin:0 4px}
-.context-menu-item:hover{background:rgba(124,58,237,.08);color:var(--accent-light);border-radius:var(--radius-sm)}
+.context-menu-item:hover{background:rgba(37,99,235,.06);color:var(--accent);border-radius:var(--radius-sm)}
 .context-menu-item .cm-icon{width:16px;text-align:center;font-size:13px}
 .context-menu-sep{height:1px;background:var(--border);margin:4px 8px}
 .context-menu-item.danger{color:var(--red)}.context-menu-item.danger:hover{background:rgba(239,68,68,.08);color:#f87171}
@@ -260,7 +260,7 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
 .timeline-actions{display:flex;gap:8px;margin-top:10px}
 
 /* Modal */
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,.4);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center}
 .modal-overlay.show{display:flex}
 .modal{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-lg);width:480px;max-width:90vw;max-height:85vh;overflow-y:auto;animation:scaleIn .2s cubic-bezier(.4,0,.2,1) both;box-shadow:var(--shadow-xl)}
 @keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
@@ -275,7 +275,7 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
 .form-group:last-child{margin-bottom:0}
 .form-group label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:7px;letter-spacing:.2px}
 .form-group input,.form-group textarea,.form-group select{width:100%;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 14px;color:var(--text-primary);outline:none;transition:all var(--transition-normal)}
-.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.08)}
 .form-group textarea{resize:vertical;min-height:80px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 
@@ -382,9 +382,9 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
 
 /* Login pills */
 .login-accounts{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:18px}
-.login-pill{padding:5px 14px;border-radius:20px;font-size:11px;background:rgba(10,14,20,.5);border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;transition:all var(--transition-normal);animation:slideUp .4s cubic-bezier(.4,0,.2,1) both}
+.login-pill{padding:5px 14px;border-radius:20px;font-size:11px;background:rgba(37,99,235,.04);border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;transition:all var(--transition-normal);animation:slideUp .4s cubic-bezier(.4,0,.2,1) both}
 .login-pill:nth-child(1){animation-delay:.1s}.login-pill:nth-child(2){animation-delay:.15s}.login-pill:nth-child(3){animation-delay:.2s}.login-pill:nth-child(4){animation-delay:.25s}.login-pill:nth-child(5){animation-delay:.3s}.login-pill:nth-child(6){animation-delay:.35s}.login-pill:nth-child(7){animation-delay:.4s}.login-pill:nth-child(8){animation-delay:.45s}.login-pill:nth-child(9){animation-delay:.5s}.login-pill:nth-child(10){animation-delay:.55s}
-.login-pill:hover{border-color:var(--accent);color:var(--accent-light);background:rgba(124,58,237,.08);transform:translateY(-1px)}
+.login-pill:hover{border-color:var(--accent);color:var(--accent);background:rgba(37,99,235,.06);transform:translateY(-1px)}
 
 /* Responsive */
 @media(max-width:900px){
@@ -464,10 +464,22 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
         <div class="nav-item active" data-nav="dashboard"><span class="icon">🏠</span><span>仪表盘</span></div>
         <div class="nav-item" data-nav="bom"><span class="icon">📦</span><span>BOM 管理</span><span class="nav-badge" id="navBadgeBom">2</span></div>
         <div class="nav-item" data-nav="materials"><span class="icon">🗂</span><span>物料库</span><span class="nav-badge" id="navBadgeMat">70</span></div>
-        <div class="nav-item" data-nav="reports"><span class="icon">📊</span><span>报表中心</span></div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">业务管理</div>
+        <div class="nav-item" data-nav="projects"><span class="icon">📁</span><span>项目管理</span><span class="nav-badge">6</span></div>
+        <div class="nav-item" data-nav="changes"><span class="icon">🔄</span><span>变更管理</span><span class="nav-badge" style="background:rgba(239,68,68,.08);color:var(--red)">3</span></div>
+        <div class="nav-item" data-nav="approvals"><span class="icon">✅</span><span>审批中心</span><span class="nav-badge" style="background:rgba(245,158,11,.08);color:var(--yellow)">5</span></div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">协作</div>
+        <div class="nav-item" data-nav="documents"><span class="icon">📑</span><span>文档中心</span></div>
+        <div class="nav-item" data-nav="suppliers"><span class="icon">🏭</span><span>供应商管理</span></div>
+        <div class="nav-item" data-nav="quality"><span class="icon">🔬</span><span>质量管理</span><span class="nav-badge" style="background:rgba(239,68,68,.08);color:var(--red)">2</span></div>
       </div>
       <div class="nav-group">
         <div class="nav-label">系统</div>
+        <div class="nav-item" data-nav="reports"><span class="icon">📊</span><span>报表中心</span></div>
         <div class="nav-item" data-nav="settings"><span class="icon">⚙️</span><span>系统设置</span></div>
       </div>
     </div>
@@ -657,6 +669,144 @@ tr.selected-row td{background:rgba(124,58,237,.06)}
           <h2 style="font-size:18px;font-weight:700;margin-bottom:20px">📊 报表中心</h2>
           <div class="stat-cards" id="statCards"></div>
           <div class="chart-grid" id="chartGrid"></div>
+        </div>
+      </div>
+
+      <!-- Page: Projects -->
+      <div class="page-panel" id="page-projects">
+        <div class="content-body">
+          <h2 style="font-size:18px;font-weight:700;margin-bottom:20px">📁 项目管理</h2>
+          <div class="stat-cards" id="projStatCards"></div>
+          <div class="toolbar">
+            <input class="search-input" type="text" id="projSearch" placeholder="搜索项目编号、名称…" oninput="renderProjects()" />
+            <select class="filter-select" id="projPhaseFilter" onchange="renderProjects()">
+              <option value="all">全部阶段</option><option value="P0">P0</option><option value="P1">P1</option><option value="P2">P2</option><option value="EVT">EVT</option><option value="DVT">DVT</option><option value="PVT">PVT</option><option value="MP">MP</option>
+            </select>
+            <select class="filter-select" id="projStatusFilter" onchange="renderProjects()">
+              <option value="all">全部状态</option><option value="进行中">进行中</option><option value="已完成">已完成</option><option value="暂停">暂停</option><option value="延期">延期</option>
+            </select>
+            <div style="flex:1"></div>
+            <button class="btn btn-primary btn-sm" onclick="showToast('新建项目功能开发中','info')">＋ 新建项目</button>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('已导出项目列表','success')">↓ 导出</button>
+          </div>
+          <div class="table-wrap"><table><thead><tr>
+            <th style="width:40px">#</th><th>项目编号</th><th>项目名称</th><th>阶段</th><th>负责人</th><th>开始日期</th><th>计划完成</th><th>状态</th><th>进度</th>
+          </tr></thead><tbody id="projBody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- Page: Changes (ECN/ECO) -->
+      <div class="page-panel" id="page-changes">
+        <div class="content-body">
+          <h2 style="font-size:18px;font-weight:700;margin-bottom:20px">🔄 变更管理</h2>
+          <div class="stat-cards" id="chgStatCards"></div>
+          <div class="toolbar">
+            <input class="search-input" type="text" id="chgSearch" placeholder="搜索变更单号、标题…" oninput="renderChanges()" />
+            <select class="filter-select" id="chgTypeFilter" onchange="renderChanges()">
+              <option value="all">全部类型</option><option value="ECR">ECR</option><option value="ECO">ECO</option><option value="ECN">ECN</option>
+            </select>
+            <select class="filter-select" id="chgStatusFilter" onchange="renderChanges()">
+              <option value="all">全部状态</option><option value="草稿">草稿</option><option value="待审批">待审批</option><option value="审批中">审批中</option><option value="执行中">执行中</option><option value="已关闭">已关闭</option><option value="已驳回">已驳回</option>
+            </select>
+            <select class="filter-select" id="chgPriorityFilter" onchange="renderChanges()">
+              <option value="all">全部优先级</option><option value="普通">普通</option><option value="紧急">紧急</option><option value="特急">特急</option>
+            </select>
+            <div style="flex:1"></div>
+            <button class="btn btn-primary btn-sm" onclick="showToast('发起变更功能开发中','info')">＋ 发起变更</button>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('已导出变更列表','success')">↓ 导出</button>
+          </div>
+          <div class="table-wrap"><table><thead><tr>
+            <th style="width:40px">#</th><th>变更单号</th><th>类型</th><th>标题</th><th>影响范围</th><th>发起人</th><th>发起日期</th><th>优先级</th><th>状态</th>
+          </tr></thead><tbody id="chgBody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- Page: Approval Center -->
+      <div class="page-panel" id="page-approvals">
+        <div class="content-body">
+          <h2 style="font-size:18px;font-weight:700;margin-bottom:20px">✅ 审批中心</h2>
+          <div class="stat-cards" id="aprCenterStats"></div>
+          <div class="toolbar">
+            <button class="btn btn-primary btn-sm" id="aprTabMine" onclick="switchAprTab('mine')" style="box-shadow:none">待我审批</button>
+            <button class="btn btn-secondary btn-sm" id="aprTabInitiated" onclick="switchAprTab('initiated')">我发起的</button>
+            <button class="btn btn-secondary btn-sm" id="aprTabAll" onclick="switchAprTab('all')">全部</button>
+            <div style="flex:1"></div>
+            <input class="search-input" type="text" id="aprCenterSearch" placeholder="搜索审批…" style="width:200px" oninput="renderApprovalCenter()" />
+          </div>
+          <div id="aprCenterList"></div>
+        </div>
+      </div>
+
+      <!-- Page: Documents -->
+      <div class="page-panel" id="page-documents">
+        <div class="content-body">
+          <h2 style="font-size:18px;font-weight:700;margin-bottom:20px">📑 文档中心</h2>
+          <div class="stat-cards" id="docStatCards"></div>
+          <div class="toolbar">
+            <input class="search-input" type="text" id="docSearch" placeholder="搜索文档编号、名称…" oninput="renderDocuments()" />
+            <select class="filter-select" id="docTypeFilter" onchange="renderDocuments()">
+              <option value="all">全部类型</option><option value="设计图纸">设计图纸</option><option value="测试报告">测试报告</option><option value="规格书">规格书</option><option value="工艺文件">工艺文件</option><option value="会议纪要">会议纪要</option>
+            </select>
+            <select class="filter-select" id="docStatusFilter" onchange="renderDocuments()">
+              <option value="all">全部状态</option><option value="草稿">草稿</option><option value="审核中">审核中</option><option value="已发布">已发布</option><option value="已归档">已归档</option>
+            </select>
+            <div style="flex:1"></div>
+            <button class="btn btn-primary btn-sm" onclick="showToast('上传文档功能开发中','info')">＋ 上传文档</button>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('已导出文档列表','success')">↓ 导出</button>
+          </div>
+          <div class="table-wrap"><table><thead><tr>
+            <th style="width:40px">#</th><th>文档编号</th><th>文档名称</th><th>类型</th><th>版本</th><th>关联项目</th><th>上传人</th><th>更新日期</th><th>状态</th>
+          </tr></thead><tbody id="docBody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- Page: Suppliers -->
+      <div class="page-panel" id="page-suppliers">
+        <div class="content-body">
+          <h2 style="font-size:18px;font-weight:700;margin-bottom:20px">🏭 供应商管理</h2>
+          <div class="stat-cards" id="supStatCards"></div>
+          <div class="toolbar">
+            <input class="search-input" type="text" id="supSearch" placeholder="搜索供应商编号、名称…" oninput="renderSuppliers()" />
+            <select class="filter-select" id="supTypeFilter" onchange="renderSuppliers()">
+              <option value="all">全部类型</option><option value="电子元器件">电子元器件</option><option value="结构件">结构件</option><option value="包材">包材</option><option value="辅料">辅料</option><option value="显示模组">显示模组</option>
+            </select>
+            <select class="filter-select" id="supStatusFilter" onchange="renderSuppliers()">
+              <option value="all">全部状态</option><option value="合格">合格</option><option value="待评审">待评审</option><option value="暂停">暂停</option><option value="黑名单">黑名单</option>
+            </select>
+            <div style="flex:1"></div>
+            <button class="btn btn-primary btn-sm" onclick="showToast('新增供应商功能开发中','info')">＋ 新增供应商</button>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('发起评审功能开发中','info')">📋 发起评审</button>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('已导出供应商列表','success')">↓ 导出</button>
+          </div>
+          <div class="table-wrap"><table><thead><tr>
+            <th style="width:40px">#</th><th>供应商编号</th><th>供应商名称</th><th>类型</th><th>等级</th><th>联系人</th><th>供货物料数</th><th>合作状态</th><th>评分</th>
+          </tr></thead><tbody id="supBody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- Page: Quality -->
+      <div class="page-panel" id="page-quality">
+        <div class="content-body">
+          <h2 style="font-size:18px;font-weight:700;margin-bottom:20px">🔬 质量管理</h2>
+          <div class="stat-cards" id="qaStatCards"></div>
+          <div class="toolbar">
+            <input class="search-input" type="text" id="qaSearch" placeholder="搜索问题编号、标题…" oninput="renderQuality()" />
+            <select class="filter-select" id="qaTypeFilter" onchange="renderQuality()">
+              <option value="all">全部类型</option><option value="来料不良">来料不良</option><option value="制程不良">制程不良</option><option value="客诉">客诉</option><option value="内部发现">内部发现</option>
+            </select>
+            <select class="filter-select" id="qaSeverityFilter" onchange="renderQuality()">
+              <option value="all">全部严重程度</option><option value="致命">致命</option><option value="严重">严重</option><option value="一般">一般</option><option value="轻微">轻微</option>
+            </select>
+            <select class="filter-select" id="qaStatusFilter" onchange="renderQuality()">
+              <option value="all">全部状态</option><option value="待处理">待处理</option><option value="分析中">分析中</option><option value="整改中">整改中</option><option value="待验证">待验证</option><option value="已关闭">已关闭</option>
+            </select>
+            <div style="flex:1"></div>
+            <button class="btn btn-primary btn-sm" onclick="showToast('新建质量问题功能开发中','info')">＋ 新建问题</button>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('已导出质量报告','success')">↓ 导出</button>
+          </div>
+          <div class="table-wrap"><table><thead><tr>
+            <th style="width:40px">#</th><th>问题编号</th><th>问题标题</th><th>类型</th><th>严重程度</th><th>关联物料</th><th>责任人</th><th>发现日期</th><th>状态</th>
+          </tr></thead><tbody id="qaBody"></tbody></table></div>
         </div>
       </div>
 
@@ -2455,7 +2605,7 @@ document.querySelectorAll('.tab-item').forEach(tab => {
 });
 
 // ===== SIDEBAR NAVIGATION =====
-const pageMap = { dashboard:'page-dashboard', bom:'page-bom', materials:'page-materials', reports:'page-reports', settings:'page-settings' };
+const pageMap = { dashboard:'page-dashboard', bom:'page-bom', materials:'page-materials', projects:'page-projects', changes:'page-changes', approvals:'page-approvals', documents:'page-documents', suppliers:'page-suppliers', quality:'page-quality', reports:'page-reports', settings:'page-settings' };
 document.querySelectorAll('.sidebar .nav-item').forEach(item => {
   item.addEventListener('click', () => { navigateTo(item.dataset.nav); });
 });
@@ -2547,13 +2697,19 @@ function navigateTo(nav) {
   document.querySelectorAll('.page-panel').forEach(p => p.classList.remove('active'));
   const page = pageMap[nav] || 'page-dashboard';
   document.getElementById(page)?.classList.add('active');
-  const labels = { dashboard:'仪表盘', bom:'BOM管理', materials:'物料库', reports:'报表中心', settings:'系统设置' };
+  const labels = { dashboard:'仪表盘', bom:'BOM管理', materials:'物料库', projects:'项目管理', changes:'变更管理', approvals:'审批中心', documents:'文档中心', suppliers:'供应商管理', quality:'质量管理', reports:'报表中心', settings:'系统设置' };
   const bc = document.getElementById('breadcrumb');
   if (bc) bc.innerHTML = '<span onclick="navigateTo(\'dashboard\')" style="cursor:pointer">工作区</span><span class="sep">/</span><span style="color:var(--text-primary)">' + (labels[nav]||'仪表盘') + '</span>';
   if (nav === 'dashboard') renderDashboard();
   if (nav === 'materials') { buildFilterDropdowns(); renderMaterials(); }
   if (nav === 'reports') renderReports();
   if (nav === 'settings') renderSettings();
+  if (nav === 'projects') renderProjects();
+  if (nav === 'changes') renderChanges();
+  if (nav === 'approvals') renderApprovalCenter();
+  if (nav === 'documents') renderDocuments();
+  if (nav === 'suppliers') renderSuppliers();
+  if (nav === 'quality') renderQuality();
 }
 
 // ===== DASHBOARD =====
@@ -3032,6 +3188,213 @@ function markAllNotifRead() {
   if (dot) dot.style.display = 'none';
   document.getElementById('notifDropdown').classList.remove('show');
   showToast('已全部标记为已读', 'success');
+}
+
+// ===== NEW MODULE DATA & RENDER =====
+const projectsData = [
+  {id:'PRJ-2025-001',name:'P12A 旗舰手机',phase:'DVT',owner:'张工',start:'2024-10-01',end:'2025-08-30',status:'进行中',progress:68},
+  {id:'PRJ-2025-002',name:'D400 智能手环',phase:'PVT',owner:'李工',start:'2024-08-15',end:'2025-06-15',status:'进行中',progress:82},
+  {id:'PRJ-2025-003',name:'T800 平板电脑',phase:'EVT',owner:'王主管',start:'2025-01-10',end:'2025-12-31',status:'进行中',progress:35},
+  {id:'PRJ-2024-018',name:'S200 智能音箱',phase:'MP',owner:'赵品质',start:'2024-03-01',end:'2025-02-28',status:'已完成',progress:100},
+  {id:'PRJ-2025-004',name:'W100 智能手表',phase:'P1',owner:'张工',start:'2025-03-01',end:'2026-01-31',status:'进行中',progress:15},
+  {id:'PRJ-2025-005',name:'C300 车载终端',phase:'P0',owner:'陈总监',start:'2025-04-01',end:'2026-06-30',status:'进行中',progress:5},
+  {id:'PRJ-2024-012',name:'M500 TWS耳机',phase:'MP',owner:'李工',start:'2024-01-15',end:'2024-11-30',status:'已完成',progress:100},
+  {id:'PRJ-2025-006',name:'R900 路由器',phase:'DVT',owner:'王主管',start:'2024-12-01',end:'2025-09-30',status:'延期',progress:52},
+  {id:'PRJ-2025-007',name:'H200 智能家居网关',phase:'P2',owner:'张工',start:'2025-02-15',end:'2026-03-31',status:'暂停',progress:22},
+  {id:'PRJ-2025-008',name:'F100 折叠屏手机',phase:'P1',owner:'陈总监',start:'2025-05-01',end:'2026-08-31',status:'进行中',progress:8}
+];
+function renderProjects() {
+  const q = (document.getElementById('projSearch')?.value||'').toLowerCase();
+  const pf = document.getElementById('projPhaseFilter')?.value||'all';
+  const sf = document.getElementById('projStatusFilter')?.value||'all';
+  const data = projectsData.filter(p => {
+    if (q && !p.id.toLowerCase().includes(q) && !p.name.toLowerCase().includes(q)) return false;
+    if (pf !== 'all' && p.phase !== pf) return false;
+    if (sf !== 'all' && p.status !== sf) return false;
+    return true;
+  });
+  const sc = document.getElementById('projStatCards');
+  if (sc) sc.innerHTML = [{l:'总项目数',v:projectsData.length,c:'var(--accent)'},{l:'进行中',v:projectsData.filter(p=>p.status==='进行中').length,c:'var(--blue)'},{l:'已完成',v:projectsData.filter(p=>p.status==='已完成').length,c:'var(--green)'},{l:'延期',v:projectsData.filter(p=>p.status==='延期').length,c:'var(--red)'}].map(s=>'<div class="stat-card"><div class="stat-num" style="color:'+s.c+'">'+s.v+'</div><div class="stat-label">'+s.l+'</div></div>').join('');
+  const statusBadge = s => ({进行中:'badge-blue',已完成:'badge-green',暂停:'badge-gray',延期:'badge-red'}[s]||'badge-gray');
+  const phaseBadge = s => ({P0:'badge-gray',P1:'badge-gray',P2:'badge-blue',EVT:'badge-blue',DVT:'badge-purple',PVT:'badge-yellow',MP:'badge-green'}[s]||'badge-gray');
+  const progressColor = p => p>=80?'var(--green)':p>=50?'var(--blue)':p>=30?'var(--yellow)':'var(--red)';
+  const tb = document.getElementById('projBody');
+  if (tb) tb.innerHTML = data.map((p,i) => '<tr><td>'+(i+1)+'</td><td style="color:var(--accent);font-weight:500">'+p.id+'</td><td style="font-weight:500">'+p.name+'</td><td><span class="badge '+phaseBadge(p.phase)+'">'+p.phase+'</span></td><td>'+p.owner+'</td><td>'+p.start+'</td><td>'+p.end+'</td><td><span class="badge '+statusBadge(p.status)+'">'+p.status+'</span></td><td style="min-width:120px"><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+p.progress+'%;background:'+progressColor(p.progress)+';border-radius:4px"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:32px">'+p.progress+'%</span></div></td></tr>').join('');
+}
+
+const changesData = [
+  {id:'ECN-2025-0042',type:'ECN',title:'主板PCBA电源模块IC替换',scope:'A100 整机',initiator:'张工',date:'2025-06-10',priority:'紧急',status:'待审批'},
+  {id:'ECO-2025-0038',type:'ECO',title:'屏蔽罩结构优化降本',scope:'P12A 手机',initiator:'李工',date:'2025-06-08',priority:'普通',status:'执行中'},
+  {id:'ECR-2025-0055',type:'ECR',title:'电容供应商切换至太阳诱电',scope:'D400 手环',initiator:'王主管',date:'2025-06-12',priority:'普通',status:'草稿'},
+  {id:'ECN-2025-0041',type:'ECN',title:'USB Type-C接口升级至3.1',scope:'T800 平板',initiator:'张工',date:'2025-06-05',priority:'特急',status:'审批中'},
+  {id:'ECO-2025-0037',type:'ECO',title:'天线布局调整提升信号',scope:'P12A 手机',initiator:'李工',date:'2025-05-28',priority:'紧急',status:'已关闭'},
+  {id:'ECR-2025-0054',type:'ECR',title:'Flash存储芯片容量升级',scope:'A100 整机',initiator:'赵品质',date:'2025-06-11',priority:'普通',status:'待审批'},
+  {id:'ECN-2025-0040',type:'ECN',title:'ESD保护方案统一',scope:'全产品线',initiator:'陈总监',date:'2025-05-25',priority:'普通',status:'已关闭'},
+  {id:'ECO-2025-0036',type:'ECO',title:'主板Layout优化减少层数',scope:'R900 路由器',initiator:'张工',date:'2025-05-20',priority:'紧急',status:'执行中'},
+  {id:'ECR-2025-0053',type:'ECR',title:'晶振供应商增加备选',scope:'A100 整机',initiator:'李工',date:'2025-06-13',priority:'普通',status:'待审批'},
+  {id:'ECN-2025-0039',type:'ECN',title:'LED指示灯颜色规范统一',scope:'全产品线',initiator:'王主管',date:'2025-05-15',priority:'普通',status:'已关闭'},
+  {id:'ECO-2025-0035',type:'ECO',title:'电池连接器更换为防呆型',scope:'W100 手表',initiator:'张工',date:'2025-06-09',priority:'紧急',status:'审批中'},
+  {id:'ECR-2025-0052',type:'ECR',title:'散热片材料从铝改为铜',scope:'C300 车载终端',initiator:'陈总监',date:'2025-06-14',priority:'普通',status:'草稿'}
+];
+function renderChanges() {
+  const q = (document.getElementById('chgSearch')?.value||'').toLowerCase();
+  const tf = document.getElementById('chgTypeFilter')?.value||'all';
+  const sf = document.getElementById('chgStatusFilter')?.value||'all';
+  const pf = document.getElementById('chgPriorityFilter')?.value||'all';
+  const data = changesData.filter(c => {
+    if (q && !c.id.toLowerCase().includes(q) && !c.title.toLowerCase().includes(q)) return false;
+    if (tf !== 'all' && c.type !== tf) return false;
+    if (sf !== 'all' && c.status !== sf) return false;
+    if (pf !== 'all' && c.priority !== pf) return false;
+    return true;
+  });
+  const sc = document.getElementById('chgStatCards');
+  if (sc) sc.innerHTML = [{l:'总变更单',v:changesData.length,c:'var(--accent)'},{l:'待审批',v:changesData.filter(c=>c.status==='待审批'||c.status==='审批中').length,c:'var(--yellow)'},{l:'执行中',v:changesData.filter(c=>c.status==='执行中').length,c:'var(--blue)'},{l:'已关闭',v:changesData.filter(c=>c.status==='已关闭').length,c:'var(--green)'}].map(s=>'<div class="stat-card"><div class="stat-num" style="color:'+s.c+'">'+s.v+'</div><div class="stat-label">'+s.l+'</div></div>').join('');
+  const typeBadge = t => ({ECR:'badge-blue',ECO:'badge-purple',ECN:'badge-green'}[t]||'badge-gray');
+  const statusBadge = s => ({草稿:'badge-gray',待审批:'badge-yellow',审批中:'badge-yellow',执行中:'badge-blue',已关闭:'badge-green',已驳回:'badge-red'}[s]||'badge-gray');
+  const priBadge = p => p==='特急'?'<span class="badge badge-red">🔥 '+p+'</span>':p==='紧急'?'<span class="badge badge-yellow">⚡ '+p+'</span>':'<span class="badge badge-gray">'+p+'</span>';
+  const tb = document.getElementById('chgBody');
+  if (tb) tb.innerHTML = data.map((c,i) => '<tr><td>'+(i+1)+'</td><td style="color:var(--accent);font-weight:500">'+c.id+'</td><td><span class="badge '+typeBadge(c.type)+'">'+c.type+'</span></td><td style="font-weight:500">'+c.title+'</td><td>'+c.scope+'</td><td>'+c.initiator+'</td><td>'+c.date+'</td><td>'+priBadge(c.priority)+'</td><td><span class="badge '+statusBadge(c.status)+'">'+c.status+'</span></td></tr>').join('');
+}
+
+const aprCenterData = [
+  {id:'APR-0042',title:'主板电源模块IC替换审批',type:'变更审批',applicant:'张工',time:'2025-06-10 14:30',urgency:'紧急',status:'待审批',target:'mine'},
+  {id:'APR-0041',title:'V3.0 BOM版本发布审批',type:'BOM审批',applicant:'张工',time:'2025-06-09 09:00',urgency:'普通',status:'待审批',target:'mine'},
+  {id:'APR-0040',title:'新物料 RF-20047 入库审批',type:'物料审批',applicant:'李工',time:'2025-06-08 16:20',urgency:'普通',status:'待审批',target:'mine'},
+  {id:'APR-0039',title:'T800 产品规格书发布',type:'文档审批',applicant:'王主管',time:'2025-06-07 11:00',urgency:'普通',status:'待审批',target:'mine'},
+  {id:'APR-0038',title:'USB接口升级变更单',type:'变更审批',applicant:'张工',time:'2025-06-05 10:15',urgency:'特急',status:'待审批',target:'mine'},
+  {id:'APR-0037',title:'电容供应商切换ECR',type:'变更审批',applicant:'张工',time:'2025-06-12 08:30',urgency:'普通',status:'审批中',target:'initiated'},
+  {id:'APR-0036',title:'D400 手环BOM V2.0发布',type:'BOM审批',applicant:'张工',time:'2025-06-01 14:00',urgency:'普通',status:'已通过',target:'initiated'},
+  {id:'APR-0035',title:'ESD保护方案统一变更',type:'变更审批',applicant:'陈总监',time:'2025-05-25 09:00',urgency:'普通',status:'已通过',target:'all'},
+  {id:'APR-0034',title:'LED规范统一ECN审批',type:'变更审批',applicant:'王主管',time:'2025-05-15 15:30',urgency:'普通',status:'已通过',target:'all'},
+  {id:'APR-0033',title:'来料不良8D报告审核',type:'质量审批',applicant:'赵品质',time:'2025-05-10 10:00',urgency:'紧急',status:'已驳回',target:'all'}
+];
+let aprCenterTab = 'mine';
+function switchAprTab(tab) {
+  aprCenterTab = tab;
+  ['mine','initiated','all'].forEach(t => {
+    const btn = document.getElementById('aprTab' + (t==='mine'?'Mine':t==='initiated'?'Initiated':'All'));
+    if (btn) { btn.className = 'btn btn-sm ' + (t===tab?'btn-primary':'btn-secondary'); if(t===tab) btn.style.boxShadow='none'; }
+  });
+  renderApprovalCenter();
+}
+function renderApprovalCenter() {
+  const q = (document.getElementById('aprCenterSearch')?.value||'').toLowerCase();
+  let data = aprCenterData;
+  if (aprCenterTab === 'mine') data = data.filter(a => a.target === 'mine');
+  else if (aprCenterTab === 'initiated') data = data.filter(a => a.target === 'initiated');
+  if (q) data = data.filter(a => a.id.toLowerCase().includes(q) || a.title.toLowerCase().includes(q));
+  const mineCount = aprCenterData.filter(a=>a.target==='mine'&&a.status==='待审批').length;
+  const initiatedCount = aprCenterData.filter(a=>a.target==='initiated').length;
+  const doneCount = aprCenterData.filter(a=>a.status==='已通过').length;
+  const sc = document.getElementById('aprCenterStats');
+  if (sc) sc.innerHTML = [{l:'待我审批',v:mineCount,c:'var(--yellow)'},{l:'我发起的',v:initiatedCount,c:'var(--blue)'},{l:'已审批',v:doneCount,c:'var(--green)'},{l:'已超期',v:1,c:'var(--red)'}].map(s=>'<div class="stat-card"><div class="stat-num" style="color:'+s.c+'">'+s.v+'</div><div class="stat-label">'+s.l+'</div></div>').join('');
+  const typeBadge = t => ({变更审批:'badge-purple',BOM审批:'badge-blue',物料审批:'badge-green',文档审批:'badge-yellow',质量审批:'badge-red'}[t]||'badge-gray');
+  const statusBadge = s => ({待审批:'badge-yellow',审批中:'badge-yellow',已通过:'badge-green',已驳回:'badge-red'}[s]||'badge-gray');
+  const urgIcon = u => u==='特急'?'🔥 ':'⚡ ';
+  const list = document.getElementById('aprCenterList');
+  if (list) list.innerHTML = data.length === 0 ? '<div style="text-align:center;padding:40px;color:var(--text-muted)">暂无审批记录</div>' : data.map(a => '<div class="approval-row" style="cursor:default"><div class="approval-header" style="gap:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-weight:600;font-size:13px">'+(a.urgency!=='普通'?urgIcon(a.urgency):'')+a.title+'</span><span class="badge '+typeBadge(a.type)+'">'+a.type+'</span><span class="badge '+statusBadge(a.status)+'">'+a.status+'</span></div><div style="font-size:11px;color:var(--text-muted)">'+a.id+' · '+a.applicant+' · '+a.time+'</div></div>'+(a.status==='待审批'&&a.target==='mine'?'<button class="btn btn-success btn-xs" onclick="showToast(\'已通过: '+a.title+'\',\'success\')">✓ 通过</button><button class="btn btn-danger btn-xs" onclick="showToast(\'已驳回: '+a.title+'\',\'error\')">✕ 驳回</button>':'')+'</div></div>').join('');
+}
+
+const documentsData = [
+  {id:'DOC-2025-0081',name:'P12A 手机整机结构设计图',type:'设计图纸',ver:'V2.3',project:'P12A 旗舰手机',uploader:'张工',date:'2025-06-14',status:'已发布'},
+  {id:'DOC-2025-0080',name:'A100 主板PCBA Layout',type:'设计图纸',ver:'V3.0',project:'A100 整机',uploader:'李工',date:'2025-06-12',status:'审核中'},
+  {id:'DOC-2025-0079',name:'D400 手环EVT测试报告',type:'测试报告',ver:'V1.0',project:'D400 智能手环',uploader:'赵品质',date:'2025-06-10',status:'已发布'},
+  {id:'DOC-2025-0078',name:'T800 平板产品规格书',type:'规格书',ver:'V0.8',project:'T800 平板电脑',uploader:'王主管',date:'2025-06-08',status:'草稿'},
+  {id:'DOC-2025-0077',name:'A100 SMT工艺指导书',type:'工艺文件',ver:'V2.1',project:'A100 整机',uploader:'张工',date:'2025-06-05',status:'已发布'},
+  {id:'DOC-2025-0076',name:'P12A DVT阶段评审纪要',type:'会议纪要',ver:'V1.0',project:'P12A 旗舰手机',uploader:'陈总监',date:'2025-06-03',status:'已归档'},
+  {id:'DOC-2025-0075',name:'W100 手表整机爆炸图',type:'设计图纸',ver:'V1.2',project:'W100 智能手表',uploader:'李工',date:'2025-05-30',status:'已发布'},
+  {id:'DOC-2025-0074',name:'R900 路由器可靠性测试',type:'测试报告',ver:'V1.1',project:'R900 路由器',uploader:'赵品质',date:'2025-05-28',status:'已发布'},
+  {id:'DOC-2025-0073',name:'全产品线ESD规范',type:'规格书',ver:'V3.0',project:'全产品线',uploader:'陈总监',date:'2025-05-25',status:'已发布'},
+  {id:'DOC-2025-0072',name:'C300 车载终端散热分析',type:'测试报告',ver:'V0.5',project:'C300 车载终端',uploader:'张工',date:'2025-05-22',status:'审核中'},
+  {id:'DOC-2025-0071',name:'M500 耳机注塑工艺文件',type:'工艺文件',ver:'V2.0',project:'M500 TWS耳机',uploader:'李工',date:'2025-05-20',status:'已归档'},
+  {id:'DOC-2025-0070',name:'F100 折叠屏概念评审纪要',type:'会议纪要',ver:'V1.0',project:'F100 折叠屏手机',uploader:'陈总监',date:'2025-05-18',status:'已归档'},
+  {id:'DOC-2025-0069',name:'H200 网关硬件规格书',type:'规格书',ver:'V1.0',project:'H200 智能家居网关',uploader:'王主管',date:'2025-05-15',status:'草稿'}
+];
+function renderDocuments() {
+  const q = (document.getElementById('docSearch')?.value||'').toLowerCase();
+  const tf = document.getElementById('docTypeFilter')?.value||'all';
+  const sf = document.getElementById('docStatusFilter')?.value||'all';
+  const data = documentsData.filter(d => {
+    if (q && !d.id.toLowerCase().includes(q) && !d.name.toLowerCase().includes(q)) return false;
+    if (tf !== 'all' && d.type !== tf) return false;
+    if (sf !== 'all' && d.status !== sf) return false;
+    return true;
+  });
+  const sc = document.getElementById('docStatCards');
+  if (sc) sc.innerHTML = [{l:'总文档数',v:documentsData.length,c:'var(--accent)'},{l:'本周新增',v:3,c:'var(--blue)'},{l:'待审核',v:documentsData.filter(d=>d.status==='审核中').length,c:'var(--yellow)'},{l:'已归档',v:documentsData.filter(d=>d.status==='已归档').length,c:'var(--green)'}].map(s=>'<div class="stat-card"><div class="stat-num" style="color:'+s.c+'">'+s.v+'</div><div class="stat-label">'+s.l+'</div></div>').join('');
+  const typeIcon = t => ({'设计图纸':'📐','测试报告':'📋','规格书':'📄','工艺文件':'🔧','会议纪要':'📝'}[t]||'📄');
+  const statusBadge = s => ({草稿:'badge-gray',审核中:'badge-yellow',已发布:'badge-green',已归档:'badge-blue'}[s]||'badge-gray');
+  const tb = document.getElementById('docBody');
+  if (tb) tb.innerHTML = data.map((d,i) => '<tr><td>'+(i+1)+'</td><td style="color:var(--accent);font-weight:500">'+d.id+'</td><td style="font-weight:500">'+typeIcon(d.type)+' '+d.name+'</td><td>'+d.type+'</td><td><span class="badge badge-purple">'+d.ver+'</span></td><td>'+d.project+'</td><td>'+d.uploader+'</td><td>'+d.date+'</td><td><span class="badge '+statusBadge(d.status)+'">'+d.status+'</span></td></tr>').join('');
+}
+
+const suppliersData = [
+  {id:'SUP-001',name:'国巨电子',type:'电子元器件',grade:'A',contact:'林经理',matCount:28,status:'合格',score:95},
+  {id:'SUP-002',name:'三星电机',type:'电子元器件',grade:'A',contact:'Kim Manager',matCount:15,status:'合格',score:92},
+  {id:'SUP-003',name:'意法半导体',type:'电子元器件',grade:'A',contact:'Pierre',matCount:8,status:'合格',score:94},
+  {id:'SUP-004',name:'德州仪器',type:'电子元器件',grade:'A',contact:'John',matCount:12,status:'合格',score:96},
+  {id:'SUP-005',name:'华邦电子',type:'电子元器件',grade:'B',contact:'陈主管',matCount:5,status:'合格',score:85},
+  {id:'SUP-006',name:'顺络电子',type:'电子元器件',grade:'B',contact:'黄经理',matCount:6,status:'待评审',score:78},
+  {id:'SUP-007',name:'中航光电',type:'结构件',grade:'A',contact:'刘总',matCount:10,status:'合格',score:91},
+  {id:'SUP-008',name:'立讯精密',type:'结构件',grade:'A',contact:'王经理',matCount:14,status:'合格',score:93},
+  {id:'SUP-009',name:'风华高科',type:'电子元器件',grade:'B',contact:'赵经理',matCount:9,status:'合格',score:82},
+  {id:'SUP-010',name:'长电科技',type:'电子元器件',grade:'B',contact:'孙总监',matCount:7,status:'合格',score:86},
+  {id:'SUP-011',name:'深圳兴旺包装',type:'包材',grade:'C',contact:'吴经理',matCount:4,status:'待评审',score:68},
+  {id:'SUP-012',name:'东莞精密模具',type:'结构件',grade:'C',contact:'周总',matCount:3,status:'暂停',score:55},
+  {id:'SUP-013',name:'京东方',type:'显示模组',grade:'A',contact:'李副总',matCount:6,status:'合格',score:90},
+  {id:'SUP-014',name:'汇顶科技',type:'电子元器件',grade:'B',contact:'张经理',matCount:4,status:'合格',score:84}
+];
+function renderSuppliers() {
+  const q = (document.getElementById('supSearch')?.value||'').toLowerCase();
+  const tf = document.getElementById('supTypeFilter')?.value||'all';
+  const sf = document.getElementById('supStatusFilter')?.value||'all';
+  const data = suppliersData.filter(s => {
+    if (q && !s.id.toLowerCase().includes(q) && !s.name.toLowerCase().includes(q)) return false;
+    if (tf !== 'all' && s.type !== tf) return false;
+    if (sf !== 'all' && s.status !== sf) return false;
+    return true;
+  });
+  const sc = document.getElementById('supStatCards');
+  if (sc) sc.innerHTML = [{l:'供应商总数',v:suppliersData.length,c:'var(--accent)'},{l:'合格供应商',v:suppliersData.filter(s=>s.status==='合格').length,c:'var(--green)'},{l:'待评审',v:suppliersData.filter(s=>s.status==='待评审').length,c:'var(--yellow)'},{l:'暂停/黑名单',v:suppliersData.filter(s=>s.status==='暂停'||s.status==='黑名单').length,c:'var(--red)'}].map(s=>'<div class="stat-card"><div class="stat-num" style="color:'+s.c+'">'+s.v+'</div><div class="stat-label">'+s.l+'</div></div>').join('');
+  const gradeBadge = g => ({A:'badge-green',B:'badge-blue',C:'badge-yellow',D:'badge-red'}[g]||'badge-gray');
+  const statusBadge = s => ({合格:'badge-green',待评审:'badge-yellow',暂停:'badge-red',黑名单:'badge-red'}[s]||'badge-gray');
+  const scoreColor = s => s>=90?'var(--green)':s>=80?'var(--blue)':s>=70?'var(--yellow)':'var(--red)';
+  const tb = document.getElementById('supBody');
+  if (tb) tb.innerHTML = data.map((s,i) => '<tr><td>'+(i+1)+'</td><td style="color:var(--accent);font-weight:500">'+s.id+'</td><td style="font-weight:500">'+s.name+'</td><td>'+s.type+'</td><td><span class="badge '+gradeBadge(s.grade)+'">'+s.grade+'级</span></td><td>'+s.contact+'</td><td style="text-align:center">'+s.matCount+'</td><td><span class="badge '+statusBadge(s.status)+'">'+s.status+'</span></td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden;min-width:60px"><div style="height:100%;width:'+s.score+'%;background:'+scoreColor(s.score)+';border-radius:4px"></div></div><span style="font-size:11px;font-weight:600;color:'+scoreColor(s.score)+'">'+s.score+'</span></div></td></tr>').join('');
+}
+
+const qualityData = [
+  {id:'QA-2025-0031',title:'贴片电阻批次阻值偏移',type:'来料不良',severity:'严重',material:'R-20001',owner:'赵品质',date:'2025-06-14',status:'分析中'},
+  {id:'QA-2025-0030',title:'主控芯片焊接虚焊',type:'制程不良',severity:'致命',material:'IC-20003',owner:'张工',date:'2025-06-12',status:'待处理'},
+  {id:'QA-2025-0029',title:'USB接口插拔寿命不足',type:'客诉',severity:'严重',material:'CN-20028',owner:'李工',date:'2025-06-10',status:'整改中'},
+  {id:'QA-2025-0028',title:'电容容值偏差超标',type:'来料不良',severity:'一般',material:'C-20002',owner:'赵品质',date:'2025-06-08',status:'待验证'},
+  {id:'QA-2025-0027',title:'PCB板边毛刺',type:'制程不良',severity:'轻微',material:'PCB-10001',owner:'王主管',date:'2025-06-05',status:'已关闭'},
+  {id:'QA-2025-0026',title:'LED亮度一致性差',type:'来料不良',severity:'一般',material:'LED-20024',owner:'赵品质',date:'2025-06-03',status:'已关闭'},
+  {id:'QA-2025-0025',title:'天线座接触不良',type:'客诉',severity:'严重',material:'CN-20029',owner:'李工',date:'2025-05-30',status:'整改中'},
+  {id:'QA-2025-0024',title:'电感啸叫异音',type:'内部发现',severity:'一般',material:'L-20005',owner:'张工',date:'2025-05-28',status:'已关闭'},
+  {id:'QA-2025-0023',title:'Flash芯片读写速率下降',type:'来料不良',severity:'严重',material:'IC-20021',owner:'赵品质',date:'2025-05-25',status:'待验证'},
+  {id:'QA-2025-0022',title:'二极管反向漏电流偏高',type:'内部发现',severity:'轻微',material:'D-20023',owner:'张工',date:'2025-05-22',status:'已关闭'},
+  {id:'QA-2025-0021',title:'晶振频率偏移',type:'来料不良',severity:'一般',material:'X-20026',owner:'李工',date:'2025-05-20',status:'已关闭'}
+];
+function renderQuality() {
+  const q = (document.getElementById('qaSearch')?.value||'').toLowerCase();
+  const tf = document.getElementById('qaTypeFilter')?.value||'all';
+  const svf = document.getElementById('qaSeverityFilter')?.value||'all';
+  const sf = document.getElementById('qaStatusFilter')?.value||'all';
+  const data = qualityData.filter(r => {
+    if (q && !r.id.toLowerCase().includes(q) && !r.title.toLowerCase().includes(q)) return false;
+    if (tf !== 'all' && r.type !== tf) return false;
+    if (svf !== 'all' && r.severity !== svf) return false;
+    if (sf !== 'all' && r.status !== sf) return false;
+    return true;
+  });
+  const sc = document.getElementById('qaStatCards');
+  if (sc) sc.innerHTML = [{l:'质量问题总数',v:qualityData.length,c:'var(--accent)'},{l:'待处理',v:qualityData.filter(r=>r.status==='待处理').length,c:'var(--red)'},{l:'处理中',v:qualityData.filter(r=>['分析中','整改中','待验证'].includes(r.status)).length,c:'var(--yellow)'},{l:'已关闭',v:qualityData.filter(r=>r.status==='已关闭').length,c:'var(--green)'}].map(s=>'<div class="stat-card"><div class="stat-num" style="color:'+s.c+'">'+s.v+'</div><div class="stat-label">'+s.l+'</div></div>').join('');
+  const sevBadge = s => ({致命:'badge-red',严重:'badge-yellow',一般:'badge-blue',轻微:'badge-gray'}[s]||'badge-gray');
+  const statusBadge = s => ({待处理:'badge-red',分析中:'badge-yellow',整改中:'badge-yellow',待验证:'badge-blue',已关闭:'badge-green'}[s]||'badge-gray');
+  const tb = document.getElementById('qaBody');
+  if (tb) tb.innerHTML = data.map((r,i) => '<tr><td>'+(i+1)+'</td><td style="color:var(--accent);font-weight:500">'+r.id+'</td><td style="font-weight:500">'+r.title+'</td><td>'+r.type+'</td><td><span class="badge '+sevBadge(r.severity)+'">'+r.severity+'</span></td><td style="color:var(--accent)">'+r.material+'</td><td>'+r.owner+'</td><td>'+r.date+'</td><td><span class="badge '+statusBadge(r.status)+'">'+r.status+'</span></td></tr>').join('');
 }
 
 // ===== INIT =====

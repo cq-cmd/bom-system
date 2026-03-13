@@ -687,8 +687,9 @@ tr.selected-row td{background:rgba(37,99,235,.06)}
             <button class="btn btn-secondary btn-sm" onclick="exportModuleCSV('projects')">↓ 导出</button>
           </div>
           <div class="table-wrap"><table><thead><tr>
-            <th style="width:40px">#</th><th>项目编号</th><th>项目名称</th><th>阶段</th><th>负责人</th><th>开始日期</th><th>计划完成</th><th>状态</th><th>进度</th><th style="width:100px">操作</th>
+            <th style="width:40px">#</th><th style="cursor:pointer" onclick="modSort('proj','id')">项目编号 ↕</th><th style="cursor:pointer" onclick="modSort('proj','name')">项目名称 ↕</th><th>阶段</th><th>负责人</th><th style="cursor:pointer" onclick="modSort('proj','start')">开始日期 ↕</th><th style="cursor:pointer" onclick="modSort('proj','end')">计划完成 ↕</th><th>状态</th><th style="cursor:pointer" onclick="modSort('proj','progress')">进度 ↕</th><th style="width:100px">操作</th>
           </tr></thead><tbody id="projBody"></tbody></table></div>
+          <div class="table-footer"><span id="projSummary">共 0 条</span><div style="display:flex;align-items:center;gap:8px"><button class="btn btn-ghost btn-xs" id="projPrev" onclick="modPage('proj',-1)" disabled>‹ 上一页</button><span id="projPageInfo" style="font-size:11px">第 1 页</span><button class="btn btn-ghost btn-xs" id="projNext" onclick="modPage('proj',1)">下一页 ›</button></div></div>
         </div>
       </div>
 
@@ -717,8 +718,9 @@ tr.selected-row td{background:rgba(37,99,235,.06)}
             <button class="btn btn-secondary btn-sm" onclick="exportModuleCSV('changes')">↓ 导出</button>
           </div>
           <div class="table-wrap"><table><thead><tr>
-            <th style="width:40px">#</th><th>变更单号</th><th>类型</th><th>标题</th><th>影响范围</th><th>发起人</th><th>审批人</th><th>发起日期</th><th>优先级</th><th>状态</th><th style="width:130px">操作</th>
+            <th style="width:40px">#</th><th style="cursor:pointer" onclick="modSort('chg','id')">变更单号 ↕</th><th>类型</th><th style="cursor:pointer" onclick="modSort('chg','title')">标题 ↕</th><th>影响范围</th><th>发起人</th><th>审批人</th><th style="cursor:pointer" onclick="modSort('chg','date')">发起日期 ↕</th><th>优先级</th><th>状态</th><th style="width:130px">操作</th>
           </tr></thead><tbody id="chgBody"></tbody></table></div>
+          <div class="table-footer"><span id="chgSummary">共 0 条</span><div style="display:flex;align-items:center;gap:8px"><button class="btn btn-ghost btn-xs" id="chgPrev" onclick="modPage('chg',-1)" disabled>‹ 上一页</button><span id="chgPageInfo" style="font-size:11px">第 1 页</span><button class="btn btn-ghost btn-xs" id="chgNext" onclick="modPage('chg',1)">下一页 ›</button></div></div>
         </div>
       </div>
 
@@ -756,8 +758,9 @@ tr.selected-row td{background:rgba(37,99,235,.06)}
             <button class="btn btn-secondary btn-sm" onclick="exportModuleCSV('documents')">↓ 导出</button>
           </div>
           <div class="table-wrap"><table><thead><tr>
-            <th style="width:40px">#</th><th>文档编号</th><th>文档名称</th><th>类型</th><th>版本</th><th>关联项目</th><th>上传人</th><th>更新日期</th><th>状态</th><th style="width:130px">操作</th>
+            <th style="width:40px">#</th><th style="cursor:pointer" onclick="modSort('doc','id')">文档编号 ↕</th><th style="cursor:pointer" onclick="modSort('doc','name')">文档名称 ↕</th><th>类型</th><th>版本</th><th>关联项目</th><th>上传人</th><th style="cursor:pointer" onclick="modSort('doc','date')">更新日期 ↕</th><th>状态</th><th style="width:130px">操作</th>
           </tr></thead><tbody id="docBody"></tbody></table></div>
+          <div class="table-footer"><span id="docSummary">共 0 条</span><div style="display:flex;align-items:center;gap:8px"><button class="btn btn-ghost btn-xs" id="docPrev" onclick="modPage('doc',-1)" disabled>‹ 上一页</button><span id="docPageInfo" style="font-size:11px">第 1 页</span><button class="btn btn-ghost btn-xs" id="docNext" onclick="modPage('doc',1)">下一页 ›</button></div></div>
         </div>
       </div>
 
@@ -780,8 +783,9 @@ tr.selected-row td{background:rgba(37,99,235,.06)}
             <button class="btn btn-secondary btn-sm" onclick="exportModuleCSV('suppliers')">↓ 导出</button>
           </div>
           <div class="table-wrap"><table><thead><tr>
-            <th style="width:40px">#</th><th>供应商编号</th><th>供应商名称</th><th>类型</th><th>等级</th><th>联系人</th><th>供货物料数</th><th>合作状态</th><th>评分</th><th style="width:100px">操作</th>
+            <th style="width:40px">#</th><th style="cursor:pointer" onclick="modSort('sup','id')">供应商编号 ↕</th><th style="cursor:pointer" onclick="modSort('sup','name')">供应商名称 ↕</th><th>类型</th><th>等级</th><th>联系人</th><th style="cursor:pointer" onclick="modSort('sup','matCount')">供货物料数 ↕</th><th>合作状态</th><th style="cursor:pointer" onclick="modSort('sup','score')">评分 ↕</th><th style="width:100px">操作</th>
           </tr></thead><tbody id="supBody"></tbody></table></div>
+          <div class="table-footer"><span id="supSummary">共 0 条</span><div style="display:flex;align-items:center;gap:8px"><button class="btn btn-ghost btn-xs" id="supPrev" onclick="modPage('sup',-1)" disabled>‹ 上一页</button><span id="supPageInfo" style="font-size:11px">第 1 页</span><button class="btn btn-ghost btn-xs" id="supNext" onclick="modPage('sup',1)">下一页 ›</button></div></div>
         </div>
       </div>
 
@@ -806,8 +810,9 @@ tr.selected-row td{background:rgba(37,99,235,.06)}
             <button class="btn btn-secondary btn-sm" onclick="exportModuleCSV('quality')">↓ 导出</button>
           </div>
           <div class="table-wrap"><table><thead><tr>
-            <th style="width:40px">#</th><th>问题编号</th><th>问题标题</th><th>类型</th><th>严重程度</th><th>关联物料</th><th>责任人</th><th>发现日期</th><th>状态</th><th style="width:130px">操作</th>
+            <th style="width:40px">#</th><th style="cursor:pointer" onclick="modSort('qa','id')">问题编号 ↕</th><th style="cursor:pointer" onclick="modSort('qa','title')">问题标题 ↕</th><th>类型</th><th>严重程度</th><th>关联物料</th><th>责任人</th><th style="cursor:pointer" onclick="modSort('qa','date')">发现日期 ↕</th><th>状态</th><th style="width:130px">操作</th>
           </tr></thead><tbody id="qaBody"></tbody></table></div>
+          <div class="table-footer"><span id="qaSummary">共 0 条</span><div style="display:flex;align-items:center;gap:8px"><button class="btn btn-ghost btn-xs" id="qaPrev" onclick="modPage('qa',-1)" disabled>‹ 上一页</button><span id="qaPageInfo" style="font-size:11px">第 1 页</span><button class="btn btn-ghost btn-xs" id="qaNext" onclick="modPage('qa',1)">下一页 ›</button></div></div>
         </div>
       </div>
 
@@ -1123,7 +1128,7 @@ tr.selected-row td{background:rgba(37,99,235,.06)}
     <div class="modal-body">
       <div class="form-row"><div class="form-group"><label>文档名称</label><input type="text" id="docFormName" placeholder="文档名称" /></div><div class="form-group"><label>文档类型</label><select id="docFormType"><option>设计图纸</option><option>测试报告</option><option>规格书</option><option>工艺文件</option><option>会议纪要</option></select></div></div>
       <div class="form-row"><div class="form-group"><label>版本号</label><input type="text" id="docFormVer" placeholder="V1.0" /></div><div class="form-group"><label>关联项目</label><select id="docFormProject"><option>A100 整机</option><option>P12A 旗舰手机</option><option>D400 智能手环</option><option>T800 平板电脑</option><option>W100 智能手表</option><option>R900 路由器</option><option>C300 车载终端</option><option>全产品线</option></select></div></div>
-      <div class="upload-area" onclick="showToast('文件选择器(Demo)','info')" style="margin-top:4px"><div class="upload-icon">📁</div><p><b>点击或拖拽文件到此处</b></p><p style="margin-top:4px;color:var(--text-muted)">支持 PDF / DWG / DOC / XLS 格式</p></div>
+      <div class="upload-area" id="docUploadArea" style="margin-top:4px"><div class="upload-icon">📁</div><p><b>点击选择文件</b></p><p style="margin-top:4px;color:var(--text-muted)">支持 PDF / DWG / DOC / XLS 格式</p><input type="file" id="docFileInput" style="display:none" onchange="handleDocFileSelect(event)" /><div id="docFileName" style="margin-top:8px;font-size:12px;color:var(--accent);display:none"></div></div>
     </div>
     <div class="modal-footer"><button class="btn btn-secondary" onclick="hideModal('docModal')">取消</button><button class="btn btn-primary" onclick="saveDocument()">上传</button></div>
   </div>
@@ -3326,8 +3331,10 @@ function renderProjects() {
   const statusBadge = s => ({进行中:'badge-blue',已完成:'badge-green',暂停:'badge-gray',延期:'badge-red'}[s]||'badge-gray');
   const phaseBadge = s => ({P0:'badge-gray',P1:'badge-gray',P2:'badge-blue',EVT:'badge-blue',DVT:'badge-purple',PVT:'badge-yellow',MP:'badge-green'}[s]||'badge-gray');
   const progressColor = p => p>=80?'var(--green)':p>=50?'var(--blue)':p>=30?'var(--yellow)':'var(--red)';
+  const sorted = modSortData('proj', data);
+  const pg = modPaginate('proj', sorted);
   const tb = document.getElementById('projBody');
-  if (tb) tb.innerHTML = data.map((p,i) => { let ops='<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();showProjDetail(\''+p.id+'\')">查看</button><button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();editProject(\''+p.id+'\')">编辑</button>';if(p.status!=='已完成')ops+='<button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="event.stopPropagation();deleteProject(\''+p.id+'\')">删除</button>';return '<tr style="cursor:pointer" onclick="showProjDetail(\''+p.id+'\')"><td>'+(i+1)+'</td><td style="color:var(--accent);font-weight:500">'+p.id+'</td><td style="font-weight:500">'+p.name+'</td><td><span class="badge '+phaseBadge(p.phase)+'">'+p.phase+'</span></td><td>'+p.owner+'</td><td>'+p.start+'</td><td>'+p.end+'</td><td><span class="badge '+statusBadge(p.status)+'">'+p.status+'</span></td><td style="min-width:120px"><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+p.progress+'%;background:'+progressColor(p.progress)+';border-radius:4px"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:32px">'+p.progress+'%</span></div></td><td style="white-space:nowrap">'+ops+'</td></tr>'}).join('');
+  if (tb) tb.innerHTML = pg.pageData.map((p,i) => { let ops='<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();showProjDetail(\''+p.id+'\')">查看</button><button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();editProject(\''+p.id+'\')">编辑</button>';if(p.status!=='已完成')ops+='<button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="event.stopPropagation();deleteProject(\''+p.id+'\')">删除</button>';return '<tr style="cursor:pointer" onclick="showProjDetail(\''+p.id+'\')"><td>'+(pg.start+i+1)+'</td><td style="color:var(--accent);font-weight:500">'+p.id+'</td><td style="font-weight:500">'+p.name+'</td><td><span class="badge '+phaseBadge(p.phase)+'">'+p.phase+'</span></td><td>'+p.owner+'</td><td>'+p.start+'</td><td>'+p.end+'</td><td><span class="badge '+statusBadge(p.status)+'">'+p.status+'</span></td><td style="min-width:120px"><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+p.progress+'%;background:'+progressColor(p.progress)+';border-radius:4px"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:32px">'+p.progress+'%</span></div></td><td style="white-space:nowrap">'+ops+'</td></tr>'}).join('');
 }
 
 const changesData = [
@@ -3374,13 +3381,15 @@ function renderChanges() {
   const typeBadge = t => ({ECR:'badge-blue',ECO:'badge-purple',ECN:'badge-green'}[t]||'badge-gray');
   const statusBadge = s => ({草稿:'badge-gray',待审批:'badge-yellow',审批中:'badge-yellow',执行中:'badge-blue',已关闭:'badge-green',已驳回:'badge-red'}[s]||'badge-gray');
   const priBadge = p => p==='特急'?'<span class="badge badge-red">🔥 '+p+'</span>':p==='紧急'?'<span class="badge badge-yellow">⚡ '+p+'</span>':'<span class="badge badge-gray">'+p+'</span>';
+  const sorted = modSortData('chg', data);
+  const pg = modPaginate('chg', sorted);
   const tb = document.getElementById('chgBody');
   if (!tb) return;
-  tb.innerHTML = data.map((c,i) => {
+  tb.innerHTML = pg.pageData.map((c,i) => {
     let ops = '<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();showChgDetail(\''+c.id+'\')">查看</button>';
     if (c.status==='草稿') ops += '<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();editChange(\''+c.id+'\')">编辑</button><button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="event.stopPropagation();deleteChange(\''+c.id+'\')">删除</button>';
     if ((c.status==='待审批') && c.reviewer===uname) ops += '<button class="btn btn-success btn-xs" onclick="event.stopPropagation();chgAction(\''+c.id+'\',\'approve\')">通过</button>';
-    return '<tr style="cursor:pointer" onclick="showChgDetail(\''+c.id+'\')"><td>'+(i+1)+'</td><td style="color:var(--accent);font-weight:500">'+c.id+'</td><td><span class="badge '+typeBadge(c.type)+'">'+c.type+'</span></td><td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis">'+c.title+'</td><td>'+c.scope+'</td><td>'+c.initiator+'</td><td>'+c.reviewer+'</td><td>'+c.date+'</td><td>'+priBadge(c.priority)+'</td><td><span class="badge '+statusBadge(c.status)+'">'+c.status+'</span></td><td style="white-space:nowrap">'+ops+'</td></tr>';
+    return '<tr style="cursor:pointer" onclick="showChgDetail(\''+c.id+'\')"><td>'+(pg.start+i+1)+'</td><td style="color:var(--accent);font-weight:500">'+c.id+'</td><td><span class="badge '+typeBadge(c.type)+'">'+c.type+'</span></td><td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis">'+c.title+'</td><td>'+c.scope+'</td><td>'+c.initiator+'</td><td>'+c.reviewer+'</td><td>'+c.date+'</td><td>'+priBadge(c.priority)+'</td><td><span class="badge '+statusBadge(c.status)+'">'+c.status+'</span></td><td style="white-space:nowrap">'+ops+'</td></tr>';
   }).join('');
 }
 
@@ -3455,8 +3464,10 @@ function renderDocuments() {
   if (sc) sc.innerHTML = [{l:'总文档数',v:documentsData.length,c:'var(--accent)'},{l:'本周新增',v:3,c:'var(--blue)'},{l:'待审核',v:documentsData.filter(d=>d.status==='审核中').length,c:'var(--yellow)'},{l:'已归档',v:documentsData.filter(d=>d.status==='已归档').length,c:'var(--green)'}].map(s=>'<div class="stat-card"><div class="stat-num" style="color:'+s.c+'">'+s.v+'</div><div class="stat-label">'+s.l+'</div></div>').join('');
   const typeIcon = t => ({'设计图纸':'📐','测试报告':'📋','规格书':'📄','工艺文件':'🔧','会议纪要':'📝'}[t]||'📄');
   const statusBadge = s => ({草稿:'badge-gray',审核中:'badge-yellow',已发布:'badge-green',已归档:'badge-blue'}[s]||'badge-gray');
+  const sortedD = modSortData('doc', data);
+  const pgD = modPaginate('doc', sortedD);
   const tb = document.getElementById('docBody');
-  if (tb) tb.innerHTML = data.map((d,i) => { let ops='<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();showDocDetail(\''+d.id+'\')">查看</button>';if(d.status==='草稿')ops+='<button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="event.stopPropagation();deleteDoc(\''+d.id+'\')">删除</button>';if(d.status==='已发布')ops+='<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();docAction(\''+d.id+'\',\'upgrade\')">升版</button>';return '<tr style="cursor:pointer" onclick="showDocDetail(\''+d.id+'\')"><td>'+(i+1)+'</td><td style="color:var(--accent);font-weight:500">'+d.id+'</td><td style="font-weight:500">'+typeIcon(d.type)+' '+d.name+'</td><td>'+d.type+'</td><td><span class="badge badge-purple">'+d.ver+'</span></td><td>'+d.project+'</td><td>'+d.uploader+'</td><td>'+d.date+'</td><td><span class="badge '+statusBadge(d.status)+'">'+d.status+'</span></td><td style="white-space:nowrap">'+ops+'</td></tr>'}).join('');
+  if (tb) tb.innerHTML = pgD.pageData.map((d,i) => { let ops='<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();showDocDetail(\''+d.id+'\')">查看</button>';if(d.status==='草稿')ops+='<button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="event.stopPropagation();deleteDoc(\''+d.id+'\')">删除</button>';if(d.status==='已发布')ops+='<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();docAction(\''+d.id+'\',\'upgrade\')">升版</button>';return '<tr style="cursor:pointer" onclick="showDocDetail(\''+d.id+'\')"><td>'+(pgD.start+i+1)+'</td><td style="color:var(--accent);font-weight:500">'+d.id+'</td><td style="font-weight:500">'+typeIcon(d.type)+' '+d.name+'</td><td>'+d.type+'</td><td><span class="badge badge-purple">'+d.ver+'</span></td><td>'+d.project+'</td><td>'+d.uploader+'</td><td>'+d.date+'</td><td><span class="badge '+statusBadge(d.status)+'">'+d.status+'</span></td><td style="white-space:nowrap">'+ops+'</td></tr>'}).join('');
 }
 
 const suppliersData = [
@@ -3490,8 +3501,10 @@ function renderSuppliers() {
   const gradeBadge = g => ({A:'badge-green',B:'badge-blue',C:'badge-yellow',D:'badge-red'}[g]||'badge-gray');
   const statusBadge = s => ({合格:'badge-green',待评审:'badge-yellow',暂停:'badge-red',黑名单:'badge-red'}[s]||'badge-gray');
   const scoreColor = s => s>=90?'var(--green)':s>=80?'var(--blue)':s>=70?'var(--yellow)':'var(--red)';
+  const sortedS = modSortData('sup', data);
+  const pgS = modPaginate('sup', sortedS);
   const tb = document.getElementById('supBody');
-  if (tb) tb.innerHTML = data.map((s,i) => { let ops='<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();showSupDetail(\''+s.id+'\')">查看</button><button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();editSupplier(\''+s.id+'\')">编辑</button>';if(s.status==='待评审')ops+='<button class="btn btn-success btn-xs" onclick="event.stopPropagation();supAction(\''+s.id+'\',\'approve\')">通过</button>';return '<tr style="cursor:pointer" onclick="showSupDetail(\''+s.id+'\')"><td>'+(i+1)+'</td><td style="color:var(--accent);font-weight:500">'+s.id+'</td><td style="font-weight:500">'+s.name+'</td><td>'+s.type+'</td><td><span class="badge '+gradeBadge(s.grade)+'">'+s.grade+'级</span></td><td>'+s.contact+'</td><td style="text-align:center">'+s.matCount+'</td><td><span class="badge '+statusBadge(s.status)+'">'+s.status+'</span></td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden;min-width:60px"><div style="height:100%;width:'+s.score+'%;background:'+scoreColor(s.score)+';border-radius:4px"></div></div><span style="font-size:11px;font-weight:600;color:'+scoreColor(s.score)+'">'+s.score+'</span></div></td><td style="white-space:nowrap">'+ops+'</td></tr>'}).join('');
+  if (tb) tb.innerHTML = pgS.pageData.map((s,i) => { let ops='<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();showSupDetail(\''+s.id+'\')">查看</button><button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();editSupplier(\''+s.id+'\')">编辑</button>';if(s.status==='待评审')ops+='<button class="btn btn-success btn-xs" onclick="event.stopPropagation();supAction(\''+s.id+'\',\'approve\')">通过</button>';return '<tr style="cursor:pointer" onclick="showSupDetail(\''+s.id+'\')"><td>'+(pgS.start+i+1)+'</td><td style="color:var(--accent);font-weight:500">'+s.id+'</td><td style="font-weight:500">'+s.name+'</td><td>'+s.type+'</td><td><span class="badge '+gradeBadge(s.grade)+'">'+s.grade+'级</span></td><td>'+s.contact+'</td><td style="text-align:center">'+s.matCount+'</td><td><span class="badge '+statusBadge(s.status)+'">'+s.status+'</span></td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden;min-width:60px"><div style="height:100%;width:'+s.score+'%;background:'+scoreColor(s.score)+';border-radius:4px"></div></div><span style="font-size:11px;font-weight:600;color:'+scoreColor(s.score)+'">'+s.score+'</span></div></td><td style="white-space:nowrap">'+ops+'</td></tr>'}).join('');
 }
 
 const qualityData = [
@@ -3525,10 +3538,20 @@ function renderQuality() {
   const statusBadge = s => ({待处理:'badge-red',分析中:'badge-yellow',整改中:'badge-yellow',待验证:'badge-blue',已关闭:'badge-green'}[s]||'badge-gray');
   const tb = document.getElementById('qaBody');
   const nextSt={待处理:'分析中',分析中:'整改中',整改中:'待验证',待验证:'已关闭'};
-  if (tb) tb.innerHTML = data.map((r,i) => { let ops='<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();showQaDetail(\''+r.id+'\')">查看</button>';const ns=nextSt[r.status];if(ns)ops+='<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();qaAction(\''+r.id+'\',\'advance\')">→'+ns+'</button>';if(r.status!=='已关闭')ops+='<button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="event.stopPropagation();deleteQa(\''+r.id+'\')">删除</button>';return '<tr style="cursor:pointer" onclick="showQaDetail(\''+r.id+'\')"><td>'+(i+1)+'</td><td style="color:var(--accent);font-weight:500">'+r.id+'</td><td style="font-weight:500">'+r.title+'</td><td>'+r.type+'</td><td><span class="badge '+sevBadge(r.severity)+'">'+r.severity+'</span></td><td style="color:var(--accent)">'+r.material+'</td><td>'+r.owner+'</td><td>'+r.date+'</td><td><span class="badge '+statusBadge(r.status)+'">'+r.status+'</span></td><td style="white-space:nowrap">'+ops+'</td></tr>'}).join('');
+  const sortedQ = modSortData('qa', data);
+  const pgQ = modPaginate('qa', sortedQ);
+  if (tb) tb.innerHTML = pgQ.pageData.map((r,i) => { let ops='<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();showQaDetail(\''+r.id+'\')">查看</button>';const ns=nextSt[r.status];if(ns)ops+='<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();qaAction(\''+r.id+'\',\'advance\')">→'+ns+'</button>';if(r.status!=='已关闭')ops+='<button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="event.stopPropagation();deleteQa(\''+r.id+'\')">删除</button>';return '<tr style="cursor:pointer" onclick="showQaDetail(\''+r.id+'\')"><td>'+(pgQ.start+i+1)+'</td><td style="color:var(--accent);font-weight:500">'+r.id+'</td><td style="font-weight:500">'+r.title+'</td><td>'+r.type+'</td><td><span class="badge '+sevBadge(r.severity)+'">'+r.severity+'</span></td><td style="color:var(--accent)">'+r.material+'</td><td>'+r.owner+'</td><td>'+r.date+'</td><td><span class="badge '+statusBadge(r.status)+'">'+r.status+'</span></td><td style="white-space:nowrap">'+ops+'</td></tr>'}).join('');
 }
 
 // ===== NEW MODULE INTERACTIONS =====
+var modSortState={proj:{field:null,asc:true},chg:{field:null,asc:true},doc:{field:null,asc:true},sup:{field:null,asc:true},qa:{field:null,asc:true}};
+var modPageState={proj:{page:1,size:10},chg:{page:1,size:10},doc:{page:1,size:10},sup:{page:1,size:10},qa:{page:1,size:10}};
+function modSort(mod,field){var s=modSortState[mod];if(s.field===field)s.asc=!s.asc;else{s.field=field;s.asc=true}modPageState[mod].page=1;var fn={proj:renderProjects,chg:renderChanges,doc:renderDocuments,sup:renderSuppliers,qa:renderQuality}[mod];if(fn)fn()}
+function modPage(mod,delta){var p=modPageState[mod];p.page+=delta;var fn={proj:renderProjects,chg:renderChanges,doc:renderDocuments,sup:renderSuppliers,qa:renderQuality}[mod];if(fn)fn()}
+function modSortData(mod,data){var s=modSortState[mod];if(!s.field)return data;return data.slice().sort(function(a,b){var va=a[s.field],vb=b[s.field];if(typeof va==='number')return s.asc?va-vb:vb-va;va=String(va||'');vb=String(vb||'');return s.asc?va.localeCompare(vb):vb.localeCompare(va)})}
+function modPaginate(mod,data){var p=modPageState[mod];var total=Math.max(1,Math.ceil(data.length/p.size));if(p.page>total)p.page=total;if(p.page<1)p.page=1;var start=(p.page-1)*p.size;var pageData=data.slice(start,start+p.size);var sumEl=document.getElementById(mod+'Summary');if(sumEl)sumEl.textContent='共 '+data.length+' 条'+(data.length>p.size?' (第'+(start+1)+'-'+Math.min(start+p.size,data.length)+'条)':'');var infoEl=document.getElementById(mod+'PageInfo');if(infoEl)infoEl.textContent='第 '+p.page+' / '+total+' 页';var prevEl=document.getElementById(mod+'Prev');if(prevEl)prevEl.disabled=p.page<=1;var nextEl=document.getElementById(mod+'Next');if(nextEl)nextEl.disabled=p.page>=total;return{pageData:pageData,start:start}}
+function handleDocFileSelect(e){var f=e.target.files[0];if(!f)return;var el=document.getElementById('docFileName');if(el){el.textContent='📎 '+f.name+' ('+Math.round(f.size/1024)+'KB)';el.style.display='block'}showToast('文件 '+f.name+' 已选择','success')}
+document.addEventListener('DOMContentLoaded',function(){var area=document.getElementById('docUploadArea');if(area)area.addEventListener('click',function(){document.getElementById('docFileInput').click()})});
 function todayISO(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function genId(prefix,arr){return prefix+'-'+(new Date().getFullYear())+'-'+String(arr.length+1).padStart(3,'0')}
 function detailGrid(pairs){return '<div class="detail-grid">'+pairs.map(p=>'<div class="detail-field"><div class="label">'+p[0]+'</div><div class="value">'+p[1]+'</div></div>').join('')+'</div>'}

@@ -3004,10 +3004,81 @@ function initEnhancements() {
   var matFilterEl = document.getElementById('matFilter');
   if (matFilterEl) {
     var savedF = restoreFilterState('mat', 'status');
-    if (savedF) { matFilterEl.value = savedF; }
-    matFilterEl.addEventListener('change', function() { saveFilterState('mat', 'status', this.value); });
+  if (savedF) { matFilterEl.value = savedF; }
+  matFilterEl.addEventListener('change', function() { saveFilterState('mat', 'status', this.value); });
   }
 }
+
+const exposedAPI = {
+  addChildToSelected,
+  batchDelete,
+  changePage,
+  changePageSize,
+  clearFieldError,
+  clearSelection,
+  collapseAll,
+  createNewBOM,
+  createVersion,
+  ctxAction,
+  doApprove,
+  doBatchEdit,
+  doImport,
+  downloadTemplate,
+  editSelectedNode,
+  expandAll,
+  exportApprovals,
+  exportCSV,
+  exportComplianceReport,
+  exportCurrentBOM,
+  exportInventoryReport,
+  exportModuleCSV,
+  handleDocFileSelect,
+  handleFileDrop,
+  handleFileSelect,
+  hideModal,
+  markAllNotifRead,
+  modPage,
+  modSort,
+  navigateTo,
+  renderApprovalCenter,
+  renderApprovals,
+  renderChanges,
+  renderCompliance,
+  renderCostCompare,
+  renderDocuments,
+  renderInventory,
+  renderLifecycle,
+  renderProjects,
+  renderQuality,
+  renderSuppliers,
+  runCompare,
+  saveChange,
+  saveDocument,
+  saveMaterial,
+  saveNode,
+  saveProject,
+  saveQuality,
+  saveSupReview,
+  saveSupplier,
+  saveUserEdit,
+  showBatchEditModal,
+  showChgModal,
+  showMaterialModal,
+  showModal,
+  showNewBOMModal,
+  showNewProcessModal,
+  showNewProjectModal,
+  showSupReviewModal,
+  sortMaterials,
+  submitApproval,
+  switchAprTab,
+  switchBOM,
+  switchChgTab,
+  toggleSelectAll,
+  toggleTheme
+};
+
+Object.assign(window, exposedAPI);
 
 // ===== INIT =====
 try { var savedBomIdx = parseInt(localStorage.getItem('bom_active_idx')); if (!isNaN(savedBomIdx) && savedBomIdx >= 0 && savedBomIdx < allBOMs.length) { bomData = allBOMs[savedBomIdx]; selectedNodeId = bomData.id; } } catch(e) {}

@@ -79,8 +79,50 @@ function rebuildFlat() {
   materialsFlat.length = 0;
   function walk(node) { if (node.level >= 2) materialsFlat.push(node); if (node.children) node.children.forEach(walk); }
   walk(bomData);
+  cleanupFavoriteMaterials();
 }
 rebuildFlat();
+
+function cleanupFavoriteMaterials() {
+  if (!favoriteMaterials.size) return;
+  const valid = new Set(materialsFlat.map(m => m.id));
+  let changed = false;
+  favoriteMaterials.forEach(id => {
+    if (!valid.has(id)) { favoriteMaterials.delete(id); changed = true; }
+  });
+  if (changed) persistFavorites();
+}
+
+function persistFavorites() {
+  try { localStorage.setItem('bom_mat_favs', JSON.stringify([...favoriteMaterials])); } catch(e) {}
+}
+function persistFavoriteFilter() {
+  try { localStorage.setItem('bom_mat_fav_only', showFavoriteOnly ? '1' : '0'); } catch(e) {}
+}
+function updateFavToggleButton() {
+  const btn = document.getElementById('favToggleBtn');
+  if (!btn) return;
+  btn.classList.toggle('fav-active', showFavoriteOnly);
+  btn.textContent = (showFavoriteOnly ? '★ 仅看收藏' : '☆ 收藏筛选');
+}
+function toggleFavoriteFilter() {
+  showFavoriteOnly = !showFavoriteOnly;
+  persistFavoriteFilter();
+  updateFavToggleButton();
+  matPage = 1;
+  renderMaterials();
+}
+function toggleFavorite(id) {
+  if (favoriteMaterials.has(id)) {
+    favoriteMaterials.delete(id);
+    showToast('已从收藏移除 ' + id, 'info');
+  } else {
+    favoriteMaterials.add(id);
+    showToast('已收藏物料 ' + id, 'success');
+  }
+  persistFavorites();
+  renderMaterials();
+}
 
 
 
@@ -101,6 +143,21 @@ let ctxTreeNodeEl = null;
 let selectedMatIds = new Set();
 let importedData = null;
 let currentUser = null;
+let favoriteMaterials = new Set();
+let showFavoriteOnly = false;
+let pinnedNodeIds = new Set();
+
+try {
+  const rawFavs = JSON.parse(localStorage.getItem('bom_mat_favs') || '[]');
+  if (Array.isArray(rawFavs)) favoriteMaterials = new Set(rawFavs);
+} catch(e) {}
+try {
+  showFavoriteOnly = localStorage.getItem('bom_mat_fav_only') === '1';
+} catch(e) {}
+try {
+  const rawPins = JSON.parse(localStorage.getItem('bom_node_pins') || '[]');
+  if (Array.isArray(rawPins)) pinnedNodeIds = new Set(rawPins);
+} catch(e) {}
 
 function findUserByIdentifier(identifier) {
   if (!identifier) return null;
@@ -255,6 +312,7 @@ function renderTree() {
   container.appendChild(buildTreeNode(bomData, 0));
   restoreTreeState();
   updateTreeStats();
+  renderPinBoard();
 }
 function buildTreeNode(node, depth) {
   const div = document.createElement('div');
@@ -320,6 +378,8 @@ function showDetail(node) {
   ];
   grid.innerHTML = fields.map(f => `<div class="detail-field"><span class="label">${f[0]}</span><span class="value">${f[1]}</span></div>`).join('');
   updateCostSummary(node);
+  renderNodeInsights(node);
+  updatePinButton(node);
 }
 function expandAll() { document.querySelectorAll('.tree-children').forEach(c => c.classList.add('open')); document.querySelectorAll('.tree-arrow:not(.empty)').forEach(a => a.classList.add('expanded')); }
 function collapseAll() { document.querySelectorAll('.tree-children').forEach(c => c.classList.remove('open')); document.querySelectorAll('.tree-arrow').forEach(a => a.classList.remove('expanded')); }
@@ -350,6 +410,109 @@ function updateCostSummary(node) {
     <div class="detail-cost-item"><span class="label">总成本</span><span class="value" style="color:var(--accent)">${formatCurrency(cost.total)}</span></div>
   `;
 }
+
+function calcSubtreeStats(node) {
+  const stats = {nodes:0, leaves:0, risk:0, pending:0, totalCost:0, suppliers:new Map()};
+  (function walk(n) {
+    stats.nodes++;
+    const hasChildren = n.children && n.children.length;
+    if (!hasChildren) stats.leaves++;
+    if (n.status && n.status !== '有效') stats.risk++;
+    if (n.status === '待审') stats.pending++;
+    stats.totalCost += (n.price || 0) * (n.qty || 1);
+    const sup = n.supplier || '—';
+    stats.suppliers.set(sup, (stats.suppliers.get(sup) || 0) + 1);
+    if (hasChildren) n.children.forEach(walk);
+  })(node);
+  const supplierEntries = [...stats.suppliers.entries()];
+  const singleSource = supplierEntries.filter(([,count]) => count === 1).length;
+  return {
+    ...stats,
+    uniqueSuppliers: supplierEntries.length,
+    singleSource,
+    avgCost: stats.nodes ? stats.totalCost / stats.nodes : 0
+  };
+}
+
+function renderNodeInsights(node) {
+  const grid = document.getElementById('nodeInsightGrid');
+  if (!grid || !node) return;
+  const stats = calcSubtreeStats(node);
+  grid.innerHTML = `
+    <div class="detail-cost-item"><span class="label">覆盖节点</span><span class="value">${stats.nodes}</span></div>
+    <div class="detail-cost-item"><span class="label">叶子节点</span><span class="value">${stats.leaves}</span></div>
+    <div class="detail-cost-item"><span class="label">风险物料</span><span class="value">${stats.risk}</span></div>
+    <div class="detail-cost-item"><span class="label">待审批</span><span class="value">${stats.pending}</span></div>
+    <div class="detail-cost-item"><span class="label">供应商数</span><span class="value">${stats.uniqueSuppliers}</span></div>
+    <div class="detail-cost-item"><span class="label">单一供应商</span><span class="value">${stats.singleSource}</span></div>
+    <div class="detail-cost-item"><span class="label">均摊成本</span><span class="value">${formatCurrency(stats.avgCost)}</span></div>
+  `;
+}
+
+function persistPinnedNodes() {
+  try { localStorage.setItem('bom_node_pins', JSON.stringify([...pinnedNodeIds])); } catch(e) {}
+}
+function updatePinButton(node) {
+  const btn = document.getElementById('pinNodeBtn');
+  if (!btn || !node) return;
+  const pinned = pinnedNodeIds.has(node.id);
+  btn.textContent = pinned ? '📍 已关注' : '📌 关注节点';
+  btn.classList.toggle('fav-active', pinned);
+}
+function togglePinNode() {
+  const node = findNode(selectedNodeId);
+  if (!node) return;
+  const pinned = pinnedNodeIds.has(node.id);
+  if (pinned) {
+    pinnedNodeIds.delete(node.id);
+    showToast('已取消关注 ' + node.name, 'info');
+  } else {
+    pinnedNodeIds.add(node.id);
+    showToast('已关注节点 ' + node.name, 'success');
+  }
+  persistPinnedNodes();
+  updatePinButton(node);
+  renderPinBoard();
+}
+function removePinnedNode(id) {
+  if (!pinnedNodeIds.has(id)) return;
+  pinnedNodeIds.delete(id);
+  persistPinnedNodes();
+  renderPinBoard();
+  if (selectedNodeId === id) updatePinButton(findNode(id) || bomData);
+}
+function focusPinnedNode(id) {
+  const node = findNode(id);
+  if (!node) {
+    removePinnedNode(id);
+    return;
+  }
+  navigateTo('bom');
+  selectedNodeId = id;
+  renderTree();
+  showDetail(node);
+}
+function renderPinBoard() {
+  const list = document.getElementById('pinList');
+  if (!list) return;
+  if (!pinnedNodeIds.size) {
+    list.innerHTML = '<div class="pin-empty"><span class="pin-empty-icon">📌</span><div>暂无关注节点，选中节点后点击“关注”即可快速跳转。</div></div>';
+    return;
+  }
+  let mutated = false;
+  const html = Array.from(pinnedNodeIds).map(id => {
+    const node = findNode(id);
+    if (!node) {
+      pinnedNodeIds.delete(id);
+      mutated = true;
+      return '';
+    }
+    return '<div class="pin-item" onclick="focusPinnedNode(\''+id+'\')"><div class="pin-meta"><span class="pin-icon">'+(node.icon||'📄')+'</span><span>'+node.name+'</span></div><button class="pin-remove" onclick="event.stopPropagation();removePinnedNode(\''+id+'\')">✕</button></div>';
+  }).join('');
+  if (mutated) persistPinnedNodes();
+  list.innerHTML = html || '<div class="pin-empty"><span class="pin-empty-icon">📌</span><div>暂无关注节点</div></div>';
+}
+
 
 function exportCurrentBOM() {
   const node = findNode(selectedNodeId);
@@ -500,6 +663,7 @@ function getFilteredMaterials() {
   if (cat !== 'all') data = data.filter(m => getCategory(m.id) === cat);
   if (sup !== 'all') data = data.filter(m => m.supplier === sup);
   if (search) data = data.filter(m => m.id.toLowerCase().includes(search) || m.name.toLowerCase().includes(search) || m.supplier.toLowerCase().includes(search));
+  if (showFavoriteOnly) data = data.filter(m => favoriteMaterials.has(m.id));
   if (matSortField) {
     data.sort((a,b) => {
       let va, vb;
@@ -513,6 +677,7 @@ function getFilteredMaterials() {
 }
 function renderMaterials() {
   const data = getFilteredMaterials();
+  updateFavToggleButton();
   const totalCost = data.reduce((s,m) => s + m.price*m.qty, 0);
   const totalPages = Math.max(1, Math.ceil(data.length / matPageSize));
   if (matPage > totalPages) matPage = totalPages;
@@ -525,7 +690,9 @@ function renderMaterials() {
     const checked = selectedMatIds.has(m.id) ? 'checked' : '';
     const rowCls = selectedMatIds.has(m.id) ? ' class="selected-row"' : '';
     const cat = getCategory(m.id);
-    return '<tr'+rowCls+' ondblclick="editMaterial(\''+m.id+'\')"><td><input type="checkbox" '+checked+' onchange="toggleMatSelect(\''+m.id+'\',this.checked)" /></td><td>'+(start+i+1)+'</td><td style="color:var(--accent);font-weight:500;cursor:pointer" onclick="showMatDetail(\''+m.id+'\')">'+m.id+'</td><td style="cursor:pointer" onclick="showMatDetail(\''+m.id+'\')">'+m.name+'</td><td><span class="badge badge-purple">'+cat+'</span></td><td style="color:var(--text-secondary)">'+m.spec+'</td><td>'+m.unit+'</td><td class="text-right">'+m.qty+'</td><td>'+m.supplier+'</td><td class="text-right">'+m.price.toFixed(2)+'</td><td class="text-right" style="font-weight:500">'+sub.toFixed(2)+'</td><td><span class="badge '+cls+'" title="'+m.status+'">'+m.status+'</span></td><td><button class="btn btn-ghost btn-xs" onclick="showMatDetail(\''+m.id+'\')" title="查看详情">👁</button><button class="btn btn-ghost btn-xs" onclick="editMaterial(\''+m.id+'\')" title="编辑">✏️</button><button class="btn btn-ghost btn-xs" onclick="deleteMaterial(\''+m.id+'\')" title="删除">🗑</button></td></tr>';
+    const fav = favoriteMaterials.has(m.id);
+    const star = '<button class="star-btn'+(fav?' active':'')+'" onclick="event.stopPropagation();toggleFavorite(\''+m.id+'\')" title="'+(fav?'取消收藏':'收藏该物料')+'">'+(fav?'★':'☆')+'</button>';
+    return '<tr'+rowCls+' ondblclick="editMaterial(\''+m.id+'\')"><td><input type="checkbox" '+checked+' onchange="toggleMatSelect(\''+m.id+'\',this.checked)" /></td><td class="star-cell">'+star+'</td><td>'+(start+i+1)+'</td><td style="color:var(--accent);font-weight:500;cursor:pointer" onclick="showMatDetail(\''+m.id+'\')">'+m.id+'</td><td style="cursor:pointer" onclick="showMatDetail(\''+m.id+'\')">'+m.name+'</td><td><span class="badge badge-purple">'+cat+'</span></td><td style="color:var(--text-secondary)">'+m.spec+'</td><td>'+m.unit+'</td><td class="text-right">'+m.qty+'</td><td>'+m.supplier+'</td><td class="text-right">'+m.price.toFixed(2)+'</td><td class="text-right" style="font-weight:500">'+sub.toFixed(2)+'</td><td><span class="badge '+cls+'" title="'+m.status+'">'+m.status+'</span></td><td><button class="btn btn-ghost btn-xs" onclick="showMatDetail(\''+m.id+'\')" title="查看详情">👁</button><button class="btn btn-ghost btn-xs" onclick="editMaterial(\''+m.id+'\')" title="编辑">✏️</button><button class="btn btn-ghost btn-xs" onclick="deleteMaterial(\''+m.id+'\')" title="删除">🗑</button></td></tr>';
   }).join('');
   document.getElementById('matSummary').textContent = '共 '+data.length+' 种物料（显示 '+(start+1)+'-'+Math.min(start+matPageSize, data.length)+'）';
   document.getElementById('matCost').textContent = '总成本: ¥ '+totalCost.toFixed(2);
@@ -2912,15 +3079,16 @@ renderMaterials = function() {
   if (!tbody) return;
   var rows = tbody.querySelectorAll('tr');
   if (rows.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="13"><div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">暂无物料数据</div><button class="btn btn-primary btn-sm" onclick="showMaterialModal()">+ 创建第一个物料</button></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="14"><div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">暂无物料数据</div><button class="btn btn-primary btn-sm" onclick="showMaterialModal()">+ 创建第一个物料</button></div></td></tr>';
     return;
   }
   rows.forEach(function(row) {
     var cells = row.querySelectorAll('td');
-    if (cells.length < 13) return;
-    var idText = cells[2] ? cells[2].textContent.trim() : '';
-    [7, 9, 8].forEach(function(ci) {
-      var field = ci === 7 ? 'qty' : ci === 9 ? 'price' : 'supplier';
+    if (cells.length < 14) return;
+    var idText = cells[3] ? cells[3].textContent.trim() : '';
+    [[8,'qty'],[10,'price'],[9,'supplier']].forEach(function(pair) {
+      var ci = pair[0];
+      var field = pair[1];
       if (cells[ci]) {
         cells[ci].setAttribute('data-field', field);
         cells[ci].setAttribute('data-id', idText);
@@ -2936,8 +3104,8 @@ renderMaterials = function() {
   if (matSearch) {
     rows.forEach(function(row) {
       var cells = row.querySelectorAll('td');
-      if (cells[2]) cells[2].innerHTML = hlText(cells[2].textContent, matSearch);
       if (cells[3]) cells[3].innerHTML = hlText(cells[3].textContent, matSearch);
+      if (cells[4]) cells[4].innerHTML = hlText(cells[4].textContent, matSearch);
     });
   }
 };
@@ -3074,8 +3242,13 @@ const exposedAPI = {
   switchAprTab,
   switchBOM,
   switchChgTab,
+  toggleFavorite,
+  toggleFavoriteFilter,
+  togglePinNode,
   toggleSelectAll,
-  toggleTheme
+  toggleTheme,
+  focusPinnedNode,
+  removePinnedNode
 };
 
 Object.assign(window, exposedAPI);

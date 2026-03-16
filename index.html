@@ -152,6 +152,7 @@
               <div class="detail-actions detail-actions-bottom">
                 <button class="btn btn-secondary btn-sm" onclick="editSelectedNode()">✏️ 编辑</button>
                 <button class="btn btn-secondary btn-sm" onclick="addChildToSelected()">＋ 新增子项</button>
+                <button class="btn btn-ghost btn-sm" id="pinNodeBtn" onclick="togglePinNode()">📌 关注节点</button>
                 <div style="flex:1"></div>
                 <button class="btn btn-primary btn-sm" onclick="exportCurrentBOM()">⤓ 导出当前 BOM</button>
               </div>
@@ -159,11 +160,19 @@
                 <h4 style="font-size:13px;font-weight:600;margin-bottom:10px">💰 成本汇总</h4>
                 <div class="detail-cost-grid" id="detailCostGrid"></div>
               </div>
+              <div class="detail-section" id="nodeInsightSection">
+                <h4 style="font-size:13px;font-weight:600;margin-bottom:10px">🔍 节点洞察</h4>
+                <div class="detail-cost-grid" id="nodeInsightGrid"></div>
+              </div>
             </div>
             <div class="detail-card">
               <h3 style="font-size:15px">🩺 BOM 健康度</h3>
               <div class="hint-block">自动检测停用、待审及单一供应商风险物料，帮助快速定位问题。</div>
               <div class="health-card-list" id="healthList"></div>
+            </div>
+            <div class="detail-card pin-card" id="pinBoard">
+              <h3 style="font-size:15px">📌 我的关注节点</h3>
+              <div class="pin-list" id="pinList"></div>
             </div>
           </div>
         </div>
@@ -219,6 +228,7 @@
             <select class="filter-select" id="matSupplierFilter">
               <option value="all">全部供应商</option>
             </select>
+            <button class="btn btn-secondary btn-sm" id="favToggleBtn" onclick="toggleFavoriteFilter()" title="仅查看收藏的物料">☆ 收藏筛选</button>
             <div style="flex:1"></div>
             <button class="btn btn-primary btn-sm" onclick="showMaterialModal()">＋ 新增物料</button>
             <button class="btn btn-secondary btn-sm" onclick="showModal('importModal')">↑ 导入</button>
@@ -241,6 +251,7 @@
             <table id="matTable">
               <thead><tr>
                 <th style="width:36px"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" /></th>
+                <th style="width:34px;text-align:center">⭐</th>
                 <th style="width:40px">#</th>
                 <th data-sort="id" onclick="sortMaterials('id')">物料编号 ↕</th>
                 <th data-sort="name" onclick="sortMaterials('name')">物料名称 ↕</th>

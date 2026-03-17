@@ -179,9 +179,18 @@ function setCurrentUser(user, skipNav) {
   const dropdown = document.getElementById('userDropdown');
   if (user) {
     try { localStorage.setItem('bom_user', user.name); } catch(e) {}
-    avatar.textContent = (user.initial || user.name.charAt(0)).toUpperCase();
-    avatar.style.background = getAvatarColor(user.name);
-    avatar.style.color = '#fff';
+    if (user.avatar) {
+      avatar.textContent = '';
+      avatar.style.backgroundImage = `url(${user.avatar})`;
+      avatar.style.backgroundSize = 'cover';
+      avatar.style.backgroundPosition = 'center';
+      avatar.style.backgroundColor = 'transparent';
+    } else {
+      avatar.textContent = (user.initial || user.name.charAt(0)).toUpperCase();
+      avatar.style.backgroundImage = 'none';
+      avatar.style.background = getAvatarColor(user.name);
+      avatar.style.color = '#fff';
+    }
     avatar.title = user.name;
     menuLabel.textContent = user.name;
     menuName.textContent = user.name;
@@ -197,6 +206,7 @@ function setCurrentUser(user, skipNav) {
     try { localStorage.removeItem('bom_user'); localStorage.removeItem('bom_page'); } catch(e) {}
     avatar.textContent = '—';
     avatar.title = '未登录';
+    avatar.style.backgroundImage = 'none';
     avatar.style.background = defaultAvatarBg;
     avatar.style.color = '#fff';
     menuLabel.textContent = '未登录';
@@ -371,9 +381,11 @@ function renderLoginPreview() {
   }
   const user = selectedQuickUser;
   const avatarBg = getAvatarColor(user.name || user.account || '');
+  const avatarImg = user.avatar ? `<img src="${escapeHtml(user.avatar)}" alt="${escapeHtml(user.name || '')}" loading="lazy" />` : '';
+  const avatarStyle = user.avatar ? '' : `style="background:${avatarBg}"`;
   preview.innerHTML = `
     <div class="login-preview-head">
-      <div class="login-preview-avatar" style="background:${avatarBg}">${escapeHtml((user.initial || user.name || '?').charAt(0).toUpperCase())}</div>
+      <div class="login-preview-avatar" ${avatarStyle}>${avatarImg || escapeHtml((user.initial || user.name || '?').charAt(0).toUpperCase())}</div>
       <div class="login-preview-meta">
         <div class="lp-name">${escapeHtml(user.name || '')}</div>
         <div class="lp-role">${escapeHtml(user.role || '—')}</div>
@@ -427,15 +439,22 @@ function buildLoginPill(user = {}) {
   const nameRaw = user.name || '';
   const roleRaw = user.role || '';
   const pwRaw = user.password || '';
+  const accountRaw = user.account || '';
+  const avatarRaw = user.avatar || '';
   const initialRaw = (user.initial || nameRaw || '?').trim().charAt(0).toUpperCase() || '?';
   const name = escapeHtml(nameRaw);
   const role = escapeHtml(roleRaw);
   const pw = escapeHtml(pwRaw);
+  const account = escapeHtml(accountRaw);
   const initial = escapeHtml(initialRaw);
-  const color = getAvatarColor(nameRaw);
+  const color = getAvatarColor(nameRaw || accountRaw);
   const roleBlock = role ? `<small class="pill-role">${role}</small>` : '';
-  return `<span class="login-pill" data-name="${name}" data-pw="${pw}" onclick="quickLoginFromDataset(this)">`
-    + `<span class="pill-avatar" style="background:${color}">${initial}</span>`
+  const avatarContent = avatarRaw
+    ? `<img src="${escapeHtml(avatarRaw)}" alt="${name}" class="pill-avatar-img" loading="lazy" />`
+    : initial;
+  const avatarStyle = avatarRaw ? '' : `style="background:${color}"`;
+  return `<span class="login-pill" data-name="${name}" data-account="${account}" data-pw="${pw}" onclick="quickLoginFromDataset(this)">`
+    + `<span class="pill-avatar" ${avatarStyle}>${avatarContent}</span>`
     + `<span class="pill-info"><span class="pill-name">${name}</span>${roleBlock}</span>`
     + `</span>`;
 }

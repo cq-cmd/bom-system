@@ -254,6 +254,19 @@ function initLoginUI() {
   setCurrentUser(null);
 }
 
+function quickLogin(name, password) {
+  const nameInput = document.getElementById('loginUsername');
+  const passInput = document.getElementById('loginPassword');
+  if (nameInput) nameInput.value = name || '';
+  if (passInput) passInput.value = password || '';
+  handleLoginSubmit();
+}
+
+function quickLoginFromDataset(el) {
+  if (!el) return;
+  quickLogin(el.dataset.name || '', el.dataset.pw || '');
+}
+
 // ===== UTILITY =====
 function populateEnumSelect(selectId, enumKey, allowEmpty) {
   const el = document.getElementById(selectId);
@@ -1499,15 +1512,17 @@ function initNotifBell() {
 function renderLoginPills() {
   const container = document.getElementById('loginAccounts');
   if (!container) return;
-  container.innerHTML = demoUsers.map(u =>
-    '<span class="login-pill" data-name="'+u.name+'" data-pw="'+u.password+'">'+u.name+'</span>'
-  ).join('');
-  container.addEventListener('click', e => {
+  container.innerHTML = demoUsers.map(u => {
+    const name = escapeHtml(u.name || '');
+    const role = escapeHtml(u.role || '');
+    const pw = escapeHtml(u.password || '');
+    return '<span class="login-pill" data-name="'+name+'" data-pw="'+pw+'" onclick="quickLoginFromDataset(this)"><span style="display:block;font-weight:500">'+name+'</span><small style="display:block;font-size:9px;opacity:.6;margin-top:2px">'+role+'</small></span>';
+  }).join('');
+  container.onclick = e => {
     const pill = e.target.closest('.login-pill');
     if (!pill) return;
-    document.getElementById('loginUsername').value = pill.dataset.name;
-    document.getElementById('loginPassword').value = pill.dataset.pw;
-  });
+    quickLoginFromDataset(pill);
+  };
 }
 
 
@@ -3026,15 +3041,16 @@ renderLoginPills = function() {
   var container = document.getElementById('loginAccounts');
   if (!container) return;
   container.innerHTML = demoUsers.map(function(u) {
-    return '<span class="login-pill" data-name="' + u.name + '" data-pw="' + u.password + '" style="cursor:pointer;padding:8px 14px;text-align:center"><span style="display:block;font-weight:500">' + u.name + '</span><small style="display:block;font-size:9px;opacity:.6;margin-top:2px">' + u.role + '</small></span>';
+    var name = escapeHtml(u.name || '');
+    var role = escapeHtml(u.role || '');
+    var pw = escapeHtml(u.password || '');
+    return '<span class="login-pill" data-name="' + name + '" data-pw="' + pw + '" onclick="quickLoginFromDataset(this)" style="cursor:pointer;padding:8px 14px;text-align:center"><span style="display:block;font-weight:500">' + name + '</span><small style="display:block;font-size:9px;opacity:.6;margin-top:2px">' + role + '</small></span>';
   }).join('');
-  container.addEventListener('click', function(e) {
+  container.onclick = function(e) {
     var pill = e.target.closest('.login-pill');
     if (!pill) return;
-    document.getElementById('loginUsername').value = pill.dataset.name;
-    document.getElementById('loginPassword').value = pill.dataset.pw;
-    handleLoginSubmit();
-  });
+    quickLoginFromDataset(pill);
+  };
 };
 
 function startInlineEdit(td) {
@@ -3248,7 +3264,9 @@ const exposedAPI = {
   toggleSelectAll,
   toggleTheme,
   focusPinnedNode,
-  removePinnedNode
+  removePinnedNode,
+  quickLogin,
+  quickLoginFromDataset
 };
 
 Object.assign(window, exposedAPI);

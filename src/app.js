@@ -146,6 +146,7 @@ let currentUser = null;
 let favoriteMaterials = new Set();
 let showFavoriteOnly = false;
 let pinnedNodeIds = new Set();
+const avatarPalette = ['#6366F1','#7C3AED','#EC4899','#F97316','#14B8A6','#0EA5E9','#10B981','#F43F5E'];
 
 try {
   const rawFavs = JSON.parse(localStorage.getItem('bom_mat_favs') || '[]');
@@ -265,6 +266,30 @@ function quickLogin(name, password) {
 function quickLoginFromDataset(el) {
   if (!el) return;
   quickLogin(el.dataset.name || '', el.dataset.pw || '');
+}
+
+function getAvatarColor(name = '') {
+  if (!avatarPalette.length) return '#2563EB';
+  let sum = 0;
+  for (let i = 0; i < name.length; i++) sum += name.charCodeAt(i);
+  return avatarPalette[sum % avatarPalette.length];
+}
+
+function buildLoginPill(user = {}) {
+  const nameRaw = user.name || '';
+  const roleRaw = user.role || '';
+  const pwRaw = user.password || '';
+  const initialRaw = (user.initial || nameRaw || '?').trim().charAt(0).toUpperCase() || '?';
+  const name = escapeHtml(nameRaw);
+  const role = escapeHtml(roleRaw);
+  const pw = escapeHtml(pwRaw);
+  const initial = escapeHtml(initialRaw);
+  const color = getAvatarColor(nameRaw);
+  const roleBlock = role ? `<small class="pill-role">${role}</small>` : '';
+  return `<span class="login-pill" data-name="${name}" data-pw="${pw}" onclick="quickLoginFromDataset(this)">`
+    + `<span class="pill-avatar" style="background:${color}">${initial}</span>`
+    + `<span class="pill-info"><span class="pill-name">${name}</span>${roleBlock}</span>`
+    + `</span>`;
 }
 
 // ===== UTILITY =====
@@ -1512,12 +1537,7 @@ function initNotifBell() {
 function renderLoginPills() {
   const container = document.getElementById('loginAccounts');
   if (!container) return;
-  container.innerHTML = demoUsers.map(u => {
-    const name = escapeHtml(u.name || '');
-    const role = escapeHtml(u.role || '');
-    const pw = escapeHtml(u.password || '');
-    return '<span class="login-pill" data-name="'+name+'" data-pw="'+pw+'" onclick="quickLoginFromDataset(this)"><span style="display:block;font-weight:500">'+name+'</span><small style="display:block;font-size:9px;opacity:.6;margin-top:2px">'+role+'</small></span>';
-  }).join('');
+  container.innerHTML = demoUsers.map(u => buildLoginPill(u)).join('');
   container.onclick = e => {
     const pill = e.target.closest('.login-pill');
     if (!pill) return;
@@ -3040,12 +3060,7 @@ var _origRenderLoginPills = renderLoginPills;
 renderLoginPills = function() {
   var container = document.getElementById('loginAccounts');
   if (!container) return;
-  container.innerHTML = demoUsers.map(function(u) {
-    var name = escapeHtml(u.name || '');
-    var role = escapeHtml(u.role || '');
-    var pw = escapeHtml(u.password || '');
-    return '<span class="login-pill" data-name="' + name + '" data-pw="' + pw + '" onclick="quickLoginFromDataset(this)" style="cursor:pointer;padding:8px 14px;text-align:center"><span style="display:block;font-weight:500">' + name + '</span><small style="display:block;font-size:9px;opacity:.6;margin-top:2px">' + role + '</small></span>';
-  }).join('');
+  container.innerHTML = demoUsers.map(function(u) { return buildLoginPill(u); }).join('');
   container.onclick = function(e) {
     var pill = e.target.closest('.login-pill');
     if (!pill) return;

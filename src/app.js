@@ -146,7 +146,9 @@ let currentUser = null;
 let favoriteMaterials = new Set();
 let showFavoriteOnly = false;
 let pinnedNodeIds = new Set();
+let selectedQuickUser = null;
 const avatarPalette = ['#6366F1','#7C3AED','#EC4899','#F97316','#14B8A6','#0EA5E9','#10B981','#F43F5E'];
+const defaultAvatarBg = 'linear-gradient(135deg,#2563EB,#1D4ED8)';
 
 try {
   const rawFavs = JSON.parse(localStorage.getItem('bom_mat_favs') || '[]');
@@ -176,7 +178,9 @@ function setCurrentUser(user, skipNav) {
   const dropdown = document.getElementById('userDropdown');
   if (user) {
     try { localStorage.setItem('bom_user', user.name); } catch(e) {}
-    avatar.textContent = user.initial || user.name.charAt(0);
+    avatar.textContent = (user.initial || user.name.charAt(0)).toUpperCase();
+    avatar.style.background = getAvatarColor(user.name);
+    avatar.style.color = '#fff';
     avatar.title = user.name;
     menuLabel.textContent = user.name;
     menuName.textContent = user.name;
@@ -192,6 +196,8 @@ function setCurrentUser(user, skipNav) {
     try { localStorage.removeItem('bom_user'); localStorage.removeItem('bom_page'); } catch(e) {}
     avatar.textContent = '—';
     avatar.title = '未登录';
+    avatar.style.background = defaultAvatarBg;
+    avatar.style.color = '#fff';
     menuLabel.textContent = '未登录';
     menuName.textContent = '—';
     menuRole.textContent = '—';
@@ -265,7 +271,92 @@ function quickLogin(name, password) {
 
 function quickLoginFromDataset(el) {
   if (!el) return;
-  quickLogin(el.dataset.name || '', el.dataset.pw || '');
+  const user = getDemoUserByName(el.dataset.name || el.dataset.account || '');
+  if (user) selectQuickUser(user, {persist:true});
+  const previewBtn = document.querySelector('#loginPreview .login-quick-btn');
+  if (previewBtn) {
+    previewBtn.focus();
+  }
+}
+
+function handleQuickLogin() {
+  if (!selectedQuickUser) {
+    showToast('请选择一个账号', 'error');
+    return;
+  }
+  quickLogin(selectedQuickUser.name, selectedQuickUser.password);
+}
+
+function getDemoUserByName(name) {
+  if (!name) return null;
+  return demoUsers.find(u => u.name === name || u.account === name) || null;
+}
+
+function persistQuickUser(name) {
+  try { localStorage.setItem('bom_quick_user', name || ''); } catch(e) {}
+}
+function getSavedQuickUser() {
+  try { return localStorage.getItem('bom_quick_user') || ''; } catch(e) { return ''; }
+}
+
+function highlightQuickUser(name) {
+  document.querySelectorAll('.login-pill').forEach(p => {
+    p.classList.toggle('active', !!name && (p.dataset.name === name));
+  });
+}
+
+function renderLoginPreview() {
+  const preview = document.getElementById('loginPreview');
+  if (!preview) return;
+  if (!selectedQuickUser) {
+    preview.innerHTML = '<div class="login-preview-empty"><div class="login-preview-icon">👤</div><div>请选择上方账号，系统将自动填充信息并支持一键登录</div></div>';
+    return;
+  }
+  const user = selectedQuickUser;
+  const avatarBg = getAvatarColor(user.name || user.account || '');
+  preview.innerHTML = `
+    <div class="login-preview-head">
+      <div class="login-preview-avatar" style="background:${avatarBg}">${escapeHtml((user.initial || user.name || '?').charAt(0).toUpperCase())}</div>
+      <div class="login-preview-meta">
+        <div class="lp-name">${escapeHtml(user.name || '')}</div>
+        <div class="lp-role">${escapeHtml(user.role || '—')}</div>
+      </div>
+    </div>
+    <div class="login-preview-info">
+      <div><span>账号</span>${escapeHtml(user.account || '—')}</div>
+      <div><span>邮箱</span>${escapeHtml(user.email || '—')}</div>
+    </div>
+    <div class="login-preview-actions">
+      <button class="login-quick-btn" onclick="handleQuickLogin()">一键登录</button>
+    </div>
+    <div class="login-preview-note">系统会自动填充用户名与密码，可登录后在顶部切换账户。</div>
+  `;
+}
+
+function selectQuickUser(user, opts = {}) {
+  if (!user) {
+    selectedQuickUser = null;
+    highlightQuickUser(null);
+    renderLoginPreview();
+    return;
+  }
+  selectedQuickUser = user;
+  highlightQuickUser(user.name);
+  if (!opts.skipInputs) {
+    const nameInput = document.getElementById('loginUsername');
+    const passInput = document.getElementById('loginPassword');
+    if (nameInput) nameInput.value = user.name;
+    if (passInput) passInput.value = user.password;
+  }
+  renderLoginPreview();
+  if (opts.persist !== false) persistQuickUser(user.name);
+}
+
+function restoreQuickLoginSelection() {
+  const saved = getSavedQuickUser();
+  const fallback = getDemoUserByName(saved) || demoUsers[0] || null;
+  if (fallback) selectQuickUser(fallback, {persist:false});
+  else renderLoginPreview();
 }
 
 function getAvatarColor(name = '') {
@@ -1543,6 +1634,7 @@ function renderLoginPills() {
     if (!pill) return;
     quickLoginFromDataset(pill);
   };
+  restoreQuickLoginSelection();
 }
 
 
@@ -3058,14 +3150,7 @@ hideModal = function(id) {
 
 var _origRenderLoginPills = renderLoginPills;
 renderLoginPills = function() {
-  var container = document.getElementById('loginAccounts');
-  if (!container) return;
-  container.innerHTML = demoUsers.map(function(u) { return buildLoginPill(u); }).join('');
-  container.onclick = function(e) {
-    var pill = e.target.closest('.login-pill');
-    if (!pill) return;
-    quickLoginFromDataset(pill);
-  };
+  _origRenderLoginPills();
 };
 
 function startInlineEdit(td) {
@@ -3281,7 +3366,8 @@ const exposedAPI = {
   focusPinnedNode,
   removePinnedNode,
   quickLogin,
-  quickLoginFromDataset
+  quickLoginFromDataset,
+  handleQuickLogin
 };
 
 Object.assign(window, exposedAPI);

@@ -87,10 +87,26 @@
 .login-pill{padding:6px 14px;border-radius:20px;font-size:11px;background:rgba(37,99,235,.04);border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;transition:all var(--transition-normal);animation:slideUp .4s cubic-bezier(.4,0,.2,1) both;display:flex;align-items:center;gap:10px;min-width:150px}
 .login-pill:nth-child(1){animation-delay:.1s}.login-pill:nth-child(2){animation-delay:.15s}.login-pill:nth-child(3){animation-delay:.2s}.login-pill:nth-child(4){animation-delay:.25s}.login-pill:nth-child(5){animation-delay:.3s}.login-pill:nth-child(6){animation-delay:.35s}.login-pill:nth-child(7){animation-delay:.4s}.login-pill:nth-child(8){animation-delay:.45s}.login-pill:nth-child(9){animation-delay:.5s}.login-pill:nth-child(10){animation-delay:.55s}
 .login-pill:hover{border-color:var(--accent);color:var(--accent);background:rgba(37,99,235,.06);transform:translateY(-1px)}
+.login-pill.active{border-color:var(--accent);background:rgba(124,58,237,.08);color:var(--accent);box-shadow:0 4px 12px rgba(124,58,237,.2)}
 .pill-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 10px rgba(15,23,42,.15)}
 .pill-info{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2}
 .pill-name{font-size:12px;font-weight:600;color:var(--text-primary)}
 .pill-role{font-size:10px;color:var(--text-muted);margin-top:1px}
+
+.login-preview{margin-top:12px;padding:14px;border:1px solid var(--border);border-radius:var(--radius);background:rgba(255,255,255,.7);text-align:left;min-height:120px;transition:all var(--transition-normal)}
+.login-preview-empty{text-align:center;color:var(--text-muted);font-size:12px;display:flex;flex-direction:column;gap:6px;align-items:center}
+.login-preview-icon{font-size:26px}
+.login-preview-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.login-preview-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:#fff;box-shadow:0 8px 20px rgba(15,23,42,.15)}
+.login-preview-meta .lp-name{font-size:15px;font-weight:600;color:var(--text-primary)}
+.login-preview-meta .lp-role{font-size:12px;color:var(--text-muted);margin-top:4px}
+.login-preview-info{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;margin-bottom:12px}
+.login-preview-info span{display:block;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.login-preview-actions{display:flex;gap:8px}
+.login-quick-btn{flex:1;border:none;border-radius:var(--radius);padding:10px 0;font-size:12px;font-weight:600;background:linear-gradient(135deg,#2563EB,#7C3AED);color:#fff;cursor:pointer;box-shadow:0 8px 20px rgba(79,70,229,.25);transition:transform .15s,box-shadow .15s}
+.login-quick-btn:hover{transform:translateY(-1px);box-shadow:0 12px 24px rgba(79,70,229,.35)}
+.login-quick-btn:active{transform:translateY(0)}
+.login-preview-note{font-size:11px;color:var(--text-secondary)}
 
 .health-card-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
 .health-item{display:flex;align-items:center;justify-content:space-between;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;font-size:12px;transition:all var(--transition-normal)}

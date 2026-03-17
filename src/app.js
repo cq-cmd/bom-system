@@ -149,6 +149,7 @@ let pinnedNodeIds = new Set();
 let selectedQuickUser = null;
 const avatarPalette = ['#6366F1','#7C3AED','#EC4899','#F97316','#14B8A6','#0EA5E9','#10B981','#F43F5E'];
 const defaultAvatarBg = 'linear-gradient(135deg,#2563EB,#1D4ED8)';
+let loginOverlayMode = 'auth';
 
 try {
   const rawFavs = JSON.parse(localStorage.getItem('bom_mat_favs') || '[]');
@@ -185,7 +186,7 @@ function setCurrentUser(user, skipNav) {
     menuLabel.textContent = user.name;
     menuName.textContent = user.name;
     menuRole.textContent = user.role;
-    if (login) login.style.display = 'none';
+    hideLoginOverlay();
     if (app) app.style.display = 'flex';
     dropdown?.classList.remove('show');
     if (!skipNav) {
@@ -202,7 +203,7 @@ function setCurrentUser(user, skipNav) {
     menuName.textContent = '—';
     menuRole.textContent = '—';
     if (app) app.style.display = 'none';
-    if (login) login.style.display = 'flex';
+    showLoginOverlay('auth');
     dropdown?.classList.remove('show');
     const pwd = document.getElementById('loginPassword');
     if (pwd) pwd.value = '';
@@ -227,6 +228,8 @@ function handleLoginSubmit() {
 function initLoginUI() {
   const submitBtn = document.getElementById('loginSubmit');
   const logoutBtn = document.getElementById('logoutBtn');
+  const switchBtn = document.getElementById('switchAccountBtn');
+  const closeBtn = document.getElementById('loginCloseBtn');
   submitBtn?.addEventListener('click', handleLoginSubmit);
   document.getElementById('loginPassword')?.addEventListener('keydown', e => { if (e.key === 'Enter') handleLoginSubmit(); });
   document.getElementById('loginUsername')?.addEventListener('keydown', e => { if (e.key === 'Enter') handleLoginSubmit(); });
@@ -235,8 +238,17 @@ function initLoginUI() {
     setCurrentUser(null);
     const err = document.getElementById('loginError');
     if (err) err.textContent = '';
-    const loginEl = document.getElementById('loginScreen');
-    if (loginEl) loginEl.style.display = 'flex';
+    showLoginOverlay('auth');
+  });
+  switchBtn?.addEventListener('click', e => {
+    e.stopPropagation();
+    openSwitchAccount();
+    const dropdown = document.getElementById('userDropdown');
+    dropdown?.classList.remove('show');
+  });
+  closeBtn?.addEventListener('click', e => {
+    e.preventDefault();
+    handleLoginClose();
   });
   try {
     var savedUser = localStorage.getItem('bom_user');
@@ -258,6 +270,11 @@ function initLoginUI() {
     dropdown?.classList.toggle('show');
   });
   document.addEventListener('click', () => dropdown?.classList.remove('show'));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && currentUser && document.getElementById('loginScreen')?.classList.contains('login-inline')) {
+      handleLoginClose();
+    }
+  });
   setCurrentUser(null);
 }
 
@@ -285,6 +302,46 @@ function handleQuickLogin() {
     return;
   }
   quickLogin(selectedQuickUser.name, selectedQuickUser.password);
+}
+
+function showLoginOverlay(mode = 'auth') {
+  const login = document.getElementById('loginScreen');
+  const closeBtn = document.getElementById('loginCloseBtn');
+  if (!login) return;
+  loginOverlayMode = mode;
+  login.style.display = 'flex';
+  if (mode === 'switch' && currentUser) {
+    login.classList.add('login-inline');
+    closeBtn?.classList.add('show');
+  } else {
+    login.classList.remove('login-inline');
+    closeBtn?.classList.remove('show');
+  }
+}
+
+function hideLoginOverlay() {
+  const login = document.getElementById('loginScreen');
+  const closeBtn = document.getElementById('loginCloseBtn');
+  if (!login) return;
+  login.classList.remove('login-inline');
+  closeBtn?.classList.remove('show');
+  if (currentUser) login.style.display = 'none';
+}
+
+function openSwitchAccount() {
+  if (!currentUser) return;
+  const err = document.getElementById('loginError');
+  if (err) err.textContent = '';
+  showLoginOverlay('switch');
+  selectQuickUser(currentUser, {persist:false});
+  setTimeout(() => {
+    document.getElementById('loginCloseBtn')?.focus();
+  }, 0);
+}
+
+function handleLoginClose() {
+  if (!currentUser) return;
+  hideLoginOverlay();
 }
 
 function getDemoUserByName(name) {

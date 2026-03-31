@@ -1,5 +1,5 @@
 @media(max-width:900px){
-  .sidebar{width:56px;overflow:hidden}.sidebar .nav-item span:not(.icon){display:none}.sidebar .nav-label{display:none}.sidebar .nav-item{justify-content:center;padding:10px 0}.sidebar .nav-item .icon{margin:0}
+  .sidebar{width:56px;overflow:hidden}.sidebar .nav-item span:not(.icon){display:none}.sidebar .nav-label{display:none}.sidebar .nav-item{justify-content:center;padding:10px 0;margin:0 4px}.sidebar .nav-item .icon{margin:0}
   .tree-left{width:260px}
   .detail-grid{grid-template-columns:1fr}
   .chart-grid{grid-template-columns:1fr}
@@ -17,10 +17,10 @@
   .search-input{width:100%}
   .btn-xs{min-height:36px;min-width:36px;display:inline-flex;align-items:center;justify-content:center}
   .table-wrap{position:relative}
-  .table-wrap::after{content:'← 滑动查看更多 →';position:sticky;bottom:0;left:0;right:0;text-align:center;font-size:10px;color:var(--text-muted);padding:6px;background:var(--bg-elevated);border-top:1px solid var(--border);display:block}
+  .table-wrap::after{content:'← 滑动查看更多 →';position:sticky;bottom:0;left:0;right:0;text-align:center;font-size:10px;color:var(--text-muted);padding:6px;background:var(--bg-secondary);border-top:1px solid var(--border);display:block}
   .modal{max-width:95vw!important;margin:8px!important}
   .form-row{grid-template-columns:1fr!important}
-  .tree-right.mobile-open{display:block!important;position:fixed;bottom:0;left:0;right:0;height:55vh;z-index:200;border-radius:14px 14px 0 0;box-shadow:var(--shadow-xl);overflow-y:auto;background:var(--bg-secondary);transform:translateY(0);animation:slideUp .3s ease}
+  .tree-right.mobile-open{display:block!important;position:fixed;bottom:0;left:0;right:0;height:55vh;z-index:200;border-radius:14px 14px 0 0;box-shadow:var(--shadow-xl);overflow-y:auto;background:var(--bg-secondary);transform:translateY(0);animation:slideUp .25s ease}
   @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
   .mobile-sheet-handle{display:block!important;width:40px;height:4px;background:var(--border);border-radius:2px;margin:8px auto 4px}
 }

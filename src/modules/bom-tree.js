@@ -1,11 +1,13 @@
 // BOM 树 + 详情 + 成本 + 右键菜单
 import { state, allBOMs, versions, substituteMap, enumConfig, rebuildFlat } from './state.js';
 import { escapeHtml } from '../utils/dom.js';
+import { todayStr } from '../utils/format.js';
 import { findNode, populateAllEnumSelects, findParent, updateStatusBar } from './auth.js';
 import { showToast, navigateTo, showModal, showConfirm, hideModal } from './navigation.js';
 import { renderMaterials } from './materials.js';
 import { cloneNode } from './advanced-ops.js';
 import { logAction } from './enhancements.js';
+import { validateField, btnLoading, btnReset, detailGrid } from './ui-helpers.js';
 
 // ===== BOM TREE =====
 

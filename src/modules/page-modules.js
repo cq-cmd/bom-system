@@ -1,5 +1,6 @@
 // 项目/变更/文档/供应商/质量 等页面模块
-import { state, allBOMs, projectsData, changesData, documentsData, suppliersData, qualityData, modSortState, modPageState } from './state.js';
+import { state, allBOMs, projectsData, changesData, documentsData, suppliersData, qualityData, modSortState, modPageState, aprCenterData } from './state.js';
+import { nowStr } from '../utils/format.js';
 import { todayISO, genId, detailGrid } from './ui-helpers.js';
 import { showToast, showModal, hideModal, showConfirm, navigateTo } from './navigation.js';
 import { trackRecentAccess } from './enhancements.js';

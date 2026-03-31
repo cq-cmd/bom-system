@@ -1,5 +1,5 @@
 // 登录/认证系统
-import { state, demoUsers, rebuildFlat } from './state.js';
+import { state, demoUsers, enumConfig, rebuildFlat } from './state.js';
 import { escapeHtml } from '../utils/dom.js';
 import { nowStr } from '../utils/format.js';
 import { navigateTo, showToast } from './navigation.js';

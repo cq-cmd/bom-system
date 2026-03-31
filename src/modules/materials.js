@@ -1,7 +1,7 @@
 // 物料表 + 批量操作 + 收藏 + 行内编辑
-import { state, allBOMs, enumConfig, rebuildFlat, persistFavorites, persistFavoriteFilter, updateFavToggleButton } from './state.js';
+import { state, allBOMs, enumConfig, rebuildFlat, persistFavorites, persistFavoriteFilter, updateFavToggleButton, substituteMap } from './state.js';
 import { escapeHtml } from '../utils/dom.js';
-import { validateField, btnLoading, btnReset } from './ui-helpers.js';
+import { validateField, btnLoading, btnReset, hlText, applyFilterActiveState } from './ui-helpers.js';
 import { startInlineEdit, trackRecentAccess, logAction } from './enhancements.js';
 import { updateSortIndicators, showWhereUsed, editSubstitutes } from './advanced-ops.js';
 import { findNode, findParent, populateAllEnumSelects, updateStatusBar } from './auth.js';

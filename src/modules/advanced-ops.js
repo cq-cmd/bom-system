@@ -1,5 +1,5 @@
 // 批量编辑/替代/克隆/回滚/WhereUsed/多BOM/快捷键等高级操作
-import { state, allBOMs, versions, substituteMap, enumConfig, rebuildFlat } from './state.js';
+import { state, allBOMs, versions, substituteMap, enumConfig, rebuildFlat, projectsData, changesData, settingsUsers, documentsData, suppliersData, qualityData } from './state.js';
 import { escapeHtml } from '../utils/dom.js';
 import { nowStr, todayStr } from '../utils/format.js';
 import { validateField, btnLoading, btnReset, todayISO, genId, detailGrid } from './ui-helpers.js';

@@ -1,6 +1,6 @@
 // 审批流程
 import { state, versions, approvals } from './state.js';
-import { nowStr } from '../utils/format.js';
+import { nowStr, todayStr } from '../utils/format.js';
 import { validateField, btnLoading, btnReset } from './ui-helpers.js';
 import { showToast, hideModal, showModal, showConfirm } from './navigation.js';
 import { updateNavBadges } from './dashboard.js';

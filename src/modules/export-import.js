@@ -1,5 +1,6 @@
 // 导入/导出功能
 import { state, allBOMs, versions, approvals, rebuildFlat } from './state.js';
+import { todayStr } from '../utils/format.js';
 import { showToast, hideModal } from './navigation.js';
 import { renderTree } from './bom-tree.js';
 import { renderMaterials } from './materials.js';

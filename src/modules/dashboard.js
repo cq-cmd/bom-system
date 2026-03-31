@@ -1,5 +1,5 @@
 // 仪表盘 + 通知 + 待办
-import { state, versions, approvals, changesData, qualityData, documentsData } from './state.js';
+import { state, versions, approvals, changesData, qualityData, documentsData, demoUsers, projectsData } from './state.js';
 import { nowStr } from '../utils/format.js';
 import { navigateTo } from './navigation.js';
 import { showChgDetail, showQaDetail, showDocDetail } from './page-modules.js';

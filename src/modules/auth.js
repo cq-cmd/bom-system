@@ -104,18 +104,6 @@ function initLoginUI() {
     e.preventDefault();
     handleLoginClose();
   });
-  try {
-    var savedUser = localStorage.getItem('bom_user');
-    if (savedUser) {
-      var user = findUserByIdentifier(savedUser);
-      if (user) {
-        setCurrentUser(user, true);
-        var savedPage = localStorage.getItem('bom_page') || 'dashboard';
-        navigateTo(savedPage);
-        return;
-      }
-    }
-  } catch(e) {}
   const userMenu = document.getElementById('userMenu');
   const dropdown = document.getElementById('userDropdown');
   userMenu?.addEventListener('click', e => {
@@ -129,6 +117,18 @@ function initLoginUI() {
       handleLoginClose();
     }
   });
+  try {
+    var savedUser = localStorage.getItem('bom_user');
+    if (savedUser) {
+      var user = findUserByIdentifier(savedUser);
+      if (user) {
+        setCurrentUser(user, true);
+        var savedPage = localStorage.getItem('bom_page') || 'dashboard';
+        navigateTo(savedPage);
+        return;
+      }
+    }
+  } catch(e) {}
   setCurrentUser(null);
 }
 

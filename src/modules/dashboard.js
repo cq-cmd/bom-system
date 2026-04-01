@@ -4,6 +4,7 @@ import { nowStr } from '../utils/format.js';
 import { navigateTo } from './navigation.js';
 import { showChgDetail, showQaDetail, showDocDetail } from './page-modules.js';
 import { renderRecentAccess, applyPermissions } from './enhancements.js';
+import { renderPieChart, renderBarChart } from './charts.js';
 import { buildLoginPill, quickLoginFromDataset, restoreQuickLoginSelection } from './auth.js';
 import { renderMaterials } from './materials.js';
 
@@ -30,6 +31,28 @@ function renderDashboard() {
     +'<div class="stat-card"><div class="stat-num" style="color:var(--green)">'+(curVer?curVer.ver:'—')+'</div><div class="stat-label">当前版本</div></div>'
     +'<div class="stat-card" style="cursor:pointer" onclick="navigateTo(\'lifecycle\')"><div class="stat-num" style="color:var(--cyan)">♻️</div><div class="stat-label">生命周期</div></div>'
     +'<div class="stat-card" style="cursor:pointer" onclick="navigateTo(\'inventory\')"><div class="stat-num" style="color:var(--pink)">📋</div><div class="stat-label">库存采购</div></div>';
+  // Dashboard mini charts
+  var dashChartRow = document.getElementById('dashChartRow');
+  if (!dashChartRow) {
+    dashChartRow = document.createElement('div');
+    dashChartRow.id = 'dashChartRow';
+    dashChartRow.className = 'chart-grid';
+    dashChartRow.style.cssText = 'grid-template-columns:1fr 1fr;margin-bottom:20px';
+    var statsEl = document.getElementById('dashStats');
+    if (statsEl && statsEl.nextSibling) statsEl.parentNode.insertBefore(dashChartRow, statsEl.nextSibling);
+    else if (statsEl) statsEl.parentNode.appendChild(dashChartRow);
+  }
+  dashChartRow.innerHTML = '<div class="chart-card" id="dashStatusPie"></div><div class="chart-card" id="dashCostBar"></div>';
+  renderPieChart('dashStatusPie', [
+    { label: '有效', value: activeMats, color: '#5D9B74' },
+    { label: '待审', value: pendingMats, color: '#C49B3C' },
+    { label: '停用', value: totalMats - activeMats - pendingMats, color: '#C06058' }
+  ], '🏷 物料状态分布');
+  var catCost = {};
+  state.materialsFlat.forEach(function(m) { var g = m.id.split('-')[0]; catCost[g] = (catCost[g] || 0) + m.price * m.qty; });
+  var topCats = Object.entries(catCost).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 5);
+  var catColors = ['#4F6D7A', '#5B8FA8', '#5D9B74', '#C49B3C', '#C47F42'];
+  renderBarChart('dashCostBar', topCats.map(function(e, i) { return { label: e[0], value: Math.round(e[1]), color: catColors[i], format: 'currency' }; }), '📦 类别成本 Top5');
   updateNavBadges();
   renderDashTodos();
   var activities = [

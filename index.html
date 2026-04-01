@@ -415,7 +415,7 @@
             <button class="btn btn-secondary btn-sm" onclick="exportModuleCSV('suppliers')">↓ 导出</button>
           </div>
           <div class="table-wrap"><table><thead><tr>
-            <th style="width:40px">#</th><th style="cursor:pointer" onclick="modSort('sup','id')">供应商编号 ↕</th><th style="cursor:pointer" onclick="modSort('sup','name')">供应商名称 ↕</th><th>类型</th><th>等级</th><th>联系人</th><th style="cursor:pointer" onclick="modSort('sup','matCount')">供货物料数 ↕</th><th>合作状态</th><th style="cursor:pointer" onclick="modSort('sup','score')">评分 ↕</th><th style="width:100px">操作</th>
+            <th style="width:40px">#</th><th style="cursor:pointer" onclick="modSort('sup','id')">供应商编号 ↕</th><th style="cursor:pointer" onclick="modSort('sup','name')">供应商名称 ↕</th><th>类型</th><th>等级</th><th>联系人</th><th style="cursor:pointer" onclick="modSort('sup','matCount')">供货物料数 ↕</th><th style="cursor:pointer" onclick="modSort('sup','onTimeRate')">准时交付率 ↕</th><th style="cursor:pointer" onclick="modSort('sup','qualityScore')">质量评分 ↕</th><th>合作状态</th><th style="cursor:pointer" onclick="modSort('sup','score')">综合评分 ↕</th><th style="width:100px">操作</th>
           </tr></thead><tbody id="supBody"></tbody></table></div>
           <div class="table-footer"><span id="supSummary">共 0 条</span><div style="display:flex;align-items:center;gap:8px"><button class="btn btn-ghost btn-xs" id="supPrev" onclick="modPage('sup',-1)" disabled>‹ 上一页</button><span id="supPageInfo" style="font-size:11px">第 1 页</span><button class="btn btn-ghost btn-xs" id="supNext" onclick="modPage('sup',1)">下一页 ›</button></div></div>
         </div>
@@ -504,7 +504,7 @@
             <div class="search-input" style="flex:1;max-width:280px"><input type="text" placeholder="搜索物料…" id="invSearch" oninput="renderInventory()" /></div>
             <button class="btn btn-primary btn-sm" onclick="exportInventoryReport()">📥 导出采购需求</button>
           </div>
-          <div class="table-wrap"><table id="invTable"><thead><tr><th>物料编号</th><th>物料名称</th><th>需求量</th><th>库存量</th><th>安全库存</th><th>MOQ</th><th>提前期</th><th>状态</th><th>建议操作</th></tr></thead><tbody id="invBody"></tbody></table></div>
+          <div class="table-wrap"><table id="invTable"><thead><tr><th>物料编号</th><th>物料名称</th><th>需求量</th><th>库存量</th><th>安全库存</th><th>补货点</th><th>日均用量</th><th>MOQ</th><th>提前期</th><th>状态</th><th>建议操作</th></tr></thead><tbody id="invBody"></tbody></table></div>
           <div style="margin-top:20px;padding:16px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius)">
             <h3 style="font-size:14px;font-weight:600;margin-bottom:12px">📊 缺料分析</h3>
             <div id="shortageAnalysis"></div>

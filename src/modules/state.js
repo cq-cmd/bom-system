@@ -79,20 +79,20 @@ export const documentsData = [
 
 // Suppliers data (was inline in app.js around line 2265)
 export const suppliersData = [
-  { id: 'SUP-001', name: '国巨电子', type: '电子元器件', grade: 'A', contact: '林经理', matCount: 28, status: '合格', score: 95 },
-  { id: 'SUP-002', name: '三星电机', type: '电子元器件', grade: 'A', contact: 'Kim Manager', matCount: 15, status: '合格', score: 92 },
-  { id: 'SUP-003', name: '意法半导体', type: '电子元器件', grade: 'A', contact: 'Pierre', matCount: 8, status: '合格', score: 94 },
-  { id: 'SUP-004', name: '德州仪器', type: '电子元器件', grade: 'A', contact: 'John', matCount: 12, status: '合格', score: 96 },
-  { id: 'SUP-005', name: '华邦电子', type: '电子元器件', grade: 'B', contact: '陈主管', matCount: 5, status: '合格', score: 85 },
-  { id: 'SUP-006', name: '顺络电子', type: '电子元器件', grade: 'B', contact: '黄经理', matCount: 6, status: '待评审', score: 78 },
-  { id: 'SUP-007', name: '中航光电', type: '结构件', grade: 'A', contact: '刘总', matCount: 10, status: '合格', score: 91 },
-  { id: 'SUP-008', name: '立讯精密', type: '结构件', grade: 'A', contact: '王经理', matCount: 14, status: '合格', score: 93 },
-  { id: 'SUP-009', name: '风华高科', type: '电子元器件', grade: 'B', contact: '赵经理', matCount: 9, status: '合格', score: 82 },
-  { id: 'SUP-010', name: '长电科技', type: '电子元器件', grade: 'B', contact: '孙总监', matCount: 7, status: '合格', score: 86 },
-  { id: 'SUP-011', name: '深圳兴旺包装', type: '包材', grade: 'C', contact: '吴经理', matCount: 4, status: '待评审', score: 68 },
-  { id: 'SUP-012', name: '东莞精密模具', type: '结构件', grade: 'C', contact: '周总', matCount: 3, status: '暂停', score: 55 },
-  { id: 'SUP-013', name: '京东方', type: '显示模组', grade: 'A', contact: '李副总', matCount: 6, status: '合格', score: 90 },
-  { id: 'SUP-014', name: '汇顶科技', type: '电子元器件', grade: 'B', contact: '张经理', matCount: 4, status: '合格', score: 84 }
+  { id: 'SUP-001', name: '国巨电子', type: '电子元器件', grade: 'A', contact: '林经理', matCount: 28, status: '合格', score: 95, onTimeRate: 97, qualityScore: 96, cooperationYears: 12, priceCompetitiveness: 88, lastAuditDate: '2025-04-15', certifications: ['ISO9001', 'IATF16949', 'ISO14001'] },
+  { id: 'SUP-002', name: '三星电机', type: '电子元器件', grade: 'A', contact: 'Kim Manager', matCount: 15, status: '合格', score: 92, onTimeRate: 95, qualityScore: 94, cooperationYears: 8, priceCompetitiveness: 72, lastAuditDate: '2025-03-20', certifications: ['ISO9001', 'IATF16949'] },
+  { id: 'SUP-003', name: '意法半导体', type: '电子元器件', grade: 'A', contact: 'Pierre', matCount: 8, status: '合格', score: 94, onTimeRate: 93, qualityScore: 97, cooperationYears: 10, priceCompetitiveness: 68, lastAuditDate: '2025-05-08', certifications: ['ISO9001', 'ISO14001', 'IATF16949'] },
+  { id: 'SUP-004', name: '德州仪器', type: '电子元器件', grade: 'A', contact: 'John', matCount: 12, status: '合格', score: 96, onTimeRate: 98, qualityScore: 98, cooperationYears: 15, priceCompetitiveness: 75, lastAuditDate: '2025-02-12', certifications: ['ISO9001', 'IATF16949', 'AEC-Q100'] },
+  { id: 'SUP-005', name: '华邦电子', type: '电子元器件', grade: 'B', contact: '陈主管', matCount: 5, status: '合格', score: 85, onTimeRate: 88, qualityScore: 83, cooperationYears: 5, priceCompetitiveness: 91, lastAuditDate: '2025-04-01', certifications: ['ISO9001'] },
+  { id: 'SUP-006', name: '顺络电子', type: '电子元器件', grade: 'B', contact: '黄经理', matCount: 6, status: '待评审', score: 78, onTimeRate: 82, qualityScore: 76, cooperationYears: 3, priceCompetitiveness: 93, lastAuditDate: '2025-01-18', certifications: ['ISO9001'] },
+  { id: 'SUP-007', name: '中航光电', type: '结构件', grade: 'A', contact: '刘总', matCount: 10, status: '合格', score: 91, onTimeRate: 94, qualityScore: 92, cooperationYears: 11, priceCompetitiveness: 80, lastAuditDate: '2025-05-22', certifications: ['ISO9001', 'GJB9001C', 'ISO14001'] },
+  { id: 'SUP-008', name: '立讯精密', type: '结构件', grade: 'A', contact: '王经理', matCount: 14, status: '合格', score: 93, onTimeRate: 96, qualityScore: 95, cooperationYears: 9, priceCompetitiveness: 82, lastAuditDate: '2025-03-10', certifications: ['ISO9001', 'IATF16949', 'ISO14001'] },
+  { id: 'SUP-009', name: '风华高科', type: '电子元器件', grade: 'B', contact: '赵经理', matCount: 9, status: '合格', score: 82, onTimeRate: 85, qualityScore: 80, cooperationYears: 6, priceCompetitiveness: 90, lastAuditDate: '2025-04-28', certifications: ['ISO9001', 'ISO14001'] },
+  { id: 'SUP-010', name: '长电科技', type: '电子元器件', grade: 'B', contact: '孙总监', matCount: 7, status: '合格', score: 86, onTimeRate: 89, qualityScore: 85, cooperationYears: 7, priceCompetitiveness: 87, lastAuditDate: '2025-02-25', certifications: ['ISO9001', 'IATF16949'] },
+  { id: 'SUP-011', name: '深圳兴旺包装', type: '包材', grade: 'C', contact: '吴经理', matCount: 4, status: '待评审', score: 68, onTimeRate: 75, qualityScore: 70, cooperationYears: 2, priceCompetitiveness: 95, lastAuditDate: '2024-11-05', certifications: ['ISO9001'] },
+  { id: 'SUP-012', name: '东莞精密模具', type: '结构件', grade: 'C', contact: '周总', matCount: 3, status: '暂停', score: 55, onTimeRate: 65, qualityScore: 58, cooperationYears: 1, priceCompetitiveness: 88, lastAuditDate: '2024-09-12', certifications: [] },
+  { id: 'SUP-013', name: '京东方', type: '显示模组', grade: 'A', contact: '李副总', matCount: 6, status: '合格', score: 90, onTimeRate: 91, qualityScore: 93, cooperationYears: 8, priceCompetitiveness: 78, lastAuditDate: '2025-05-15', certifications: ['ISO9001', 'ISO14001', 'QC080000'] },
+  { id: 'SUP-014', name: '汇顶科技', type: '电子元器件', grade: 'B', contact: '张经理', matCount: 4, status: '合格', score: 84, onTimeRate: 87, qualityScore: 86, cooperationYears: 4, priceCompetitiveness: 83, lastAuditDate: '2025-03-28', certifications: ['ISO9001'] }
 ];
 
 // Quality data (was inline in app.js around line 2302)

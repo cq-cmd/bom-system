@@ -25,8 +25,10 @@ export function buildInventoryData() {
     var safety = Math.round(demand * 0.3);
     var moq = Math.max(100, Math.round(demand / 10) * 10);
     var leadDays = 7 + hash % 28;
-    var status = stock < safety ? 'shortage' : stock > demand * 2 ? 'overstock' : stock < safety * 1.5 ? 'reorder' : 'ok';
-    return {id:m.id, name:m.name, demand:demand, stock:stock, safety:safety, moq:moq, leadDays:leadDays, status:status, supplier:m.supplier, price:m.price};
+    var avgDailyUsage = Math.round(demand / 30 * 10) / 10;
+    var reorderPoint = Math.round(safety + avgDailyUsage * leadDays);
+    var status = stock < safety ? 'shortage' : stock > demand * 2 ? 'overstock' : stock < reorderPoint ? 'reorder' : 'ok';
+    return {id:m.id, name:m.name, demand:demand, stock:stock, safety:safety, moq:moq, leadDays:leadDays, status:status, supplier:m.supplier, price:m.price, avgDailyUsage:avgDailyUsage, reorderPoint:reorderPoint};
   });
 }
 

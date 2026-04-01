@@ -11,8 +11,8 @@
 .global-search{flex:1;max-width:400px;margin-left:auto;position:relative}
 .global-search input{width:100%;background:var(--bg-tertiary);border:1px solid transparent;border-radius:var(--radius);padding:8px 14px 8px 32px;color:var(--text-primary);outline:none;transition:all var(--transition-normal);font-size:13px}
 .global-search input:focus{border-color:var(--border);box-shadow:var(--shadow-sm);background:var(--bg-secondary)}
-.global-search::before{content:"⌕";position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px;pointer-events:none;transition:color var(--transition-fast)}
-.global-search:focus-within::before{color:var(--accent)}
+.global-search::before{content:"";position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a8a29e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");background-size:contain;background-repeat:no-repeat;pointer-events:none;transition:opacity var(--transition-fast)}
+.global-search:focus-within::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234F6D7A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E")}
 .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;transition:all var(--transition-normal);box-shadow:none;color:#fff}
 .user-avatar:hover{opacity:.85;transform:scale(1.04)}
 .user-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover}
@@ -20,14 +20,14 @@
 /* ===== SIDEBAR ===== */
 .main-wrap{display:flex;flex:1;overflow:hidden}
 .sidebar{width:var(--sidebar-w);background:var(--bg-secondary);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;padding:16px 0;overflow-y:auto;transition:width var(--transition-slow)}
-.sidebar .nav-group{margin-bottom:8px;animation:navSlideIn .3s ease both}
-.sidebar .nav-group:nth-child(1){animation-delay:.03s}
-.sidebar .nav-group:nth-child(2){animation-delay:.06s}
-.sidebar .nav-group:nth-child(3){animation-delay:.09s}
-.sidebar .nav-group:nth-child(4){animation-delay:.12s}
-.sidebar .nav-group:nth-child(5){animation-delay:.15s}
+.sidebar .nav-group{margin-bottom:8px;animation:navSlideIn .2s ease both}
+.sidebar .nav-group:nth-child(1){animation-delay:0s}
+.sidebar .nav-group:nth-child(2){animation-delay:.02s}
+.sidebar .nav-group:nth-child(3){animation-delay:.04s}
+.sidebar .nav-group:nth-child(4){animation-delay:.06s}
+.sidebar .nav-group:nth-child(5){animation-delay:.08s}
 .sidebar .nav-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;padding:8px 20px 4px;margin-bottom:2px}
-.sidebar .nav-item{display:flex;align-items:center;gap:10px;padding:8px 20px;cursor:pointer;color:var(--text-secondary);transition:all var(--transition-normal);border-radius:0;font-size:13px;border-left:2px solid transparent;position:relative;margin:0 8px;border-radius:var(--radius-sm);border-left:none}
+.sidebar .nav-item{display:flex;align-items:center;gap:10px;padding:8px 20px;cursor:pointer;color:var(--text-secondary);transition:all var(--transition-normal);font-size:13px;position:relative;margin:0 8px;border-radius:var(--radius-sm)}
 .sidebar .nav-item:hover{background:var(--bg-tertiary);color:var(--text-primary)}
 .sidebar .nav-item.active{background:var(--bg-tertiary);color:var(--text-primary);font-weight:500}
 .sidebar .nav-item.active::after{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:16px;background:var(--accent);border-radius:0 2px 2px 0}
@@ -60,7 +60,7 @@
 .login-close:hover{background:var(--bg-tertiary);color:var(--text-primary)}
 .login-close:active{transform:scale(.92)}
 .login-close.show{display:flex}
-.login-card h1{font-size:22px;font-weight:700;margin:14px 0 28px;letter-spacing:-.3px;color:var(--text-primary);font-family:var(--font-display);-webkit-text-fill-color:unset;background:none;-webkit-background-clip:unset;background-clip:unset}
+.login-card h1{font-size:22px;font-weight:700;margin:14px 0 6px;letter-spacing:-.3px;color:var(--text-primary);font-family:var(--font-display);-webkit-text-fill-color:unset;background:none;-webkit-background-clip:unset;background-clip:unset}
 .login-input{width:100%;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:var(--radius);padding:11px 16px;color:var(--text-primary);margin-bottom:14px;transition:all var(--transition-normal)}
 .login-input:focus{border-color:var(--accent);outline:none;box-shadow:var(--shadow-glow);background:var(--bg-secondary)}
 .login-input::placeholder{color:var(--text-muted);transition:color var(--transition-fast)}

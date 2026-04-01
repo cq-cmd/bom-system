@@ -8,6 +8,9 @@
   .breadcrumb{display:none}
   .global-search{max-width:200px}
   .content-body{padding:16px}
+  #lcKanban{grid-template-columns:repeat(3,1fr)!important}
+  #page-cost [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+  #page-config [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
 }
 @media(max-width:600px){
   .tree-left{width:100%}.tree-right{display:none}
@@ -23,4 +26,7 @@
   .tree-right.mobile-open{display:block!important;position:fixed;bottom:0;left:0;right:0;height:55vh;z-index:200;border-radius:14px 14px 0 0;box-shadow:var(--shadow-xl);overflow-y:auto;background:var(--bg-secondary);transform:translateY(0);animation:slideUp .25s ease}
   @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
   .mobile-sheet-handle{display:block!important;width:40px;height:4px;background:var(--border);border-radius:2px;margin:8px auto 4px}
+  #lcKanban{grid-template-columns:1fr!important}
+  .toast-container{left:16px;right:16px;bottom:16px}
+  .toast{width:100%}
 }

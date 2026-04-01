@@ -353,6 +353,15 @@
             <th style="width:40px">#</th><th style="cursor:pointer" onclick="modSort('chg','id')">变更单号 ↕</th><th>类型</th><th style="cursor:pointer" onclick="modSort('chg','title')">标题 ↕</th><th>影响范围</th><th>发起人</th><th>审批人</th><th style="cursor:pointer" onclick="modSort('chg','date')">发起日期 ↕</th><th>优先级</th><th>状态</th><th style="width:130px">操作</th>
           </tr></thead><tbody id="chgBody"></tbody></table></div>
           <div class="table-footer"><span id="chgSummary">共 0 条</span><div style="display:flex;align-items:center;gap:8px"><button class="btn btn-ghost btn-xs" id="chgPrev" onclick="modPage('chg',-1)" disabled>‹ 上一页</button><span id="chgPageInfo" style="font-size:11px">第 1 页</span><button class="btn btn-ghost btn-xs" id="chgNext" onclick="modPage('chg',1)">下一页 ›</button></div></div>
+          <div style="margin-top:20px;padding:16px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius)">
+            <h3 style="font-size:14px;font-weight:600;margin-bottom:12px">🔍 变更影响分析</h3>
+            <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px">选择物料查看所有引用该物料的 BOM，评估变更影响范围</p>
+            <div style="display:flex;gap:8px;margin-bottom:12px">
+              <select class="filter-select" id="impactMatSelect" onchange="analyzeChangeImpact()" style="flex:1;max-width:300px"><option value="">-- 选择物料 --</option></select>
+              <button class="btn btn-secondary btn-sm" onclick="analyzeChangeImpact()">分析影响</button>
+            </div>
+            <div id="impactResult"></div>
+          </div>
         </div>
       </div>
 
@@ -491,6 +500,13 @@
               <select class="filter-select" id="costVerB" onchange="renderCostCompare()"></select>
             </div>
             <div id="costCompare"></div>
+          </div>
+          <div style="margin-top:16px;padding:16px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius)">
+            <h3 style="font-size:14px;font-weight:600;margin-bottom:12px">🧪 成本 What-if 模拟器</h3>
+            <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px">拖动滑杆调整关键物料价格，实时预览 BOM 总成本变化</p>
+            <div id="whatIfSliders" style="margin-bottom:16px"></div>
+            <div id="whatIfResult" style="padding:12px;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-sm)"></div>
+            <div style="margin-top:8px;text-align:right"><button class="btn btn-secondary btn-sm" onclick="resetWhatIf()">↺ 重置</button></div>
           </div>
         </div>
       </div>

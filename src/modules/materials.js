@@ -6,6 +6,7 @@ import { startInlineEdit, trackRecentAccess, logAction } from './enhancements.js
 import { updateSortIndicators, showWhereUsed, editSubstitutes } from './advanced-ops.js';
 import { findNode, findParent, populateAllEnumSelects, updateStatusBar } from './auth.js';
 import { hideModal, showModal, showToast, showConfirm } from './navigation.js';
+import { renderPriceHistory } from './charts.js';
 import { renderTree } from './bom-tree.js';
 import { updateNavBadges } from './dashboard.js';
 
@@ -183,7 +184,11 @@ function showMatDetail(id) {
   const subsHtml = subs.length
     ? subs.map(s => `<span class="substitute-pill">${s.id} · ${s.name}（${s.supplier}）</span>`).join('')
     : '<span class="badge badge-gray">暂无推荐</span>';
-  document.getElementById('matDetailBody').innerHTML = baseHtml + `<div class="substitute-list"><h4>🔁 替代物料</h4>${subsHtml}</div>`;
+  document.getElementById('matDetailBody').innerHTML = baseHtml + `<div class="substitute-list"><h4>🔁 替代物料</h4>${subsHtml}</div><div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><h4 style="font-size:13px;font-weight:600;margin-bottom:12px">📈 价格趋势 (12个月)</h4><div id="matPriceHistoryChart" style="min-height:120px"></div></div>`;
+  // Render price history chart if available
+  if (typeof renderPriceHistory === 'function') {
+    setTimeout(function() { renderPriceHistory('matPriceHistoryChart', m.id, m.price); }, 50);
+  }
   document.getElementById('matDetailEditBtn').onclick = function() { hideModal('matDetailModal'); editMaterial(id); };
   document.getElementById('matDetailWhereUsedBtn').onclick = function() { hideModal('matDetailModal'); showWhereUsed(id); };
   document.getElementById('matDetailSubBtn').onclick = function() { hideModal('matDetailModal'); editSubstitutes(id); };

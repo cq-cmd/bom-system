@@ -89,6 +89,7 @@ function renderCostAnalysis() {
   if(selA && versions) { selA.innerHTML = versions.map(function(v){return '<option value="'+v.ver+'">'+v.ver+'</option>';}).join(''); selA.value = versions[1]?.ver || versions[0].ver; }
   if(selB && versions) { selB.innerHTML = versions.map(function(v){return '<option value="'+v.ver+'">'+v.ver+'</option>';}).join(''); selB.value = versions[0].ver; }
   renderCostCompare();
+  initWhatIf();
 }
 
 function renderCostCompare() {
@@ -102,6 +103,66 @@ function renderCostCompare() {
   var pct = totalA > 0 ? ((diff / totalA) * 100).toFixed(1) : '0';
   el.innerHTML = '<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:center;text-align:center;padding:16px"><div><div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">'+verA+'</div><div style="font-size:22px;font-weight:700;color:var(--text-secondary)">¥'+totalA.toFixed(0)+'</div></div><div style="font-size:24px;color:'+(diff>0?'var(--red)':'var(--green)')+'">→ '+(diff>0?'↑':'↓')+' '+(diff>0?'+':'')+pct+'%</div><div><div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">'+verB+'</div><div style="font-size:22px;font-weight:700;color:var(--accent)">¥'+totalB.toFixed(0)+'</div></div></div>' +
     '<div style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:8px">成本变化: <b style="color:'+(diff>0?'var(--red)':'var(--green)');+'">'+(diff>0?'+':'')+'¥'+diff.toFixed(0)+'</b></div>';
+}
+
+// ===== What-if Cost Simulator =====
+var whatIfOverrides = {};
+
+function initWhatIf() {
+  whatIfOverrides = {};
+  var container = document.getElementById('whatIfSliders');
+  if (!container || !state.materialsFlat || !state.materialsFlat.length) return;
+  // Pick top 6 materials by total cost contribution (price * qty)
+  var sorted = state.materialsFlat.slice().sort(function(a,b){return (b.price*b.qty)-(a.price*a.qty);});
+  var topMats = sorted.slice(0, 6);
+  container.innerHTML = topMats.map(function(m) {
+    var minP = Math.round(m.price * 0.5 * 100) / 100;
+    var maxP = Math.round(m.price * 2 * 100) / 100;
+    var step = m.price > 10 ? 1 : 0.1;
+    return '<div style="margin-bottom:10px;display:grid;grid-template-columns:120px 1fr 60px;gap:8px;align-items:center;font-size:12px">' +
+      '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-secondary)" title="'+m.id+' '+m.name+'">'+m.icon+' '+m.name+'</span>' +
+      '<input type="range" min="'+minP+'" max="'+maxP+'" step="'+step+'" value="'+m.price+'" data-mid="'+m.id+'" data-orig="'+m.price+'" oninput="updateWhatIf(this)" style="width:100%;accent-color:var(--accent)">' +
+      '<span id="wif-'+m.id.replace(/[^a-zA-Z0-9]/g,'_')+'" style="font-weight:600;text-align:right;color:var(--accent)">¥'+m.price.toFixed(m.price>10?0:2)+'</span>' +
+      '</div>';
+  }).join('');
+  updateWhatIfResult();
+}
+
+function updateWhatIf(slider) {
+  var mid = slider.getAttribute('data-mid');
+  var orig = parseFloat(slider.getAttribute('data-orig'));
+  var val = parseFloat(slider.value);
+  whatIfOverrides[mid] = val;
+  var label = document.getElementById('wif-'+mid.replace(/[^a-zA-Z0-9]/g,'_'));
+  if (label) {
+    var diff = ((val - orig) / orig * 100).toFixed(1);
+    var color = val > orig ? 'var(--red)' : val < orig ? 'var(--green)' : 'var(--accent)';
+    label.innerHTML = '¥'+ val.toFixed(val>10?0:2) + (val !== orig ? ' <span style="color:'+color+';font-size:10px">'+(val>orig?'+':'')+diff+'%</span>' : '');
+  }
+  updateWhatIfResult();
+}
+
+function updateWhatIfResult() {
+  var el = document.getElementById('whatIfResult');
+  if (!el || !state.materialsFlat) return;
+  var origTotal = state.materialsFlat.reduce(function(s,m){return s+m.price*m.qty;},0);
+  var newTotal = state.materialsFlat.reduce(function(s,m){
+    var p = whatIfOverrides[m.id] !== undefined ? whatIfOverrides[m.id] : m.price;
+    return s + p * m.qty;
+  },0);
+  var diff = newTotal - origTotal;
+  var pct = origTotal > 0 ? (diff / origTotal * 100).toFixed(2) : '0';
+  var color = diff > 0 ? 'var(--red)' : diff < 0 ? 'var(--green)' : 'var(--text-muted)';
+  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;text-align:center">' +
+    '<div><div style="font-size:10px;color:var(--text-muted)">原始成本</div><div style="font-size:18px;font-weight:700;color:var(--text-secondary)">¥'+origTotal.toFixed(0)+'</div></div>' +
+    '<div style="font-size:20px;color:'+color+'">→ '+(diff>0?'↑':'↓')+' '+(diff>0?'+':'')+pct+'%</div>' +
+    '<div><div style="font-size:10px;color:var(--text-muted)">模拟成本</div><div style="font-size:18px;font-weight:700;color:'+color+'">¥'+newTotal.toFixed(0)+'</div></div>' +
+    '</div><div style="text-align:center;margin-top:6px;font-size:11px;color:'+color+'">差额: '+(diff>0?'+':'')+'¥'+diff.toFixed(0)+'</div>';
+}
+
+function resetWhatIf() {
+  whatIfOverrides = {};
+  initWhatIf();
 }
 
 var inventoryData = [];
@@ -261,4 +322,4 @@ function exportComplianceReport() {
 }
 
 
-export { buildLifecycleData, renderLifecycle, renderCostAnalysis, renderCostCompare, buildInventoryData, renderInventory, exportInventoryReport, renderProcessRoutes, showNewProcessModal, renderProductConfig, buildComplianceData, renderCompliance, exportComplianceReport };
+export { buildLifecycleData, renderLifecycle, renderCostAnalysis, renderCostCompare, buildInventoryData, renderInventory, exportInventoryReport, renderProcessRoutes, showNewProcessModal, renderProductConfig, buildComplianceData, renderCompliance, exportComplianceReport, updateWhatIf, resetWhatIf };

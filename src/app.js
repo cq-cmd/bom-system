@@ -20,8 +20,8 @@ import { renderSettings, addEnumItem, removeEnumItem } from './modules/settings.
 import { showModal, hideModal, showConfirm, showToast, navigateTo } from './modules/navigation.js';
 import { renderDashboard, updateNavBadges, initNotifBell, renderLoginPills, renderDashTodos } from './modules/dashboard.js';
 import { showBatchEditModal, doBatchEdit, showWhereUsed, editSubstitutes, addSubstitute, removeSubstitute, cloneNode, rollbackVersion, renderCostTrend, renderDuplicateCheck, renderSingleSourceRisk, populateBOMSelector, switchBOM, showNewBOMModal, createNewBOM, deleteBOM, editUser, saveUserEdit, renderSearchDropdown, hideSearchDropdown, updateSortIndicators, initNotifActions, markAllNotifRead } from './modules/advanced-ops.js';
-import { renderProjects, switchChgTab, renderChanges, switchAprTab, renderApprovalCenter, renderDocuments, renderSuppliers, renderQuality, modSort, modPage, modSortData, modPaginate, handleDocFileSelect, showNewProjectModal, editProject, saveProject, deleteProject, projAction, showProjDetail, showChgModal, saveChange, editChange, deleteChange, chgAction, showChgDetail, saveDocument, deleteDoc, docAction, showDocDetail, saveSupplier, editSupplier, supAction, showSupReviewModal, saveSupReview, showSupDetail, saveQuality, deleteQa, qaAction, showQaDetail, doAprCenterAction, exportModuleCSV } from './modules/page-modules.js';
-import { buildLifecycleData, renderLifecycle, renderCostAnalysis, renderCostCompare, buildInventoryData, renderInventory, exportInventoryReport, renderProcessRoutes, showNewProcessModal, renderProductConfig, buildComplianceData, renderCompliance, exportComplianceReport } from './modules/pdm-modules.js';
+import { renderProjects, switchChgTab, renderChanges, switchAprTab, renderApprovalCenter, renderDocuments, renderSuppliers, renderQuality, modSort, modPage, modSortData, modPaginate, handleDocFileSelect, showNewProjectModal, editProject, saveProject, deleteProject, projAction, showProjDetail, showChgModal, saveChange, editChange, deleteChange, chgAction, showChgDetail, saveDocument, deleteDoc, docAction, showDocDetail, saveSupplier, editSupplier, supAction, showSupReviewModal, saveSupReview, showSupDetail, saveQuality, deleteQa, qaAction, showQaDetail, doAprCenterAction, exportModuleCSV, analyzeChangeImpact } from './modules/page-modules.js';
+import { buildLifecycleData, renderLifecycle, renderCostAnalysis, renderCostCompare, buildInventoryData, renderInventory, exportInventoryReport, renderProcessRoutes, showNewProcessModal, renderProductConfig, buildComplianceData, renderCompliance, exportComplianceReport, updateWhatIf, resetWhatIf } from './modules/pdm-modules.js';
 import { enhanceTreeSearch, trackRecentAccess, renderRecentAccess, logAction, renderAuditLog, canUserDo, applyPermissions, startInlineEdit, showShortcutHelp, initEnhancements } from './modules/enhancements.js';
 
 // ===== Expose all functions to window for onclick handlers in dynamic HTML =====
@@ -41,7 +41,9 @@ const exposedAPI = {
   showSupReviewModal, sortMaterials, submitApproval, switchAprTab, switchBOM,
   switchChgTab, toggleFavorite, toggleFavoriteFilter, togglePinNode,
   toggleSelectAll, toggleTheme, focusPinnedNode, removePinnedNode,
-  quickLogin, quickLoginFromDataset, handleQuickLogin
+  quickLogin, quickLoginFromDataset, handleQuickLogin,
+  updateWhatIf, resetWhatIf,
+  analyzeChangeImpact
 };
 Object.assign(window, exposedAPI);
 

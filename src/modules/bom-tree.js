@@ -82,6 +82,84 @@ function buildTreeNode(node, depth) {
     state.ctxNode = node; ctxAction('edit');
   });
   row.addEventListener('contextmenu', e => { e.preventDefault(); state.ctxNode = node; state.ctxTreeNodeEl = div; showContextMenu(e.clientX, e.clientY); });
+  // ===== Drag & Drop =====
+  if (depth > 0) { // Don't allow dragging root node
+    row.setAttribute('draggable', 'true');
+    row.addEventListener('dragstart', e => {
+      e.stopPropagation();
+      state._dragNodeId = node.id;
+      row.style.opacity = '0.4';
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', node.id);
+    });
+    row.addEventListener('dragend', e => {
+      row.style.opacity = '1';
+      document.querySelectorAll('.tree-row.drag-over').forEach(el => el.classList.remove('drag-over'));
+      state._dragNodeId = null;
+    });
+  }
+  row.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!state._dragNodeId || state._dragNodeId === node.id) return;
+    e.dataTransfer.dropEffect = 'move';
+    row.classList.add('drag-over');
+  });
+  row.addEventListener('dragleave', e => {
+    row.classList.remove('drag-over');
+  });
+  row.addEventListener('drop', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    row.classList.remove('drag-over');
+    const dragId = state._dragNodeId;
+    if (!dragId || dragId === node.id) return;
+    // Find and remove dragged node from its parent
+    function findAndRemove(parent) {
+      if (!parent.children) return null;
+      for (var i = 0; i < parent.children.length; i++) {
+        if (parent.children[i].id === dragId) {
+          return parent.children.splice(i, 1)[0];
+        }
+        var found = findAndRemove(parent.children[i]);
+        if (found) return found;
+      }
+      return null;
+    }
+    // Check if target is descendant of dragged node (prevent circular)
+    function isDescendant(parent, childId) {
+      if (parent.id === childId) return true;
+      if (parent.children) return parent.children.some(c => isDescendant(c, childId));
+      return false;
+    }
+    // Find dragged node without removing to check descendancy
+    function findNode(root, id) {
+      if (root.id === id) return root;
+      if (root.children) for (var c of root.children) { var f = findNode(c, id); if (f) return f; }
+      return null;
+    }
+    var dragNode = findNode(state.bomData, dragId);
+    if (dragNode && isDescendant(dragNode, node.id)) return; // Can't drop onto own descendant
+    var removed = findAndRemove(state.bomData);
+    if (!removed) return;
+    // Insert as sibling before target node, or as child if target has children
+    function insertBefore(parent) {
+      if (!parent.children) return false;
+      var idx = parent.children.findIndex(c => c.id === node.id);
+      if (idx >= 0) { parent.children.splice(idx, 0, removed); return true; }
+      for (var c of parent.children) { if (insertBefore(c)) return true; }
+      return false;
+    }
+    if (!insertBefore(state.bomData)) {
+      // If target not found as child, add as child of target
+      if (!node.children) node.children = [];
+      node.children.push(removed);
+    }
+    state._dragNodeId = null;
+    rebuildFlat();
+    renderTree();
+    showToast('节点已移动', 'success');
+  });
   return div;
 }
 function nodeMatchesSearch(node) {

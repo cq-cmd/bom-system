@@ -70,6 +70,48 @@ function renderChanges() {
     if ((c.status==='待审批') && c.reviewer===uname) ops += '<button class="btn btn-success btn-xs" onclick="event.stopPropagation();chgAction(\''+c.id+'\',\'approve\')">通过</button>';
     return '<tr style="cursor:pointer" onclick="showChgDetail(\''+c.id+'\')"><td>'+(pg.start+i+1)+'</td><td style="color:var(--accent);font-weight:500">'+c.id+'</td><td><span class="badge '+typeBadge(c.type)+'">'+c.type+'</span></td><td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis">'+c.title+'</td><td>'+c.scope+'</td><td>'+c.initiator+'</td><td>'+c.reviewer+'</td><td>'+c.date+'</td><td>'+priBadge(c.priority)+'</td><td><span class="badge '+statusBadge(c.status)+'">'+c.status+'</span></td><td style="white-space:nowrap">'+ops+'</td></tr>';
   }).join('');
+  // Populate impact analysis material selector
+  const impactSel = document.getElementById('impactMatSelect');
+  if (impactSel && state.materialsFlat && impactSel.options.length <= 1) {
+    impactSel.innerHTML = '<option value="">-- 选择物料 --</option>' + state.materialsFlat.map(m => '<option value="'+m.id+'">'+m.id+' '+m.name+'</option>').join('');
+  }
+}
+
+function analyzeChangeImpact() {
+  const mid = document.getElementById('impactMatSelect')?.value;
+  const el = document.getElementById('impactResult');
+  if (!el) return;
+  if (!mid) { el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px">请先选择一个物料</div>'; return; }
+  const mat = state.materialsFlat ? state.materialsFlat.find(m => m.id === mid) : null;
+  if (!mat) { el.innerHTML = '<div style="color:var(--text-muted)">未找到物料</div>'; return; }
+  // Traverse all BOMs to find references
+  function findInNode(node, path) {
+    var results = [];
+    if (node.id === mid) results.push(path);
+    if (node.children) node.children.forEach(function(c) { results = results.concat(findInNode(c, path + ' → ' + c.name)); });
+    return results;
+  }
+  var hits = [];
+  allBOMs.forEach(function(bom) {
+    var paths = findInNode(bom, bom.name);
+    if (paths.length > 0) hits.push({ bom: bom, paths: paths });
+  });
+  // Related changes
+  var relChanges = changesData.filter(function(c) { return c.materials && c.materials.includes(mid); });
+  el.innerHTML = '<div style="margin-bottom:12px"><span style="font-weight:600;color:var(--accent)">'+mat.icon+' '+mat.id+'</span> <span style="font-weight:500">'+mat.name+'</span> <span class="badge badge-blue" style="margin-left:6px">'+mat.supplier+'</span> <span style="color:var(--text-muted);font-size:11px;margin-left:8px">¥'+mat.price+' × '+mat.qty+'</span></div>' +
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">' +
+    '<div class="stat-card"><div class="stat-num" style="color:var(--accent)">'+hits.length+'</div><div class="stat-label">引用此物料的 BOM</div></div>' +
+    '<div class="stat-card"><div class="stat-num" style="color:var(--blue)">'+hits.reduce(function(s,h){return s+h.paths.length;},0)+'</div><div class="stat-label">引用路径总数</div></div>' +
+    '<div class="stat-card"><div class="stat-num" style="color:var(--yellow)">'+relChanges.length+'</div><div class="stat-label">相关变更单</div></div></div>' +
+    (hits.length > 0 ? '<div style="font-size:12px"><h4 style="font-size:13px;font-weight:600;margin-bottom:8px">📦 受影响 BOM</h4>' +
+      hits.map(function(h) {
+        return '<div style="padding:8px 12px;margin-bottom:6px;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-sm)">' +
+          '<div style="font-weight:600;color:var(--accent);margin-bottom:4px">'+h.bom.icon+' '+h.bom.name+'</div>' +
+          h.paths.map(function(p) { return '<div style="font-size:11px;color:var(--text-muted);padding:2px 0">📍 '+p+'</div>'; }).join('') +
+          '</div>';
+      }).join('') + '</div>' : '<div style="text-align:center;padding:12px;color:var(--text-muted);font-size:12px">该物料未在任何 BOM 中被引用</div>') +
+    (relChanges.length > 0 ? '<div style="margin-top:12px;font-size:12px"><h4 style="font-size:13px;font-weight:600;margin-bottom:8px">🔄 相关变更单</h4>' +
+      relChanges.map(function(c) { var stb = ({草稿:'badge-gray',待审批:'badge-yellow',审批中:'badge-yellow',执行中:'badge-blue',已关闭:'badge-green',已驳回:'badge-red'})[c.status]||'badge-gray'; return '<div style="padding:6px 12px;margin-bottom:4px;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-sm);display:flex;justify-content:space-between;align-items:center"><span><span style="color:var(--accent);font-weight:500">'+c.id+'</span> '+c.title+'</span><span class="badge '+stb+'">'+c.status+'</span></div>'; }).join('') + '</div>' : '');
 }
 
 
@@ -325,4 +367,4 @@ function doAprCenterAction(id,action){const a=aprCenterData.find(x=>x.id===id);i
 function exportModuleCSV(mod){let headers=[],rows=[];if(mod==='projects'){headers=['项目编号','项目名称','阶段','负责人','开始日期','计划完成','状态','进度'];rows=projectsData.map(p=>[p.id,p.name,p.phase,p.owner,p.start,p.end,p.status,p.progress+'%'])}else if(mod==='changes'){headers=['变更单号','类型','标题','影响范围','发起人','发起日期','优先级','状态'];rows=changesData.map(c=>[c.id,c.type,c.title,c.scope,c.initiator,c.date,c.priority,c.status])}else if(mod==='documents'){headers=['文档编号','文档名称','类型','版本','关联项目','上传人','更新日期','状态'];rows=documentsData.map(d=>[d.id,d.name,d.type,d.ver,d.project,d.uploader,d.date,d.status])}else if(mod==='suppliers'){headers=['供应商编号','供应商名称','类型','等级','联系人','供货物料数','准时交付率','质量评分','合作状态','综合评分','合作年限','最近审核'];rows=suppliersData.map(s=>[s.id,s.name,s.type,s.grade,s.contact,s.matCount,(s.onTimeRate||'')+'%',s.qualityScore||'',s.status,s.score,s.cooperationYears||'',s.lastAuditDate||''])}else if(mod==='quality'){headers=['问题编号','问题标题','类型','严重程度','关联物料','责任人','发现日期','状态'];rows=qualityData.map(r=>[r.id,r.title,r.type,r.severity,r.material,r.owner,r.date,r.status])}const bom='\uFEFF';const csv=bom+[headers.join(','),...rows.map(r=>r.map(c=>'"'+(c+'').replace(/"/g,'""')+'"').join(','))].join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a2=document.createElement('a');a2.href=url;a2.download=mod+'_export_'+todayISO()+'.csv';document.body.appendChild(a2);a2.click();document.body.removeChild(a2);URL.revokeObjectURL(url);showToast('已导出 '+rows.length+' 条记录','success')}
 
 
-export { renderProjects, switchChgTab, renderChanges, switchAprTab, renderApprovalCenter, renderDocuments, renderSuppliers, renderQuality, modSort, modPage, modSortData, modPaginate, handleDocFileSelect, showNewProjectModal, editProject, saveProject, deleteProject, projAction, showProjDetail, showChgModal, saveChange, editChange, deleteChange, chgAction, showChgDetail, saveDocument, deleteDoc, docAction, showDocDetail, saveSupplier, editSupplier, supAction, showSupReviewModal, saveSupReview, showSupDetail, saveQuality, deleteQa, qaAction, showQaDetail, doAprCenterAction, exportModuleCSV };
+export { renderProjects, switchChgTab, renderChanges, switchAprTab, renderApprovalCenter, renderDocuments, renderSuppliers, renderQuality, modSort, modPage, modSortData, modPaginate, handleDocFileSelect, showNewProjectModal, editProject, saveProject, deleteProject, projAction, showProjDetail, showChgModal, saveChange, editChange, deleteChange, chgAction, showChgDetail, saveDocument, deleteDoc, docAction, showDocDetail, saveSupplier, editSupplier, supAction, showSupReviewModal, saveSupReview, showSupDetail, saveQuality, deleteQa, qaAction, showQaDetail, doAprCenterAction, exportModuleCSV, analyzeChangeImpact };

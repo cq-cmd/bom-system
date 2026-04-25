@@ -14,12 +14,104 @@ let projSearchTerm = '';
 let projPhaseFilter = 'all';
 let projStatusFilter = 'all';
 
+// Add tasks support to projects
 export function getProjectsData() {
   return projectsData;
 }
 
 export function setProjectsData(data) {
   projectsData = data;
+}
+
+// Add tasks and milestones to project interface
+function ensureProjectHasTasks(project) {
+  if (!project.tasks) {
+    project.tasks = [];
+  }
+}
+
+function ensureProjectHasMilestones(project) {
+  if (!project.milestones) {
+    project.milestones = [];
+  }
+}
+
+export function addTask(projectId, taskText) {
+  const project = projectsData.find(p => p.id === projectId);
+  if (!project) return false;
+
+  ensureProjectHasTasks(project);
+  const taskId = `${projectId}-T${project.tasks.length + 1}`;
+  project.tasks.push({
+    id: taskId,
+    text: taskText,
+    completed: false,
+    createdAt: new Date().toISOString().split('T')[0]
+  });
+  return true;
+}
+
+export function toggleTask(projectId, taskId) {
+  const project = projectsData.find(p => p.id === projectId);
+  if (!project || !project.tasks) return false;
+
+  const task = project.tasks.find(t => t.id === taskId);
+  if (task) {
+    task.completed = !task.completed;
+    return true;
+  }
+  return false;
+}
+
+export function deleteTask(projectId, taskId) {
+  const project = projectsData.find(p => p.id === projectId);
+  if (!project || !project.tasks) return false;
+
+  const index = project.tasks.findIndex(t => t.id === taskId);
+  if (index >= 0) {
+    project.tasks.splice(index, 1);
+    return true;
+  }
+  return false;
+}
+
+export function addMilestone(projectId, milestoneName, milestoneDate) {
+  const project = projectsData.find(p => p.id === projectId);
+  if (!project) return false;
+
+  ensureProjectHasMilestones(project);
+  const id = `${projectId}-M${project.milestones.length + 1}`;
+  project.milestones.push({
+    id,
+    name: milestoneName,
+    date: milestoneDate,
+    completed: false
+  });
+  return true;
+}
+
+export function toggleMilestone(projectId, milestoneId) {
+  const project = projectsData.find(p => p.id === projectId);
+  if (!project || !project.milestones) return false;
+
+  const ms = project.milestones.find(m => m.id === milestoneId);
+  if (ms) {
+    ms.completed = !ms.completed;
+    return true;
+  }
+  return false;
+}
+
+export function deleteMilestone(projectId, milestoneId) {
+  const project = projectsData.find(p => p.id === projectId);
+  if (!project || !project.milestones) return false;
+
+  const index = project.milestones.findIndex(m => m.id === milestoneId);
+  if (index >= 0) {
+    project.milestones.splice(index, 1);
+    return true;
+  }
+  return false;
 }
 
 function getFilteredProjects() {
@@ -285,9 +377,80 @@ export function showProjectDetail(id) {
   `;
 
   document.getElementById('genericDetailTitle').textContent = '项目详情';
-  document.getElementById('genericDetailBody').innerHTML = content;
+  ensureProjectHasTasks(project);
+  const tasksHtml = project.tasks && project.tasks.length > 0 ? `
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+      <h4 style="font-size:14px;font-weight:600;margin-bottom:12px">📋 项目任务 (${project.tasks.filter(t => !t.completed).length}/${project.tasks.length})</h4>
+      <div id="projectTaskList">
+        ${project.tasks.map(t => `
+          <div class="task-item" style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border-light)">
+            <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleProjectTask('${project.id}','${t.id}')">
+            <span style="flex:1${t.completed ? ';text-decoration:line-through;color:var(--text-muted)' : ''}">${escapeHtml(t.text)}</span>
+            <button class="btn btn-ghost btn-xs" onclick="deleteProjectTask('${project.id}','${t.id}')">🗑</button>
+          </div>
+        `).join('')}
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <input type="text" id="newTaskInput" placeholder="输入新任务..." style="flex:1;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm)" />
+          <button class="btn btn-primary btn-sm" onclick="addProjectTask('${project.id}')">添加</button>
+        </div>
+      </div>
+    </div>
+  ` : `
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+      <div class="hint-block">暂无任务，添加任务来跟踪项目进度</div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <input type="text" id="newTaskInput" placeholder="输入新任务..." style="flex:1;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm)" />
+        <button class="btn btn-primary btn-sm" onclick="addProjectTask('${project.id}')">添加</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('genericDetailBody').innerHTML = content + tasksHtml;
   document.getElementById('genericDetailActions').innerHTML = `
-    <button class="btn btn-primary" onclick="editProject('${project.id}');document.getElementById('genericDetailCloseBtn').click()">编辑</button>
+    <button class="btn btn-primary" onclick="editProject('${project.id}');hideModal('genericDetailModal')">编辑</button>
+  `;
+  showModal('genericDetailModal');
+}
+
+export function exportProjectsCSV() {
+  const data = getFilteredProjects();
+  const headers = ['项目编号', '项目名称', '阶段', '负责人', '开始日期', '计划完成', '状态', '进度'];
+  const rows = data.map(p => [
+    p.id, p.name, p.phase, p.owner, p.start, p.end, p.status, p.progress
+  ]);
+  exportCSV('bom-projects-export.csv', headers, rows);
+  showToast('项目列表导出成功', 'success');
+}
+
+export function initProjects() {
+  const searchInput = document.getElementById('projSearch');
+  const phaseFilter = document.getElementById('projPhaseFilter');
+  const statusFilter = document.getElementById('projStatusFilter');
+
+  searchInput?.addEventListener('input', e => {
+    projSearchTerm = e.target.value.trim();
+    projPage = 1;
+    renderProjects();
+  });
+
+  phaseFilter?.addEventListener('change', e => {
+    projPhaseFilter = e.target.value;
+    projPage = 1;
+    renderProjects();
+  });
+
+  statusFilter?.addEventListener('change', e => {
+    projStatusFilter = e.target.value;
+    projPage = 1;
+    renderProjects();
+  });
+
+  renderProjects();
+}
+
+  document.getElementById('genericDetailBody').innerHTML = content + tasksHtml + milestonesHtml;
+  document.getElementById('genericDetailActions').innerHTML = `
+    <button class="btn btn-primary" onclick="editProject('${project.id}');hideModal('genericDetailModal')">编辑</button>
   `;
   showModal('genericDetailModal');
 }

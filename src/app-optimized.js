@@ -353,3 +353,46 @@ window.switchAprTab = approvals.switchAprTab;
 window.openApprovalDetail = approvals.openApprovalDetail;
 window.doApprove = approvals.doApprove;
 window.submitApproval = approvals.submitNewApproval;
+
+// Project tasks
+window.addProjectTask = (projectId) => {
+  const input = document.getElementById('newTaskInput');
+  const text = input.value.trim();
+  if (!text) return;
+  if (projects.addTask(projectId, text)) {
+    input.value = '';
+    showProjectDetail(projectId);
+    ui.showToast('任务已添加', 'success');
+  }
+};
+window.toggleProjectTask = (projectId, taskId) => {
+  projects.toggleTask(projectId, taskId);
+  showProjectDetail(projectId);
+};
+window.deleteProjectTask = (projectId, taskId) => {
+  projects.deleteTask(projectId, taskId);
+  showProjectDetail(projectId);
+};
+
+// Project milestones
+window.addProjectMilestone = (projectId) => {
+  const nameInput = document.getElementById('newMilestoneName');
+  const dateInput = document.getElementById('newMilestoneDate');
+  const name = nameInput.value.trim();
+  const date = dateInput.value;
+  if (!name) return;
+  if (projects.addMilestone(projectId, name, date)) {
+    nameInput.value = '';
+    dateInput.value = '';
+    showProjectDetail(projectId);
+    ui.showToast('里程碑已添加', 'success');
+  }
+};
+window.toggleProjectMilestone = (projectId, milestoneId) => {
+  projects.toggleMilestone(projectId, milestoneId);
+  showProjectDetail(projectId);
+};
+window.deleteProjectMilestone = (projectId, milestoneId) => {
+  projects.deleteMilestone(projectId, milestoneId);
+  showProjectDetail(projectId);
+};

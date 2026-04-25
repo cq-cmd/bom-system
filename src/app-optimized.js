@@ -32,6 +32,9 @@ import * as navigation from './modules/navigation.js';
 import * as bom from './modules/bom.js';
 import * as materials from './modules/materials.js';
 import * as dashboard from './modules/dashboard.js';
+import * as projects from './modules/projects.js';
+import * as changes from './modules/changes.js';
+import * as approvals from './modules/approvals.js';
 import { populateAllEnumSelects, populateEnumSelect, exportCSV } from './modules/utils.js';
 
 // Deep clone initial data
@@ -131,6 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Render initial BOM tree
   bom.renderBOMTree();
+
+  // Initialize projects, changes, approvals
+  projects.initProjects();
+  changes.initChanges();
+  approvals.initApprovalCenter();
 
   // Expose additional globals that are needed
   window.showMaterialModal = showMaterialModal;
@@ -314,3 +322,34 @@ window.hideModal = ui.hideModal;
 window.showConfirmModal = ui.showConfirmModal;
 window.clearFieldError = ui.clearFieldError;
 window.setFieldError = ui.setFieldError;
+
+// Projects module
+window.modSort = projects.modSort;
+window.modPage = projects.modPage;
+window.showNewProjectModal = projects.showNewProjectModal;
+window.saveProject = projects.saveProject;
+window.deleteProject = projects.deleteProject;
+window.showProjectDetail = projects.showProjectDetail;
+window.editProject = projects.editProject;
+window.exportModuleCSV = (module) => {
+  if (module === 'projects') {
+    projects.exportProjectsCSV();
+  } else if (module === 'changes') {
+    changes.exportChangesCSV();
+  }
+};
+
+// Changes module
+window.switchChgTab = changes.switchChgTab;
+window.modSort = changes.modSort;
+window.modPage = changes.modPage;
+window.showChgModal = changes.showChgModal;
+window.saveChange = changes.saveChange;
+window.deleteChange = changes.deleteChange;
+window.showChangeDetail = changes.showChangeDetail;
+
+// Approvals module
+window.switchAprTab = approvals.switchAprTab;
+window.openApprovalDetail = approvals.openApprovalDetail;
+window.doApprove = approvals.doApprove;
+window.submitApproval = approvals.submitNewApproval;

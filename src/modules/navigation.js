@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // 导航/标签/搜索/模态框/Toast
 import { state, versions } from './state.js';
 import { renderMaterials, buildFilterDropdowns } from './materials.js';
@@ -167,3 +168,84 @@ function navigateTo(nav) {
 
 
 export { showModal, hideModal, showConfirm, showToast, navigateTo };
+=======
+import { setStorage, getStorage } from '../utils/storage.js';
+
+export let currentPage = 'dashboard';
+
+export function navigateTo(pageId) {
+  // Update sidebar navigation
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.nav === pageId);
+  });
+
+  // Update page panels
+  document.querySelectorAll('.page-panel').forEach(panel => {
+    panel.classList.toggle('active', panel.id === 'page-' + pageId);
+  });
+
+  currentPage = pageId;
+  try {
+    setStorage('bom_page', pageId);
+  } catch(e) {}
+
+  updateBreadcrumb(pageId);
+
+  // Trigger page-specific refresh if needed
+  switch(pageId) {
+    case 'materials':
+      // Already rendered on init
+      break;
+    case 'dashboard':
+      // Refresh dashboard
+      break;
+  }
+}
+
+function updateBreadcrumb(pageId) {
+  const labels = {
+    dashboard: '仪表盘',
+    bom: 'BOM 管理',
+    materials: '物料库',
+    projects: '项目管理',
+    changes: '变更管理',
+    approvals: '审批中心',
+    lifecycle: '生命周期',
+    cost: '成本分析',
+    suppliers: '供应商管理',
+    inventory: '库存/采购',
+    compliance: '合规认证',
+    documents: '文档中心',
+    process: '工艺路线',
+    quality: '质量管理',
+    config: '产品配置',
+    reports: '报表中心',
+    settings: '系统设置'
+  };
+
+  const breadcrumb = document.querySelector('.breadcrumb');
+  if (!breadcrumb) return;
+
+  const label = labels[pageId] || pageId;
+  breadcrumb.lastElementChild.textContent = label;
+}
+
+export function initNavigation() {
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const page = item.dataset.nav;
+      if (page) navigateTo(page);
+    });
+  });
+
+  // Restore last page
+  try {
+    const saved = getStorage('bom_page');
+    if (saved && document.getElementById('page-' + saved)) {
+      navigateTo(saved);
+    }
+  } catch(e) {}
+}
+
+export { currentPage };
+>>>>>>> 5c9e725 (refactor: modular code structure optimization)

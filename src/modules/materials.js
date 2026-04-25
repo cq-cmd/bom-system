@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // 物料表 + 批量操作 + 收藏 + 行内编辑
 import { state, allBOMs, enumConfig, rebuildFlat, persistFavorites, persistFavoriteFilter, updateFavToggleButton, substituteMap } from './state.js';
 import { escapeHtml } from '../utils/dom.js';
@@ -333,3 +334,289 @@ function toggleFavorite(id) {
 }
 
 export { getCategory, buildFilterDropdowns, getFilteredMaterials, renderMaterials, renderMatStats, renderBomHealth, sortMaterials, changePage, changePageSize, showMatDetail, toggleMatSelect, toggleSelectAll, clearSelection, updateBatchBar, showMaterialModal, editMaterial, saveMaterial, deleteMaterial, batchDelete, toggleFavoriteFilter, toggleFavorite };
+=======
+import { escapeHtml, hlText } from '../utils/dom.js';
+import { showToast, showConfirmModal } from './ui.js';
+import { getMaterialsFlat, getFavoriteMaterials, getShowFavoriteOnly, toggleFavorite } from './bom.js';
+
+let matPage = 1;
+let matPageSize = 20;
+let matSort = { field: null, asc: true };
+let searchTerm = '';
+let filterStatus = 'all';
+let filterCategory = 'all';
+let filterSupplier = 'all';
+let selectedMatIds = new Set();
+
+export function getSelectedMatIds() {
+  return selectedMatIds;
+}
+
+export function clearSelection() {
+  selectedMatIds.clear();
+  updateBatchBar();
+}
+
+function updateBatchBar() {
+  const bar = document.getElementById('batchBar');
+  const count = document.getElementById('batchCount');
+  if (!bar || !count) return;
+
+  if (selectedMatIds.size > 0) {
+    bar.style.display = 'flex';
+    count.textContent = `已选 ${selectedMatIds.size} 项`;
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+export function toggleSelectAll() {
+  const materials = getFilteredMaterials();
+  if (selectedMatIds.size === materials.length) {
+    selectedMatIds.clear();
+  } else {
+    materials.forEach(m => selectedMatIds.add(m.id));
+  }
+  updateBatchBar();
+  renderMaterials();
+}
+
+export function toggleMaterialSelection(id) {
+  if (selectedMatIds.has(id)) {
+    selectedMatIds.delete(id);
+  } else {
+    selectedMatIds.add(id);
+  }
+  updateBatchBar();
+}
+
+function getFilteredMaterials() {
+  let materials = getMaterialsFlat();
+  const favorites = getFavoriteMaterials();
+  const showOnlyFavs = getShowFavoriteOnly();
+
+  if (showOnlyFavs) {
+    materials = materials.filter(m => favorites.has(m.id));
+  }
+
+  if (!searchTerm && filterStatus === 'all' && filterCategory === 'all' && filterSupplier === 'all') {
+    return materials;
+  }
+
+  const q = searchTerm.toLowerCase();
+  return materials.filter(mat => {
+    if (searchTerm && !(mat.id.toLowerCase().includes(q) || mat.name.toLowerCase().includes(q) || (mat.spec && mat.spec.toLowerCase().includes(q)))) {
+      return false;
+    }
+    if (filterStatus !== 'all' && mat.status !== filterStatus) {
+      return false;
+    }
+    // Category and supplier filters can be added based on data
+    return true;
+  });
+}
+
+function sortMaterials(field) {
+  if (matSort.field === field) {
+    matSort.asc = !matSort.asc;
+  } else {
+    matSort.field = field;
+    matSort.asc = true;
+  }
+  matPage = 1;
+  renderMaterials();
+}
+
+function changePage(delta) {
+  matPage += delta;
+  renderMaterials();
+}
+
+function changePageSize() {
+  const select = document.getElementById('pageSizeSelect');
+  if (!select) return;
+  matPageSize = parseInt(select.value, 10);
+  matPage = 1;
+  renderMaterials();
+}
+
+function calculateTotalCost(materials) {
+  return materials.reduce((sum, mat) => sum + (mat.price || 0) * (mat.qty || 1), 0);
+}
+
+export function renderMaterials() {
+  const tbody = document.getElementById('matBody');
+  const summary = document.getElementById('matSummary');
+  const pageInfo = document.getElementById('pageInfo');
+  const prevBtn = document.getElementById('prevPage');
+  const nextBtn = document.getElementById('nextPage');
+  const costInfo = document.getElementById('matCost');
+
+  if (!tbody) return;
+
+  let materials = getFilteredMaterials();
+  const total = materials.length;
+  const totalPages = Math.max(1, Math.ceil(total / matPageSize));
+
+  if (matPage > totalPages) matPage = totalPages;
+
+  // Sort
+  if (matSort.field) {
+    materials = [...materials].sort((a, b) => {
+      let aVal = a[matSort.field] || 0;
+      let bVal = b[matSort.field] || 0;
+
+      if (typeof aVal === 'string') {
+        aVal = aVal.toLowerCase();
+        bVal = bVal.toLowerCase();
+      }
+
+      if (aVal < bVal) return matSort.asc ? -1 : 1;
+      if (aVal > bVal) return matSort.asc ? 1 : -1;
+      return 0;
+    });
+  }
+
+  // Pagination
+  const start = (matPage - 1) * matPageSize;
+  const end = start + matPageSize;
+  const pageMaterials = materials.slice(start, end);
+  const favorites = getFavoriteMaterials();
+
+  tbody.innerHTML = pageMaterials.map(mat => {
+    const isSelected = selectedMatIds.has(mat.id);
+    const isFav = favorites.has(mat.id);
+    const statusCls = `badge-${(mat.status || '有效').toLowerCase()}`;
+    const subtotal = (mat.price || 0) * (mat.qty || 1);
+
+    return `
+      <tr class="${isSelected ? 'selected' : ''}">
+        <td><input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleMaterialSelection('${escapeHtml(mat.id)}')" /></td>
+        <td style="text-align:center">
+          <span style="cursor:pointer;color:${isFav ? '#f59e0b' : '#999'}" onclick="toggleMaterialFavorite('${escapeHtml(mat.id)}')">
+            ${isFav ? '★' : '☆'}
+          </span>
+        </td>
+        <td>${start + tbody.childElementCount + 1}</td>
+        <td>${hlText(mat.id, searchTerm)}</td>
+        <td>${hlText(mat.name, searchTerm)}</td>
+        <td>${escapeHtml(mat.category || '-')}</td>
+        <td>${escapeHtml(mat.spec || '-')}</td>
+        <td>${escapeHtml(mat.unit || '-')}</td>
+        <td class="text-right">${mat.qty || 1}</td>
+        <td>${escapeHtml(mat.supplier || '-')}</td>
+        <td class="text-right">${mat.price ? mat.price.toFixed(2) : '-'}</td>
+        <td class="text-right">${subtotal ? subtotal.toFixed(2) : '-'}</td>
+        <td><span class="badge ${statusCls}">${escapeHtml(mat.status || '有效')}</span></td>
+        <td>
+          <button class="btn btn-ghost btn-xs" onclick="showMaterialDetail('${escapeHtml(mat.id)}')">详情</button>
+          <button class="btn btn-ghost btn-xs" onclick="editMaterial('${escapeHtml(mat.id)}')">编辑</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  if (summary) {
+    summary.textContent = `共 ${total} 种物料`;
+  }
+  if (pageInfo) {
+    pageInfo.textContent = `第 ${matPage} / ${totalPages} 页`;
+  }
+  if (prevBtn) {
+    prevBtn.disabled = matPage <= 1;
+  }
+  if (nextBtn) {
+    nextBtn.disabled = matPage >= totalPages;
+  }
+  if (costInfo) {
+    const totalCost = calculateTotalCost(materials);
+    costInfo.textContent = `总成本: ¥ ${totalCost.toFixed(2)}`;
+  }
+
+  updateBatchBar();
+}
+
+export function toggleMaterialFavorite(id) {
+  toggleFavorite(id);
+  renderMaterials();
+}
+
+export function searchMaterials(term) {
+  searchTerm = (term || '').trim();
+  matPage = 1;
+  renderMaterials();
+}
+
+export function filterMaterials(status, category, supplier) {
+  filterStatus = status || 'all';
+  filterCategory = category || 'all';
+  filterSupplier = supplier || 'all';
+  matPage = 1;
+  renderMaterials();
+}
+
+export function getMatPage() {
+  return matPage;
+}
+
+export function setMatPage(page) {
+  matPage = page;
+}
+
+export function deleteSelectedMaterial(id) {
+  const materials = getMaterialsFlat();
+  const index = materials.findIndex(m => m.id === id);
+  if (index >= 0) {
+    materials.splice(index, 1);
+    // Remove from parent in BOM as well - this needs BOM tree traversal
+    showToast('已删除物料', 'success');
+    renderMaterials();
+    return true;
+  }
+  return false;
+}
+
+export function batchDelete() {
+  if (selectedMatIds.size === 0) {
+    showToast('请先选择要删除的物料', 'error');
+    return;
+  }
+
+  showConfirmModal(
+    '确认批量删除',
+    `确定要删除选中的 ${selectedMatIds.size} 个物料吗？此操作无法撤销。`,
+    () => {
+      let deleted = 0;
+      selectedMatIds.forEach(id => {
+        if (deleteSelectedMaterial(id)) deleted++;
+      });
+      selectedMatIds.clear();
+      updateBatchBar();
+      showToast(`已删除 ${deleted} 个物料`, 'success');
+    },
+    '确认删除'
+  );
+}
+
+export function initMaterialsFilters() {
+  const searchInput = document.getElementById('matSearch');
+  const statusFilter = document.getElementById('matFilter');
+  const categoryFilter = document.getElementById('matCategoryFilter');
+  const supplierFilter = document.getElementById('matSupplierFilter');
+
+  searchInput?.addEventListener('input', e => {
+    searchMaterials(e.target.value);
+  });
+  statusFilter?.addEventListener('change', e => {
+    filterMaterials(e.target.value, categoryFilter?.value, supplierFilter?.value);
+  });
+  categoryFilter?.addEventListener('change', e => {
+    filterMaterials(statusFilter?.value, e.target.value, supplierFilter?.value);
+  });
+  supplierFilter?.addEventListener('change', e => {
+    filterMaterials(statusFilter?.value, categoryFilter?.value, e.target.value);
+  });
+}
+
+export { matPage, matPageSize, matSort, searchTerm, filterStatus, filterCategory, filterSupplier };
+>>>>>>> 5c9e725 (refactor: modular code structure optimization)

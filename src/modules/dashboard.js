@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // 仪表盘 + 通知 + 待办
 import { state, versions, approvals, changesData, qualityData, documentsData, demoUsers, projectsData } from './state.js';
 import { nowStr } from '../utils/format.js';
@@ -144,3 +145,107 @@ function renderDashTodos() {
 
 
 export { renderDashboard, updateNavBadges, initNotifBell, renderLoginPills, renderDashTodos };
+=======
+import { getBomData, getMaterialsFlat } from '../modules/bom.js';
+import { getCurrentUser } from '../modules/auth.js';
+
+export function renderDashboard() {
+  const user = getCurrentUser();
+  const welcome = document.getElementById('dashWelcome');
+  const role = document.getElementById('dashRole');
+
+  if (welcome && user) {
+    welcome.textContent = `欢迎回来，${user.name}`;
+  }
+  if (role && user) {
+    role.textContent = user.role || '';
+  }
+
+  renderStats();
+  renderActivity();
+}
+
+function renderStats() {
+  const container = document.getElementById('dashStats');
+  if (!container) return;
+
+  const materials = getMaterialsFlat();
+  const bom = getBomData();
+
+  const totalMaterials = materials.length;
+  const activeMaterials = materials.filter(m => m.status === '有效').length;
+  const pendingMaterials = materials.filter(m => m.status === '待审').length;
+  const inactiveMaterials = materials.filter(m => m.status === '停用').length;
+
+  let totalNodes = 0;
+  let maxDepth = 0;
+  function count(node, depth) {
+    totalNodes++;
+    if (depth > maxDepth) maxDepth = depth;
+    if (node.children) node.children.forEach(c => count(c, depth + 1));
+  }
+  count(bom, 1);
+
+  container.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--accent)">${totalMaterials}</div>
+      <div class="stat-label">物料总数</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--green)">${activeMaterials}</div>
+      <div class="stat-label">有效物料</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--yellow)">${pendingMaterials}</div>
+      <div class="stat-label">待审批</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--red)">${inactiveMaterials}</div>
+      <div class="stat-label">已停用</div>
+    </div>
+  `;
+}
+
+function renderActivity() {
+  const container = document.getElementById('dashActivity');
+  if (!container) return;
+
+  // Recent activity can be enhanced based on actual usage
+  const activities = [
+    { type: 'approval', text: 'V3.0 BOM 等待品质审核', time: '10 分钟前' },
+    { type: 'material', text: '新物料 RF-20047 提交入库审批', time: '1 小时前' },
+    { type: 'system', text: '系统将于今日 22:00 进行维护', time: '3 小时前' },
+  ];
+
+  container.innerHTML = activities.map(act => `
+    <div class="activity-item">
+      <div class="activity-text">${act.text}</div>
+      <div class="activity-time">${act.time}</div>
+    </div>
+  `).join('');
+}
+
+export function updateNavBadges() {
+  const materials = getMaterialsFlat();
+  const pending = materials.filter(m => m.status === '待审').length;
+  const inactive = materials.filter(m => m.status === '停用').length;
+
+  const navBadgeMat = document.getElementById('navBadgeMat');
+  const navBadgeInv = document.getElementById('navBadgeInv');
+
+  if (navBadgeMat) navBadgeMat.textContent = materials.length;
+  if (navBadgeInv) navBadgeInv.textContent = pending + inactive;
+}
+
+export function getDashboardStats() {
+  const materials = getMaterialsFlat();
+  const bom = getBomData();
+
+  return {
+    totalMaterials: materials.length,
+    activeMaterials: materials.filter(m => m.status === '有效').length,
+    pendingMaterials: materials.filter(m => m.status === '待审').length,
+    inactiveMaterials: materials.filter(m => m.status === '停用').length,
+  };
+}
+>>>>>>> 5c9e725 (refactor: modular code structure optimization)
